@@ -1,15 +1,15 @@
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function Login({ className, ...props }: React.ComponentProps<"div">) {
+export function Login({
+  setCurrentTab,
+}: {
+  setCurrentTab: (tab: string) => void;
+}) {
   return (
-    <div
-      className={cn("flex flex-col gap-6 items-center", className)}
-      {...props}
-    >
+    <div>
       <Card className="overflow-hidden w-full max-w-125">
         <form className="p-6 md:p-8">
           <div className="flex flex-col gap-6">
@@ -71,7 +71,7 @@ export function Login({ className, ...props }: React.ComponentProps<"div">) {
 
             <div className="text-center text-sm">
               Não tem uma conta?{" "}
-              <a href="#" className="underline underline-offset-4">
+              <a href="#" className="underline underline-offset-4" onClick={() => setCurrentTab("signup")}>
                 Cadastre-se
               </a>
             </div>

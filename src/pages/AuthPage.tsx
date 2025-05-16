@@ -1,3 +1,4 @@
+import { Login } from "@/components/Login";
 import SignUpForm from "@/components/SignUpForm";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 
@@ -15,6 +16,9 @@ export function AuthPage() {
       >
         <TabsContent value="signup">
           <SignUpForm setCurrentTab={setCurrentTab} />
+        </TabsContent>
+        <TabsContent value="login">
+          <Login setCurrentTab={setCurrentTab} />
         </TabsContent>
       </Tabs>
     </div>
