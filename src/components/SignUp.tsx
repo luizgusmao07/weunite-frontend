@@ -10,20 +10,20 @@ import {
   FormLabel,
   FormMessage,
 } from "./ui/form";
-import { signUpSchema } from "@/schemas/SignUpSchema";
+import { signUpSchema } from "@/schemas/auth.schema";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
-import React, { useEffect } from "react";
 import { User, AtSign, KeyRound, UserCircle } from "lucide-react";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { Checkbox } from "./ui/checkbox";
+import { usePasswordStrength } from "@/hooks/usePasswordStrength";
 
-export function SignUpForm({
+export function SignUp({
   setCurrentTab,
 }: {
   setCurrentTab: (tab: string) => void;
 }) {
-  const [progress, setProgress] = React.useState(0);
-
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -34,32 +34,24 @@ export function SignUpForm({
     },
   });
 
+  const password = form.watch("password");
+  const progress = usePasswordStrength(password);
+
   function onSubmit(values: z.infer<typeof signUpSchema>) {
     console.log(values);
   }
 
-  const password = form.watch("password");
-
-  useEffect(() => {
-    const calculatePasswordStrength = (password: string) => {
-      let strength = 0;
-
-      if (password.length >= 8) strength += 20;
-      if (/[A-Z]/.test(password)) strength += 20;
-      if (/[a-z]/.test(password)) strength += 20;
-      if (/[0-9]/.test(password)) strength += 20;
-      if (/[^A-Za-z0-9]/.test(password)) strength += 20;
-
-      return strength;
-    };
-
-    setProgress(calculatePasswordStrength(password || ""));
-  }, [password]);
   return (
     <div className="flex flex-col items-center space-y-2">
-      <Card className="w-125">
+      <DotLottieReact
+        src="https://lottie.host/a06a613a-efd2-4dbd-96d0-2f4fd7344792/0jYYhWcj4H.lottie"
+        loop
+        autoplay
+        className="w-50 m-0"
+      />
+      <Card className="w-125 py-4">
         <CardContent>
-          <div className="text-center mb-6">
+          <div className="text-center mb-3">
             <h2 className="text-2xl font-bold">Crie sua conta</h2>
             <p className="text-muted-foreground text-sm mt-1">
               Preencha os dados abaixo para começar
@@ -88,7 +80,7 @@ export function SignUpForm({
                           />
                         </div>
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -109,7 +101,7 @@ export function SignUpForm({
                           />
                         </div>
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -130,7 +122,7 @@ export function SignUpForm({
                           />
                         </div>
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -151,7 +143,7 @@ export function SignUpForm({
                           />
                         </div>
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -162,7 +154,20 @@ export function SignUpForm({
                   </div>
                 </div>
 
-                <div className="flex flex-col space-y-1">
+                <div className="flex flex-col space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="terms" required />
+                    <label
+                      htmlFor="terms"
+                      className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Aceitar{" "}
+                      <a href="" className="underline decoration-solid">
+                        termos e condições
+                      </a>
+                    </label>
+                  </div>
+
                   <Button type="submit">Cadastrar</Button>
                   <span className="text-xs">
                     Já se cadastrou? {""}
@@ -180,15 +185,8 @@ export function SignUpForm({
           </div>
         </CardContent>
       </Card>
-
-      <span className="text-xs text-center">
-        Ao se cadastrar você concorda com nosso{" "}
-        <a href="#" className="underline decoration-solid">
-          Termos de Segurança e Privacidade
-        </a>
-      </span>
     </div>
   );
 }
 
-export default SignUpForm;
+export default SignUp;

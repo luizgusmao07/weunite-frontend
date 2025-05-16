@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AtSign, KeyRound } from "lucide-react";
 
 export function Login({
   setCurrentTab,
@@ -21,13 +22,16 @@ export function Login({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="weunite@exemplo.com"
-                required
-              />
+              <div className="relative">
+                <AtSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="weunite@exemplo.com"
+                  className="pl-8"
+                  required
+                />
+              </div>
             </div>
 
             <div className="grid gap-2">
@@ -41,7 +45,15 @@ export function Login({
                 </a>
               </div>
 
-              <Input id="password" type="password" required />
+              <div className="relative">
+                <KeyRound className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="password"
+                  placeholder="weuniteB1@"
+                  className="pl-8"
+                  required
+                />
+              </div>
             </div>
 
             <Button type="submit" className="w-full">
@@ -70,21 +82,29 @@ export function Login({
             </div>
 
             <div className="text-center text-sm">
-              Não tem uma conta?{" "}
-              <a href="#" className="underline underline-offset-4" onClick={() => setCurrentTab("signup")}>
-                Cadastre-se
-              </a>
+              Não tem uma conta? <br />
+              <span className="text-muted-foreground">
+                Cadastre-se como{" "}
+                <a
+                  href="#"
+                  className="underline decoration-solid"
+                  onClick={() => setCurrentTab("signupcompany")}
+                >
+                  clube
+                </a>{" "}
+                ou{" "}
+                <a
+                  href="#"
+                  className="underline decoration-solid"
+                  onClick={() => setCurrentTab("signup")}
+                >
+                  atleta
+                </a>
+              </span>
             </div>
           </div>
         </form>
       </Card>
-
-      <div className="text-balance text-center text-xs text-mute-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
-        Ao se cadastrar você concorda com nosso{" "}
-        <a href="#" className="underline decoration-solid">
-          Termos de Segurança e Privacidade
-        </a>
-      </div>
     </div>
   );
 }
