@@ -42,18 +42,6 @@ export function Login({
     <div>
       <Card className="overflow-hidden w-full max-w-125">
         <Form {...form}>
-          <div className="grid gap-2">
-            <div className="flex items-center">
-              <Label htmlFor="password">Senha</Label>
-              <a
-                href="#"
-                className="ml-auto text-sm underline-offset-2 hover:underline"
-                onClick={() => navigate("/forgot-password")}
-              >
-                Esqueceu sua senha?
-              </a>
-            </div>
-          </div>
           <form className="p-6 md:p-8" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col item-center text-center">
@@ -96,6 +84,7 @@ export function Login({
                       <a
                         href="#"
                         className="ml-auto text-sm underline-offset-2 hover:underline"
+                        onClick={() => navigate("/forgot-password")}
                       >
                         Esqueceu sua senha?
                       </a>
