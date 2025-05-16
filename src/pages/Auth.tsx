@@ -15,15 +15,18 @@ export function Auth() {
         value={currentTab}
         onValueChange={setCurrentTab}
       >
+        
         <TabsContent value="signup">
           <SignUp setCurrentTab={setCurrentTab} />
         </TabsContent>
+
         <TabsContent value="login">
           <Login setCurrentTab={setCurrentTab} />
         </TabsContent>
         <TabsContent value="signupcompany">
           <SignUpCompany setCurrentTab={setCurrentTab} />
         </TabsContent>
+      
       </Tabs>
     </div>
   );
