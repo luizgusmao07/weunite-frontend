@@ -9,13 +9,12 @@ export function Auth() {
   const [currentTab, setCurrentTab] = useState("signup");
 
   return (
-    <div className="flex justify-center h-screen">
+    <div className="flex items-center justify-center h-screen">
       <Tabs
         defaultValue="login"
         value={currentTab}
         onValueChange={setCurrentTab}
       >
-        
         <TabsContent value="signup">
           <SignUp setCurrentTab={setCurrentTab} />
         </TabsContent>
@@ -26,7 +25,6 @@ export function Auth() {
         <TabsContent value="signupcompany">
           <SignUpCompany setCurrentTab={setCurrentTab} />
         </TabsContent>
-      
       </Tabs>
     </div>
   );

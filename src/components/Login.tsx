@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { loginSchema } from "@/schemas/LoginSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,18 +40,16 @@ export function Login({
 
   return (
     <div>
-
-      <div className="flex flex-col items-center space-y-2 pt-15">
-         <DotLottieReact
-            src="https://lottie.host/5ce60653-911c-4bcc-b385-b8be5f43b51e/OGOTw3OGfF.lottie"
-            loop
-            autoplay
-            className="w-50 m-0"
-          />
+      <div className="flex flex-col items-center space-y-2">
+        <DotLottieReact
+          src="https://lottie.host/5ce60653-911c-4bcc-b385-b8be5f43b51e/OGOTw3OGfF.lottie"
+          loop
+          autoplay
+          className="w-50 m-0"
+        />
       </div>
 
-      <Card className="overflow-hidden w-full w-125">
-
+      <Card className="overflow-hidden w-125">
         <Form {...form}>
           <form className="p-6 md:p-8" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">

@@ -39,7 +39,7 @@ export function SignUpCompany({
   return (
     <div className="flex flex-col space-y-2">
       
-      <div className="flex justify-center pt-15">
+      <div className="flex justify-center">
         <DotLottieReact
           src="https://lottie.host/a06a613a-efd2-4dbd-96d0-2f4fd7344792/0jYYhWcj4H.lottie"
           loop
@@ -48,7 +48,7 @@ export function SignUpCompany({
         />
       </div>
       
-      <Card className="w-125 py-4">
+      <Card className="w-125">
         <CardContent>
           <div className="text-center mb-3">
             <h2 className="text-2xl font-bold">Crie sua conta</h2>
