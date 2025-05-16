@@ -59,7 +59,7 @@ export const signUpSchema = z.object({
   email: z
     .string()
     .min(1, {
-      message: "E-mail é obrigatório",
+      message: "O e-mail é obrigatório",
     })
     .email({
       message: "E-mail inválido (ex. válido: exemplo@provedor.com)",
@@ -87,12 +87,18 @@ export const signUpCompanySchema = z.object({
   email: z
     .string()
     .min(1, {
-      message: "E-mail é obrigatório",
+      message: "O e-mail é obrigatório",
     })
     .email({
       message: "E-mail inválido (ex. válido: exemplo@provedor.com)",
     }),
   cnpj: z.string().refine((val) => isValidCNPJ(val), {
     message: "CNPJ inválido",
+  }),
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email({
+    message: "E-mail inválido (ex. válido: exemplo@provedor.com)",
   }),
 });

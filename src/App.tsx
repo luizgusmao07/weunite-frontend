@@ -1,12 +1,14 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import AuthPage from "./pages/Auth";
+import Auth from "./pages/Auth";
+import { ForgotPassword } from "./pages/ForgotPassword";
 
 function App() {
   return (
     <>
       <Routes>
-        <Route path={"/auth"} element={<AuthPage />} />
+        <Route path={"/auth"} element={<Auth />} />
+        <Route path={"/forgot-password"} element={<ForgotPassword />} />
       </Routes>
     </>
   );

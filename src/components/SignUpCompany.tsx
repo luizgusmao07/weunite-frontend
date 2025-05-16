@@ -44,7 +44,7 @@ export function SignUpCompany({
         autoplay
         className="w-50 m-0"
       />
-      <Card className="w-125 py-4">
+      <Card className="w-125">
         <CardContent>
           <div className="text-center mb-3">
             <h2 className="text-2xl font-bold">Crie sua conta</h2>

@@ -3,12 +3,14 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AtSign, KeyRound } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function Login({
   setCurrentTab,
 }: {
   setCurrentTab: (tab: string) => void;
 }) {
+  const navigate = useNavigate();
   return (
     <div>
       <Card className="overflow-hidden w-full max-w-125">
@@ -40,6 +42,7 @@ export function Login({
                 <a
                   href="#"
                   className="ml-auto text-sm underline-offset-2 hover:underline"
+                  onClick={() => navigate("/forgot-password")}
                 >
                   Esqueceu sua senha?
                 </a>

@@ -14,10 +14,11 @@ import { signUpSchema } from "@/schemas/auth.schema";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
-import { User, AtSign, KeyRound, UserCircle } from "lucide-react";
+import { User, AtSign, KeyRound, UserCircle, EyeOff, Eye } from "lucide-react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Checkbox } from "./ui/checkbox";
 import { usePasswordStrength } from "@/hooks/usePasswordStrength";
+import { useState } from "react";
 
 export function SignUp({
   setCurrentTab,
@@ -36,6 +37,7 @@ export function SignUp({
 
   const password = form.watch("password");
   const progress = usePasswordStrength(password);
+  const [showPassword, setShowPassword] = useState(false);
 
   function onSubmit(values: z.infer<typeof signUpSchema>) {
     console.log(values);
@@ -49,7 +51,7 @@ export function SignUp({
         autoplay
         className="w-50 m-0"
       />
-      <Card className="w-125 py-4">
+      <Card className="w-125">
         <CardContent>
           <div className="text-center mb-3">
             <h2 className="text-2xl font-bold">Crie sua conta</h2>
@@ -136,11 +138,22 @@ export function SignUp({
                         <div className="relative">
                           <KeyRound className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             placeholder="joaosilva1B@"
                             className="pl-8"
                             {...field}
                           />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-2.5 transition-transform duration-300 ease-in-out"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4 text-muted-foreground animate-pulse" />
+                            ) : (
+                              <Eye className="h-4 w-4 text-muted-foreground animate-pulse" />
+                            )}
+                          </button>
                         </div>
                       </FormControl>
                       <FormMessage className="text-xs" />
