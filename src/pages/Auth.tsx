@@ -6,10 +6,10 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useState } from "react";
 
 export function Auth() {
-  const [currentTab, setCurrentTab] = useState("login");
+  const [currentTab, setCurrentTab] = useState("signup");
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex justify-center h-screen">
       <Tabs
         defaultValue="login"
         value={currentTab}

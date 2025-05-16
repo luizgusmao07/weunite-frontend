@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "./ui/form";
 import { useState } from "react";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 export function Login({
   setCurrentTab,
@@ -40,7 +41,18 @@ export function Login({
 
   return (
     <div>
-      <Card className="overflow-hidden w-full max-w-125">
+
+      <div className="flex flex-col items-center space-y-2 pt-15">
+         <DotLottieReact
+            src="https://lottie.host/5ce60653-911c-4bcc-b385-b8be5f43b51e/OGOTw3OGfF.lottie"
+            loop
+            autoplay
+            className="w-50 m-0"
+          />
+      </div>
+
+      <Card className="overflow-hidden w-full w-125">
+
         <Form {...form}>
           <form className="p-6 md:p-8" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
