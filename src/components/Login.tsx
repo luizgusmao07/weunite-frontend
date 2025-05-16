@@ -6,11 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form, FormItem, FormField, FormLabel, FormControl, FormMessage } from "./ui/form";
-<<<<<<< HEAD
-import { AtSign, KeyRound } from "lucide-react";
-=======
 import { useState } from "react";
->>>>>>> a997e82 (feat: funcionalidade de visualizar senha)
 
 export function Login({
   setCurrentTab,
