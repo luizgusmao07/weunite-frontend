@@ -23,13 +23,10 @@ export function Auth() {
         <TabsContent value="login">
           <Login setCurrentTab={setCurrentTab} />
         </TabsContent>
-<<<<<<< HEAD:src/pages/Auth.tsx
         <TabsContent value="signupcompany">
           <SignUpCompany setCurrentTab={setCurrentTab} />
         </TabsContent>
-=======
       
->>>>>>> f24f0a1 (feat: adicionando alerta):src/pages/AuthPage.tsx
       </Tabs>
     </div>
   );
