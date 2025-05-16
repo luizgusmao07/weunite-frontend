@@ -1,84 +1,194 @@
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Card, CardContent } from "./ui/card"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Card, CardContent } from "./ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
 import { signUpSchema } from "@/schemas/SignUpSchema";
-import { Input } from "./ui/input"
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { Progress } from "./ui/progress";
+import React, { useEffect } from "react";
+import { User, AtSign, KeyRound, UserCircle } from "lucide-react";
 
-export function SignUpForm() {
-    const form = useForm<z.infer<typeof signUpSchema>>({
-        resolver: zodResolver(signUpSchema),
-        defaultValues: {
-            name: "",
-            username: "",
-            email: "",
-            password: "",
-        }
-    });
-    return (
-        <div>
-            <Card>
-                <CardContent>
-                    <Form {...form}>
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Name</FormLabel>
-                                    <FormControl>
-                                        <Input type="text" placeholder="JohnDoe" {...field} />
-                                    </FormControl>
-                                    <FormDescription>Esse será seu nome</FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="username"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Username</FormLabel>
-                                    <FormControl>
-                                        <Input type="text" placeholder="JohnDoe123" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email</FormLabel>
-                                    <FormControl>
-                                        <Input type="email" placeholder="johndoe@provedor.com" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="password"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Password</FormLabel>
-                                    <FormControl>
-                                        <input type="password" placeholder="johnDoeB1@" form="" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </Form>
-                </CardContent>
-            </Card>
-        </div>
-    )
+export function SignUpForm({
+  setCurrentTab,
+}: {
+  setCurrentTab: (tab: string) => void;
+}) {
+  const [progress, setProgress] = React.useState(0);
+
+  const form = useForm<z.infer<typeof signUpSchema>>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      name: "",
+      username: "",
+      email: "",
+      password: "",
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof signUpSchema>) {
+    console.log(values);
+  }
+
+  const password = form.watch("password");
+
+  useEffect(() => {
+    const calculatePasswordStrength = (password: string) => {
+      let strength = 0;
+
+      if (password.length >= 8) strength += 20;
+      if (/[A-Z]/.test(password)) strength += 20;
+      if (/[a-z]/.test(password)) strength += 20;
+      if (/[0-9]/.test(password)) strength += 20;
+      if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+
+      return strength;
+    };
+
+    setProgress(calculatePasswordStrength(password || ""));
+  }, [password]);
+  return (
+    <div className="flex flex-col items-center space-y-2">
+      <Card className="w-125">
+        <CardContent>
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold">Crie sua conta</h2>
+            <p className="text-muted-foreground text-sm mt-1">
+              Preencha os dados abaixo para começar
+            </p>
+          </div>
+          <div className="space-y-4">
+            <Form {...form}>
+              <form
+                className="space-y-3"
+                onSubmit={form.handleSubmit(onSubmit)}
+              >
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="text"
+                            placeholder="João da Silva"
+                            className="pl-8"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <UserCircle className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="text"
+                            placeholder="JoãoSilva"
+                            className="pl-8"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <AtSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="email"
+                            placeholder="joaosilva@provedor.com"
+                            className="pl-8"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <KeyRound className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="password"
+                            placeholder="joaosilva1B@"
+                            className="pl-8"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex flex-col space-y-3">
+                  <div>
+                    <Progress value={progress} />
+                    <span className="text-xs">Segurança da senha</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col space-y-1">
+                  <Button type="submit">Cadastrar</Button>
+                  <span className="text-xs">
+                    Já se cadastrou? {""}
+                    <a
+                      href="#"
+                      className="underline decoration-solid"
+                      onClick={() => setCurrentTab("login")}
+                    >
+                      Login
+                    </a>
+                  </span>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </CardContent>
+      </Card>
+
+      <span className="text-xs text-center">
+        Ao se cadastrar você concorda com nosso{" "}
+        <a href="#" className="underline decoration-solid">
+          Termos de Segurança e Privacidade
+        </a>
+      </span>
+    </div>
+  );
 }
 
-export default SignUpForm
+export default SignUpForm;
