@@ -1,8 +1,7 @@
 import { Login } from "@/components/auth/Login";
-import SignUp from "@/components/auth/SignUp";
-import SignUpCompany from "@/components/auth/SignUpCompany";
+import { SignUp } from "@/components/auth/SignUp";
+import { SignUpCompany } from "@/components/auth/SignUpCompany";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 

@@ -183,5 +183,3 @@ export function SignUpCompany({
     </div>
   );
 }
-
-export default SignUpCompany;
