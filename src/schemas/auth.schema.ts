@@ -6,7 +6,6 @@ function isValidCNPJ(cnpj: string): boolean {
 
   if (cnpj.length !== 14) return false;
 
-  // Verifica se todos os dígitos são iguais (ex: 00000000000000)
   if (/^(\d)\1+$/.test(cnpj)) return false;
 
   let tamanho = cnpj.length - 2;
