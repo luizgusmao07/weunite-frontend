@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent } from "../ui/card";
 import {
   Form,
   FormControl,
@@ -9,13 +9,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { signUpCompanySchema } from "@/schemas/auth.schema";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+} from "../ui/form";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 import { User, AtSign, UserCircle, Building2 } from "lucide-react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import { Checkbox } from "./ui/checkbox";
+import { Checkbox } from "../ui/checkbox";
+import { signUpCompanySchema } from "@/schemas/auth";
 
 export function SignUpCompany({
   setCurrentTab,
@@ -38,7 +38,6 @@ export function SignUpCompany({
 
   return (
     <div className="flex flex-col space-y-2">
-      
       <div className="flex justify-center">
         <DotLottieReact
           src="https://lottie.host/a06a613a-efd2-4dbd-96d0-2f4fd7344792/0jYYhWcj4H.lottie"
@@ -47,7 +46,7 @@ export function SignUpCompany({
           className="w-50 m-0"
         />
       </div>
-      
+
       <Card className="w-125">
         <CardContent>
           <div className="text-center mb-3">

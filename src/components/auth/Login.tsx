@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { loginSchema } from "@/schemas/login.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -13,9 +12,11 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-} from "./ui/form";
+} from "../ui/form";
 import { useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { Eye, EyeOff } from "lucide-react";
+import { loginSchema } from "@/schemas/auth";
 
 export function Login({
   setCurrentTab,
@@ -49,7 +50,7 @@ export function Login({
         />
       </div>
 
-      <Card className="overflow-hidden w-125">
+      <Card className="w-125">
         <Form {...form}>
           <form className="p-6 md:p-8" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
@@ -104,60 +105,18 @@ export function Login({
                         <Input
                           id="password"
                           type={showPassword ? "text" : "password"}
+                          placeholder="**********"
                           {...field}
                         />
-
                         <button
                           type="button"
-                          className="absolute right-3 top-2.25 -translate-y1/2 text-muted-foreground"
-                          onClick={() => setShowPassword((v) => !v)}
-                          tabIndex={-1}
-                          aria-label={
-                            showPassword ? "Ocultar senha" : "Mostrar senha"
-                          }
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-2.5 transition-transform duration-300 ease-in-out"
                         >
                           {showPassword ? (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-5 w-5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                              />
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                              />
-                            </svg>
+                            <EyeOff className="h-4 w-4 text-muted-foreground animate-pulse" />
                           ) : (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-5 w-5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.269-2.943-9.543-7a9.956 9.956 0 012.293-3.95M6.873 6.872A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.956 9.956 0 01-4.043 5.112M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                              />
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M3 3l18 18"
-                              />
-                            </svg>
+                            <Eye className="h-4 w-4 text-muted-foreground animate-pulse" />
                           )}
                         </button>
                       </div>

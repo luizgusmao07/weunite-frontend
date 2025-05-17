@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent } from "../ui/card";
 import {
   Form,
   FormControl,
@@ -9,16 +9,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { signUpSchema } from "@/schemas/auth.schema";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Progress } from "./ui/progress";
+} from "../ui/form";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Progress } from "../ui/progress";
 import { User, AtSign, KeyRound, UserCircle, EyeOff, Eye } from "lucide-react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import { Checkbox } from "./ui/checkbox";
+import { Checkbox } from "../ui/checkbox";
 import { usePasswordStrength } from "@/hooks/usePasswordStrength";
 import { useState } from "react";
+import { signUpSchema } from "@/schemas/auth";
 
 export function SignUp({
   setCurrentTab,
@@ -45,7 +45,6 @@ export function SignUp({
 
   return (
     <div className="flex flex-col space-y-2">
-      
       <div className="flex justify-center">
         <DotLottieReact
           src="https://lottie.host/a06a613a-efd2-4dbd-96d0-2f4fd7344792/0jYYhWcj4H.lottie"
@@ -143,7 +142,7 @@ export function SignUp({
                           <KeyRound className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type={showPassword ? "text" : "password"}
-                            placeholder="joaosilva1B@"
+                             placeholder="**********"
                             className="pl-8"
                             {...field}
                           />
