@@ -17,35 +17,36 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, AtSign } from "lucide-react";
+import { ArrowLeft, AtSign, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { forgotPasswordSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useResendTimer } from "@/hooks/useResendTimer";
-import { useState } from "react";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useAuthMessages } from "@/hooks/useAuthMessages";
+import { sendResetPasswordSchema } from "@/schemas/auth/recovery.schema";
 
-export function ForgotPassword() {
-  const navigate = useNavigate();
-  const { timer, canResend, startTimer } = useResendTimer(60);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<z.infer<typeof forgotPasswordSchema>>({
-    resolver: zodResolver(forgotPasswordSchema),
+export function SendResetPassword() {
+  const form = useForm<z.infer<typeof sendResetPasswordSchema>>({
+    resolver: zodResolver(sendResetPasswordSchema),
     defaultValues: {
       email: "",
     },
   });
+  const { timer, canResend, startTimer } = useResendTimer(60);
+  const { sendResetPassword } = useAuthStore();
+  const navigate = useNavigate();
 
-  function onSubmit(values: z.infer<typeof forgotPasswordSchema>) {
-    setIsSubmitting(true);
-    console.log(values);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      startTimer();
-    }, 1500);
+  async function onSubmit(value: z.infer<typeof sendResetPasswordSchema>) {
+    const result = await sendResetPassword(value);
+    if (result.success) {
+      navigate(`/auth/verify-reset-token/${value.email}`);
+    }
+    startTimer();
   }
+
+  useAuthMessages();
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
@@ -96,9 +97,17 @@ export function ForgotPassword() {
               <Button
                 className="w-full"
                 type="submit"
-                disabled={isSubmitting || !form.formState.isDirty || !canResend}
+                disabled={
+                  form.formState.isSubmitting ||
+                  !form.formState.isDirty ||
+                  !canResend
+                }
               >
-                {isSubmitting ? "Enviando..." : "Confirmar"}
+                {form.formState.isSubmitting ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  "Confirmar"
+                )}
               </Button>
             </form>
           </Form>
@@ -119,7 +128,7 @@ export function ForgotPassword() {
                   });
                 }
               }}
-              disabled={isSubmitting || !canResend}
+              disabled={form.formState.isSubmitting || !canResend}
             >
               {canResend ? "Reenviar e-mail" : `Reenviar em ${timer}s`}
             </Button>

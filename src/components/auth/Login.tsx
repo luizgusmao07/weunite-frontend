@@ -15,29 +15,32 @@ import {
 } from "../ui/form";
 import { useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import { Eye, EyeOff } from "lucide-react";
-import { loginSchema } from "@/schemas/auth";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { loginSchema } from "@/schemas/auth/login.schema";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useAuthMessages } from "@/hooks/useAuthMessages";
 
 export function Login({
   setCurrentTab,
 }: {
   setCurrentTab: (tab: string) => void;
 }) {
-  const navigate = useNavigate();
-
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuthStore();
+  const navigate = useNavigate();
 
-  function onSubmit(values: z.infer<typeof loginSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
+    await login(values);
   }
 
-  const [showPassword, setShowPassword] = useState(false);
+  useAuthMessages();
 
   return (
     <div>
@@ -65,16 +68,16 @@ export function Login({
 
               <FormField
                 control={form.control}
-                name="email"
+                name="username"
                 render={({ field }) => (
                   <div className="grid gap-2">
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
-                          id="email"
-                          type="email"
-                          placeholder="weunite@exemplo.com"
+                          id="username"
+                          type="username"
+                          placeholder="WeUnite"
                           {...field}
                         />
                       </div>
@@ -94,7 +97,7 @@ export function Login({
                       <a
                         href="#"
                         className="ml-auto text-sm underline-offset-2 hover:underline"
-                        onClick={() => navigate("/forgot-password")}
+                        onClick={() => navigate("/auth/send-reset-password")}
                       >
                         Esqueceu sua senha?
                       </a>
@@ -125,8 +128,16 @@ export function Login({
                   </div>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Login
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  "Login"
+                )}
               </Button>
 
               <div

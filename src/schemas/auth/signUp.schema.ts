@@ -1,6 +1,11 @@
 import { z } from "zod";
-import { isValidCNPJ } from "../utils/validators";
-import { emailSchema, nameSchema, passwordSchema, usernameSchema } from "../common/user.schema";
+import { cnpjValidator } from "../../validators/cnpjValidator";
+import {
+  emailSchema,
+  nameSchema,
+  passwordSchema,
+  usernameSchema,
+} from "../common/user.schema";
 
 export const signUpSchema = z.object({
   name: nameSchema,
@@ -13,7 +18,7 @@ export const signUpCompanySchema = z.object({
   name: nameSchema,
   username: usernameSchema,
   email: emailSchema,
-  cnpj: z.string().refine((val) => isValidCNPJ(val), {
+  cnpj: z.string().refine((val) => cnpjValidator(val), {
     message: "CNPJ inválido",
   }),
 });

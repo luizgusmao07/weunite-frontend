@@ -1,4 +1,4 @@
-export function isValidCNPJ(cnpj: string): boolean {
+export function cnpjValidator(cnpj: string): boolean {
   cnpj = cnpj.replace(/[^\d]+/g, "");
 
   if (cnpj.length !== 14) return false;

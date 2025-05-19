@@ -1,10 +1,22 @@
 import { z } from "zod";
-import { emailSchema } from "../common/user.schema";
+import { emailSchema, passwordSchema } from "../common/user.schema";
 
-export const forgotPasswordSchema = z.object({
+export const sendResetPasswordSchema = z.object({
   email: emailSchema,
 });
 
-export const verifyResetCodeSchema = z.object({
-  code: z.string().min(6, { message: "O código deve ter 6 digitos" }),
+export const verifyResetTokenSchema = z.object({
+  verificationToken: z
+    .string()
+    .min(6, { message: "O código deve ter 6 digitos" }),
 });
+
+export const resetPasswordSchema = z
+  .object({
+    newPassword: passwordSchema,
+    newPasswordConfirmation: passwordSchema,
+  })
+  .refine((data) => data.newPassword === data.newPasswordConfirmation, {
+    message: "As senhas devem ser iguais",
+    path: ["newPasswordConfirmation"],
+  });

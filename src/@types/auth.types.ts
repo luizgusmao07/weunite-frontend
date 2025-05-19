@@ -1,0 +1,57 @@
+import type { User } from "./user.types";
+
+export interface AuthState {
+  user: User | null;
+  jwt: string | null;
+  isAuthenticated: boolean;
+  loading: boolean;
+  error: string | null;
+  message: string | null;
+  clearMessages: () => Promise<void>;
+  signup: (data: SignUp) => Promise<Result>;
+  verifyEmail: (data: VerifyCode, email: string) => Promise<void>;
+  sendResetPassword: (data: SendResetPassword) => Promise<Result>;
+  verifyResetToken: (data: VerifyCode, email: string) => Promise<Result>;
+  resetPassword: (
+    data: ResetPassword,
+    verificationToken: string
+  ) => Promise<void>;
+  login: (data: Login) => Promise<void>;
+}
+
+export interface SignUp {
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+}
+
+export interface VerifyCode {
+  verificationToken: string;
+}
+
+export interface SignUpCompany {
+  name: string;
+  username: string;
+  email: string;
+  cnpj: string;
+}
+
+export interface SendResetPassword {
+  email: string;
+}
+
+export interface ResetPassword {
+  newPassword: string;
+}
+
+export interface Login {
+  username: string;
+  password: string;
+}
+
+export interface Result {
+  success: boolean;
+  message?: string | null;
+  error?: string | null;
+}

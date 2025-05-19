@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -19,57 +20,61 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Button } from "@/components/ui/button";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { z } from "zod";
-import { useState } from "react";
-import { verifyResetCodeSchema } from "@/schemas/auth";
+import { useAuthMessages } from "@/hooks/useAuthMessages";
 import { useResendTimer } from "@/hooks/useResendTimer";
+import { verifyResetTokenSchema } from "@/schemas/auth/recovery.schema";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
+import z from "zod";
 
-export function VerifyCode({
-  redirectLink,
-  title,
-}: {
-  redirectLink: string;
-  title: string;
-}) {
-  const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { timer, canResend, startTimer } = useResendTimer();
-
-  const form = useForm<z.infer<typeof verifyResetCodeSchema>>({
-    resolver: zodResolver(verifyResetCodeSchema),
+export function VerifyResetToken() {
+  const form = useForm<z.infer<typeof verifyResetTokenSchema>>({
+    resolver: zodResolver(verifyResetTokenSchema),
     defaultValues: {
-      code: "",
+      verificationToken: "",
     },
   });
+  const { timer, canResend, startTimer } = useResendTimer();
+  const { verifyResetToken } = useAuthStore();
+  const { email } = useParams();
+  const navigate = useNavigate();
 
-  function onSubmit(value: z.infer<typeof verifyResetCodeSchema>) {
-    setIsSubmitting(true);
-    console.log(value);
-    setTimeout(() => {
-      setIsSubmitting(false);
-    }, 1500);
+  async function onSubmit(values: z.infer<typeof verifyResetTokenSchema>) {
+    if (email) {
+      const result = await verifyResetToken(values, email);
+      if (result.success) {
+        navigate(`/auth/reset-password/${values.verificationToken}`);
+      }
+    } else {
+      toast.error("URL não existe");
+      navigate("/auth");
+    }
   }
 
-  function handleResendCode() {
+  const handleResendCode = () => {
     startTimer();
-  }
+  };
+
+  useAuthMessages();
+
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <Card className="w-[380px] max-w-full">
         <CardHeader className="space-y-2">
           <button
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-            onClick={() => navigate(redirectLink)}
+            onClick={() => navigate("/auth/send-reset-password")}
           >
             <ArrowLeft size={16} /> Voltar
           </button>
           <div className="flex flex-col text-center space-y-2">
-            <CardTitle className="text-2xl font-bold">{title}</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              Redefinição de senha
+            </CardTitle>
             <CardDescription className="text-muted-foreground">
               Um código de seis digitos foi enviado ao seu e-mail
             </CardDescription>
@@ -80,7 +85,7 @@ export function VerifyCode({
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
-                name="code"
+                name="verificationToken"
                 render={({ field }) => (
                   <FormItem className="w-full flex flex-col items-center">
                     <FormControl>
@@ -123,9 +128,15 @@ export function VerifyCode({
               <Button
                 type="submit"
                 className="w-full"
-                disabled={isSubmitting || !form.formState.isValid}
+                disabled={
+                  form.formState.isSubmitting || !form.formState.isValid
+                }
               >
-                {isSubmitting ? "Verificando..." : "Verificar código"}
+                {form.formState.isSubmitting ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  "Verificar código"
+                )}
               </Button>
             </form>
           </Form>

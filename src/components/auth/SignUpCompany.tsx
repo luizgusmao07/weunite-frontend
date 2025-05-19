@@ -15,7 +15,7 @@ import { Button } from "../ui/button";
 import { User, AtSign, UserCircle, Building2 } from "lucide-react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Checkbox } from "../ui/checkbox";
-import { signUpCompanySchema } from "@/schemas/auth";
+import { signUpCompanySchema } from "@/schemas/auth/signUp.schema";
 
 export function SignUpCompany({
   setCurrentTab,
