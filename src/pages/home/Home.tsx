@@ -1,3 +1,8 @@
+import RightSidebar from "@/components/home/RightSidebar"
+
+
 export function Home() {
-  return <div>Você entrou</div>;
+  return (
+    <RightSidebar/>
+  );
 }
