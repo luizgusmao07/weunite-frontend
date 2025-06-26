@@ -17,6 +17,7 @@ export interface AuthState {
     verificationToken: string
   ) => Promise<void>;
   login: (data: Login) => Promise<void>;
+  logout: () => void;
 }
 
 export interface SignUp {

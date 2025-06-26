@@ -13,7 +13,8 @@ import { useSidebar } from "@/components/ui/sidebar";
 
 import { useTheme } from "@/components/ThemeProvider";
 import { useLocation } from 'react-router-dom';
-
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useNavigate } from 'react-router-dom';
 
 export function LeftSidebar() {
   const { state } = useSidebar();
@@ -23,6 +24,14 @@ export function LeftSidebar() {
   const location = useLocation();
   const pathname = location.pathname;
   const getIncoColor = (path: string): string => (pathname === path ? "#22C55E" : "currentColor");
+
+  const { logout } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout(); // Isso já vai atualizar o localStorage devido ao middleware persist
+    navigate('/auth/login');
+  };
 
   const themeItem = {
     title: "Modo de cor",
@@ -144,7 +153,7 @@ export function LeftSidebar() {
                 </div>
 
                 <div className="h-px bg-gray-100 my-1"></div>
-                <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer text-red-600 hover:bg-red-50 transition-colors">
+                <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer text-red-600 hover:bg-red-50 transition-colors" onClick={handleLogout}>
                   <LogOut className="h-4 w-4 -scale-x-100" />
                   <p>Sair</p>
                 </DropdownMenuItem>

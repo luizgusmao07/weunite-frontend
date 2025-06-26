@@ -29,6 +29,15 @@ export const useAuthStore = create<AuthState>()(
 
       clearMessages: async () => set({ message: null, error: null }),
 
+      logout: () => {
+        set({
+          user: null,
+          jwt: null,
+          isAuthenticated: false,
+          message: "Logout realizado com sucesso"
+        });
+      },
+
       signup: async (request: SignUp) => {
         set({ loading: true, error: null, message: null });
         const result = await signUpRequest(request);
