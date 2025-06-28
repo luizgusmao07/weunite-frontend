@@ -11,6 +11,8 @@ import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigge
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Search } from "@/components/shared/Search";
+import { CreatePost } from "./CreatePost";
+
 import { useTheme } from "@/components/ThemeProvider";
 import { useLocation } from 'react-router-dom';
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -21,6 +23,7 @@ import { useEffect } from "react";
 export function LeftSidebar() {
   const { state, setOpen } = useSidebar();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
 
   const { setTheme, theme } = useTheme()
   const themeIcon = theme === "dark" ? Sun : Moon;
@@ -36,6 +39,10 @@ export function LeftSidebar() {
       setOpen(false);
     }
     setIsSearchOpen(true);
+  };
+
+  const handleCreatePostOpen = () => {
+    setIsCreatePostOpen(true);
   };
 
   const handleLogout = () => {
@@ -77,6 +84,8 @@ export function LeftSidebar() {
   return (
     <>
       <Search isOpen={isSearchOpen} onOpenChange={setIsSearchOpen} />
+      <CreatePost open={isCreatePostOpen} onOpenChange={setIsCreatePostOpen} />
+
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <div className={`${state === "collapsed" ? "flex justify-center items-center" : "pt-4 "}`}>
@@ -124,6 +133,8 @@ export function LeftSidebar() {
                             setTheme(theme === "dark" ? "light" : "dark");
                           } else if (item.title === "Pesquisar") {
                             handleSearchOpen();
+                          } else if (item.title === "Criar Publicação") {
+                            handleCreatePostOpen();  // Usar esta função diretamente
                           } else if (item.url !== "#") {
                             navigate(item.url);
                           }
