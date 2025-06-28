@@ -10,7 +10,6 @@ import {
 import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useSidebar } from "@/components/ui/sidebar";
-
 import { Search } from "@/components/shared/Search";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLocation } from 'react-router-dom';
