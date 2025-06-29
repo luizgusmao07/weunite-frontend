@@ -134,7 +134,7 @@ export function LeftSidebar() {
                           } else if (item.title === "Pesquisar") {
                             handleSearchOpen();
                           } else if (item.title === "Criar Publicação") {
-                            handleCreatePostOpen();  // Usar esta função diretamente
+                            handleCreatePostOpen();  
                           } else if (item.url !== "#") {
                             navigate(item.url);
                           }

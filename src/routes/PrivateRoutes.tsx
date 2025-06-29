@@ -14,8 +14,8 @@ export function PrivateRoutes() {
 
   return (
     <SidebarProvider>
-      <Outlet />
       <LeftSidebar />
+      <Outlet />
     </SidebarProvider>
   )
 }
