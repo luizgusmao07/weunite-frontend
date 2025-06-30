@@ -7,7 +7,7 @@ import type {
 import { instance as axios } from "../axios";
 import { AxiosError } from "axios";
 
-export const createPostRequest = async (data: CreatePost, userId: 2) => {
+export const createPostRequest = async (data: CreatePost, userId: number) => {
   try {
     const formData = new FormData();
 
@@ -48,9 +48,9 @@ export const createPostRequest = async (data: CreatePost, userId: 2) => {
   }
 };
 
-export const updatePostRequest = async (data: UpdatePost) => {
+export const updatePostRequest = async (data: UpdatePost, userId: number, postId: number) => {
   try {
-    const response = await axios.post("/post/update", data);
+    const response = await axios.post(`/post/update/${userId}/${postId}`, data);
     return {
       success: true,
       data: response.data,
@@ -84,6 +84,26 @@ export const getPostRequest = async (data: GetPost) => {
       data: null,
       message: null,
       error: error.response?.data?.message || "Erro ao consultar publicação",
+    };
+  }
+};
+
+export const getPostsRequest = async () => {
+  try {
+    const response = await axios.get(`/posts/get`);
+    return {
+      success: true,
+      data: response.data,
+      message: response.data.message || "Publicações consultadas com sucesso!",
+      error: null,
+    };
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    return {
+      success: false,
+      data: null,
+      message: null,
+      error: error.response?.data?.message || "Erro ao consultar publicações",
     };
   }
 };

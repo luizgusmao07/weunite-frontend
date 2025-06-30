@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreatePost } from "@/hooks/usePosts";
 import { createPostSchema } from "@/schemas/post/createPost.schema";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -22,8 +23,6 @@ interface CreatePostProps {
 }
 
 export function CreatePost({ open, onOpenChange }: CreatePostProps) {
-  const createPostMutation = useCreatePost();
-
   const form = useForm<z.infer<typeof createPostSchema>>({
     resolver: zodResolver(createPostSchema),
     defaultValues: {
@@ -32,8 +31,17 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
     },
   });
 
+  const { user } = useAuthStore();
+
+  const createPostMutation = useCreatePost();
+
   async function onSubmit(values: z.infer<typeof createPostSchema>) {
-    const result = await createPostMutation.mutateAsync(values);
+    if (!user?.id) return;
+
+    const result = await createPostMutation.mutateAsync({
+      data: values,
+      userId: Number(user.id),
+    });
 
     if (result.success) {
       form.reset();
@@ -76,7 +84,7 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
                     id="post-image"
                     name={name}
                     type="file"
-                    accept="image/*"
+                    accept="image/*, video/*"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       onChange(file);

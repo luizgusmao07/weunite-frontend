@@ -72,9 +72,9 @@ export const useAuthStore = create<AuthState>()(
           set({
             loading: false,
             message: result.message,
-            jwt: result.data.jwt,
+            jwt: result.data.data.jwt,
             isAuthenticated: true,
-            user: result.data.user,
+            user: result.data.data.user,
           });
         } else {
           set({
@@ -138,11 +138,11 @@ export const useAuthStore = create<AuthState>()(
 
         if (result.success) {
           set({
-            user: result.data.user,
-            jwt: result.data.jwt,
+            user: result.data.data.user,
+            jwt: result.data.data.jwt,
             isAuthenticated: true,
             loading: false,
-            message: result.data.message,
+            message: result.data.data.message,
           });
         } else {
           set({

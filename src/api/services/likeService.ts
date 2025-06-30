@@ -6,7 +6,7 @@ import { AxiosError } from "axios";
 
 export const toggleLikeRequest = async (data: ToggleLike) => {
     try {
-        const response = await axios.post(`/like/toggle/${data.userId}/${data.postId}`);
+        const response = await axios.post(`/likes/toggleLike/${data.userId}/${data.postId}`);
         return {
             success: true,
             data: response.data,
