@@ -1,6 +1,6 @@
 import type { Post as PostType } from "@/@types/post.types";
 import Post from "@/components/post/Post";
-import { useGetPosts } from "@/hooks/usePosts";
+import { useGetPosts } from "@/state/usePosts";
 
 export function FeedHome() {
   const { data } = useGetPosts();

@@ -22,9 +22,9 @@ export const createPostRequest = async (data: CreatePost, userId: number) => {
     }
 
     const response = await axios.post(`/posts/create/${userId}`, formData, {
-        headers: {
-            "Content-Type": "multipart/form-data",
-        }
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
 
     return {
@@ -33,9 +33,7 @@ export const createPostRequest = async (data: CreatePost, userId: number) => {
       message: response.data.message || "Publicação criada com sucesso!",
       error: null,
     };
-    
   } catch (err) {
-
     const error = err as AxiosError<{ message: string }>;
 
     return {
@@ -44,13 +42,32 @@ export const createPostRequest = async (data: CreatePost, userId: number) => {
       message: null,
       error: error.response?.data?.message || "Erro ao criar publicação",
     };
-
   }
 };
 
-export const updatePostRequest = async (data: UpdatePost, userId: number, postId: number) => {
+export const updatePostRequest = async (
+  data: UpdatePost,
+  userId: number,
+  postId: number
+) => {
   try {
-    const response = await axios.post(`/post/update/${userId}/${postId}`, data);
+    const formData = new FormData();
+
+    const postBlob = new Blob([JSON.stringify({ text: data.text })], {
+      type: "application/json",
+    });
+
+    formData.append("post", postBlob);
+
+    if (data.media) {
+      formData.append("image", data.media);
+    }
+
+    const response = await axios.post(
+      `/post/update/${userId}/${postId}`,
+      formData
+    );
+
     return {
       success: true,
       data: response.data,
@@ -59,6 +76,7 @@ export const updatePostRequest = async (data: UpdatePost, userId: number, postId
     };
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
+
     return {
       success: false,
       data: null,
@@ -71,6 +89,7 @@ export const updatePostRequest = async (data: UpdatePost, userId: number, postId
 export const getPostRequest = async (data: GetPost) => {
   try {
     const response = await axios.post(`/post/get/${data}`);
+
     return {
       success: true,
       data: response.data,
@@ -79,6 +98,7 @@ export const getPostRequest = async (data: GetPost) => {
     };
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
+
     return {
       success: false,
       data: null,
@@ -91,6 +111,7 @@ export const getPostRequest = async (data: GetPost) => {
 export const getPostsRequest = async () => {
   try {
     const response = await axios.get(`/posts/get`);
+
     return {
       success: true,
       data: response.data,
@@ -99,6 +120,7 @@ export const getPostsRequest = async () => {
     };
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
+
     return {
       success: false,
       data: null,
@@ -111,14 +133,16 @@ export const getPostsRequest = async () => {
 export const deletePostRequest = async (data: DeletePost) => {
   try {
     const response = await axios.post(`/post/delete/${data}`);
+
     return {
       success: true,
       data: response.data,
-      message: response.data.message || "Publicação deletar com sucesso!",
+      message: response.data.message || "Publicação deletada com sucesso!",
       error: null,
     };
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
+
     return {
       success: false,
       data: null,
