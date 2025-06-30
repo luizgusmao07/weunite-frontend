@@ -20,7 +20,6 @@ import { loginSchema } from "@/schemas/auth/login.schema";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useAuthMessages } from "@/hooks/useAuthMessages";
 
-
 export function Login({
   setCurrentTab,
 }: {
@@ -72,7 +71,7 @@ export function Login({
                 name="username"
                 render={({ field }) => (
                   <div className="grid gap-2">
-                    <FormLabel >Username</FormLabel>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -133,7 +132,6 @@ export function Login({
                 type="submit"
                 className="w-full "
                 disabled={form.formState.isSubmitting}
-                
               >
                 {form.formState.isSubmitting ? (
                   <Loader2 className="animate-spin" />

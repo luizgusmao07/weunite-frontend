@@ -1,6 +1,6 @@
 export interface CreatePost {
-  text: string | null;
-  image: File | null;
+  text?: string | null;
+  media?: File | null;
 }
 
 export interface UpdatePost {

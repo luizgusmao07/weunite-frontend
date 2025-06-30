@@ -1,18 +1,15 @@
 import { FeedHome } from "@/components/home/FeedHome";
 
-import { OpportunitiesSidebar } from '../../components/home/OpportunitiesSidebar';
+import { OpportunitiesSidebar } from "../../components/home/OpportunitiesSidebar";
 
 export function Home() {
-
   return (
     <div className="relative min-h-screen">
-      {/* Main content */}
-      <div className="pr-80"> {/* Add padding-right to make space for the sidebar */}
+
+      <div className="pr-80">
         <FeedHome />
-        {/* Add your main content here */}
       </div>
       
-      {/* Fixed sidebar on the right */}
       <OpportunitiesSidebar />
     </div>
   );
