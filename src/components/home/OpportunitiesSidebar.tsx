@@ -25,7 +25,7 @@ export const OpportunitiesSidebar: React.FC = () => {
   return (
     <div className="fixed right-0 top-0 h-screen w-80 z-10 pointer-events-none mr-6">
           <div className="flex items-center justify-center mb-4 mt-6 ">
-            <h2 className="text-lg font-semibold text-gray-800">
+            <h2 className="text-lg font-semibold text-sidebar-foreground">
               Sugestões de oportunidade
             </h2>
          </div>
@@ -36,12 +36,12 @@ export const OpportunitiesSidebar: React.FC = () => {
               {showAll && (
 
                 <div className="flex justify-end">
-                  <Button
+                  <button
                     onClick={handleClose} 
-                    className="text-sm text-green-600 bg-background font-medium hover:bg-background"
+                    className="text-sm text-third font-medium mr-1 bg-transparent hover:cursor-pointer hover:bg-transparent "
                   >
                     Fechar
-                  </Button>
+                  </button>
                 </div>
               )}
               
@@ -52,12 +52,13 @@ export const OpportunitiesSidebar: React.FC = () => {
 
             {!showAll && (
               <div className="mt-4 flex justify-end">
-                <Button
+                <button
                   onClick={handleShowMore}
-                  className="text-sm bg-background text-green-600 font-medium duration-200 hover:bg-background"
+                  className="text-sm text-third font-medium duration-200 mr-0.6 bg-transparent hover:cursor-pointer  hover:bg-hover-button"
                 >
-                  Ver Outras
-                </Button>
+                  Ver Outras 
+                </button>
+                
               </div>
             )}
 

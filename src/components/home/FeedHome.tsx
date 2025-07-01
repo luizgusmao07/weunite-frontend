@@ -1,6 +1,7 @@
 import type { Post as PostType } from "@/@types/post.types";
 import Post from "@/components/post/Post";
 import { useGetPosts } from "@/hooks/usePosts";
+import { Separator } from "@/components/ui/separator"
 
 export function FeedHome() {
   const { data } = useGetPosts();
@@ -15,12 +16,14 @@ export function FeedHome() {
   }
 
   return (
-    <div className="fixed top-0 left-1/2 transform -translate-x-1/2 h-screen w-full flex justify-center overflow-y-auto pb-4">
-      <div className="max-w-[600px] w-full space-y-6 pt-4">
-        {posts.map((post: PostType) => (
+    <div className="fixed top-0 left-1/2 transform -translate-x-1/2 h-screen w-full flex justify-center  overflow-y-auto pb-4 divide-y-4">
+      <div className="max-w-[700px] w-full  pt-4 flex flex-col items-center  ">
+        {posts.map((post: PostType,) => (
           <Post key={post.id} post={post} />
         ))}
       </div>
     </div>
+
+
   );
 }

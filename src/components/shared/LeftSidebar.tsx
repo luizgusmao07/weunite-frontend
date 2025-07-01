@@ -79,7 +79,7 @@ export function LeftSidebar() {
   };
 
   const items = [
-    { title: "Home", url: "/", icon: Home, color: getIncoColor("/") },
+    { title: "Home", url: "/home", icon: Home, color: getIncoColor("/home") },
     { title: "Oportunidade", url: "#", icon: Link },
     { title: "Chat", url: "#", icon: MessageCircleMore },
     { title: "Pesquisar", url: "#", icon: SearchIcon },
@@ -106,6 +106,8 @@ export function LeftSidebar() {
     };
     return <SidebarTrigger {...props} onClick={handleClick} />;
   };
+
+  const { user } = useAuthStore();
 
   return (
     <>
@@ -250,7 +252,7 @@ export function LeftSidebar() {
                       />
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
-                    {state !== "collapsed" && <p>Nome do usuário</p>}
+                    {state !== "collapsed" && <p>{user?.username}</p>}
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -261,9 +263,9 @@ export function LeftSidebar() {
                   className="w-56 p-2 border rounded-lg shadow-lg animate-in slide-in-from-bottom-5 duration-200"
                 >
                   <div className="px-3 py-2 mb-1 border-b border-gray-100">
-                    <p className="font-medium">Nome do usuário</p>
+                    <p className="font-medium">{user?.username}</p>
                     <p className="text-xs text-muted-foreground">
-                      usuario@email.com
+                      {user?.email}
                     </p>
                   </div>
 

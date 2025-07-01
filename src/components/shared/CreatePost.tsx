@@ -98,7 +98,7 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
             <DialogClose asChild>
               <Button variant="outline">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" variant="third">
+            <Button type="submit" className="bg-third">
               Publicar
             </Button>
           </DialogFooter>
