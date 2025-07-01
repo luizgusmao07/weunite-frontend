@@ -1,6 +1,7 @@
 import type { CreatePost, UpdatePost } from "@/@types/post.types";
 import {
   createPostRequest,
+  deletePostRequest,
   getPostsRequest,
   updatePostRequest,
 } from "@/api/services/postService";
@@ -72,3 +73,30 @@ export const useGetPosts = () => {
     retry: 2,
   });
 };
+
+export const useDeletePost = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      userId,
+      postId,
+    }: {
+      userId: number;
+      postId: number;
+    }) => deletePostRequest(userId, postId),
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success(result.message || "Publicação deletada com sucesso!");
+
+        queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+      } else {
+        toast.error(result.message || "Erro ao deletar publicação");
+      }
+  },
+  onError: () => {
+    toast.error("Erro inesperado ao deletar postagem");
+  },
+});
+
+}

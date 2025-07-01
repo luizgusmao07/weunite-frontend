@@ -2,7 +2,6 @@ import type {
   CreatePost,
   UpdatePost,
   GetPost,
-  DeletePost,
 } from "@/@types/post.types";
 import { instance as axios } from "../axios";
 import { AxiosError } from "axios";
@@ -137,7 +136,7 @@ export const getPostsRequest = async () => {
 
 export const deletePostRequest = async (userId: number, postId: number) => {
   try {
-    const response = await axios.post(`/posts/delete/${userId}/${postId}`);
+    const response = await axios.delete(`/posts/delete/${userId}/${postId}`);
 
     return {
       success: true,

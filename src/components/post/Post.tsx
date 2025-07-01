@@ -26,12 +26,26 @@ import {
   Edit,
   Flag,
 } from "lucide-react";
+
+import { 
+  AlertDialog, 
+  AlertDialogAction,
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogTitle, 
+  AlertDialogTrigger 
+} from "@/components/ui/alert-dialog";
+
 import type { Post } from "@/@types/post.types";
 import { getTimeAgo } from "@/hooks/useGetTimeAgo";
 import { useToggleLike } from "@/state/useLikes";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useState } from "react";
 import { EditPost } from "../shared/EditPost";
+import { useDeletePost } from "@/state/usePosts";
+
+import { AlertDialogFooter, AlertDialogHeader } from "../ui/alert-dialog";
 
 
 const actions = [{ icon: Heart }, { icon: MessageCircle }, { icon: Repeat2 }];
@@ -41,13 +55,13 @@ export default function Post({ post }: { post: Post }) {
 
   const toggleLike = useToggleLike();
 
+  const deletePost = useDeletePost();
+
   const isLiked = post.likes.some((like) => like.user.id === user?.id);
 
   const [isEditPostOpen, setIsEditPostOpen] = useState(false);
 
-  const handleEditPostOpen = () => {
-    setIsEditPostOpen(true);
-  };
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleLikeClick = () => {
     if (!user?.id) return;
@@ -55,24 +69,23 @@ export default function Post({ post }: { post: Post }) {
     toggleLike.mutate({ postId: post.id, userId: user.id });
   };
 
-  // Verificar se o post é do usuário logado
   const isOwner = post.user.id === user?.id;
 
+   const handleEditPostOpen = () => {
+    setIsEditPostOpen(true);
+  };
 
   const handleDelete = () => {
-    console.log("Deletar post:", post.id);
-    // Implementar lógica de exclusão
+    if (!user?.id) return;
+
+    deletePost.mutate({
+      userId: Number(user.id), 
+      postId: Number(post.id)
+    });
+
+    setIsDeleteDialogOpen(false);
   };
 
-  const handleReport = () => {
-    console.log("Reportar post:", post.id);
-    // Implementar lógica de denúncia
-  };
-
-  const handleShare = () => {
-    console.log("Compartilhar post:", post.id);
-    // Implementar lógica de compartilhamento
-  };
 
   return (
     <>
@@ -105,31 +118,61 @@ export default function Post({ post }: { post: Post }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               {isOwner ? (
-                // Opções para o dono do post
                 <>
                   <DropdownMenuItem onClick={handleEditPostOpen}>
                     <Edit className="mr-2 h-4 w-4" />
                     Editar
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleDelete} className="text-red-600">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Excluir
-                  </DropdownMenuItem>
+
+                  <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                    <AlertDialogTrigger asChild>
+                      <DropdownMenuItem 
+                        className="text-red-600 focus:text-red-600"
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          setIsDeleteDialogOpen(true);
+                        }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Excluir
+                      </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Esta ação não pode ser desfeita. O post será permanentemente 
+                          removido da plataforma.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction 
+                          onClick={handleDelete}
+                          className="bg-red-600 hover:bg-red-700"
+                          disabled={deletePost.isPending}
+                        >
+                          {deletePost.isPending ? "Deletando..." : "Excluir"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                  
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleShare}>
+                  <DropdownMenuItem>
                     <Share className="mr-2 h-4 w-4" />
                     Compartilhar
                   </DropdownMenuItem>
                 </>
               ) : (
-                // Opções para outros usuários
+
                 <>
-                  <DropdownMenuItem onClick={handleShare}>
+                  <DropdownMenuItem>
                     <Share className="mr-2 h-4 w-4" />
                     Compartilhar
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleReport} className="text-red-600">
+                  <DropdownMenuItem className="text-red-600">
                     <Flag className="mr-2 h-4 w-4" />
                     Denunciar
                   </DropdownMenuItem>
