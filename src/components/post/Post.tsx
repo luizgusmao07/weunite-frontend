@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"; // ✅ Import correto - shadcn/ui
+} from "@/components/ui/dropdown-menu";
 import {
   Heart,
   Repeat2,
@@ -44,7 +44,6 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useState } from "react";
 import { EditPost } from "../shared/EditPost";
 import { useDeletePost } from "@/state/usePosts";
-
 import { AlertDialogFooter, AlertDialogHeader } from "../ui/alert-dialog";
 
 
@@ -97,13 +96,13 @@ export default function Post({ post }: { post: Post }) {
 
       <Card className="w-full max-w-[700px] bg-red shadow-none border-0 border-b rounded-none border-foreground/50 ">
         <CardHeader className="flex flex-row items-center gap-4">
-          <Avatar>
-            <AvatarImage src={user?.profileImg} alt="User" />
+          <Avatar className="hover:cursor-pointer">
+            <AvatarImage src={user?.profileImg} alt="profile image" />
             <AvatarFallback>UN</AvatarFallback>
           </Avatar>
 
           <div className="flex flex-col">
-            <CardTitle className="text-base font-medium">
+            <CardTitle className="text-base font-medium hover:cursor-pointer">
               {post.user.username}
             </CardTitle>
 
@@ -119,7 +118,7 @@ export default function Post({ post }: { post: Post }) {
             <DropdownMenuContent align="end" className="w-48">
               {isOwner ? (
                 <>
-                  <DropdownMenuItem onClick={handleEditPostOpen}>
+                  <DropdownMenuItem onClick={handleEditPostOpen} className=" hover:cursor-pointer">
                     <Edit className="mr-2 h-4 w-4" />
                     Editar
                   </DropdownMenuItem>
@@ -127,7 +126,7 @@ export default function Post({ post }: { post: Post }) {
                   <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                     <AlertDialogTrigger asChild>
                       <DropdownMenuItem 
-                        className="text-red-600 focus:text-red-600"
+                        className="hover:cursor-pointer"
                         onSelect={(e) => {
                           e.preventDefault();
                           setIsDeleteDialogOpen(true);
@@ -146,10 +145,10 @@ export default function Post({ post }: { post: Post }) {
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogCancel className="hover:cursor-pointer">Cancelar</AlertDialogCancel>
                         <AlertDialogAction 
                           onClick={handleDelete}
-                          className="bg-red-600 hover:bg-red-700"
+                          className="bg-red-600 hover:bg-red-700 hover:cursor-pointer"
                           disabled={deletePost.isPending}
                         >
                           {deletePost.isPending ? "Deletando..." : "Excluir"}
@@ -159,20 +158,19 @@ export default function Post({ post }: { post: Post }) {
                   </AlertDialog>
                   
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem className=" hover:cursor-pointer">
                     <Share className="mr-2 h-4 w-4" />
                     Compartilhar
                   </DropdownMenuItem>
                 </>
               ) : (
-
                 <>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem className="hover:cursor-pointer">
                     <Share className="mr-2 h-4 w-4" />
                     Compartilhar
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-600">
+                  <DropdownMenuItem className="text-red-600 hover:cursor-pointer">
                     <Flag className="mr-2 h-4 w-4" />
                     Denunciar
                   </DropdownMenuItem>
@@ -195,7 +193,7 @@ export default function Post({ post }: { post: Post }) {
         </CardContent>
 
         <CardFooter className="flex flex-col mt-[-20px]  ">
-          <div className="flex justify-between w-full mb-1">
+          <div className="flex justify-between w-full mb-3">
             <span className="text-sm text-muted-foreground">
               {post.likes.length || 0} curtidas • {post.comments.length || 0}{" "}
               comentários
@@ -203,7 +201,7 @@ export default function Post({ post }: { post: Post }) {
           </div>
 
           <div className="flex w-full justify-between">
-            <CardAction className="flex items-center gap-3">
+            <CardAction className="flex items-center gap-3 hover:cursor-pointer">
               {actions.map((action, index) => (
                 <div
                   key={index}
@@ -220,14 +218,13 @@ export default function Post({ post }: { post: Post }) {
               ))}
             </CardAction>
 
-            <CardAction className="flex items-right gap-2 ">
+            <CardAction className="flex items-right gap-2 hover:cursor-pointer">
               <div>
                 <Bookmark className="h-5 w-5 text-muted-foreground varient-ghost" />
               </div>
             </CardAction>
           </div>
 
-        
         </CardFooter>
       </Card>
     </>

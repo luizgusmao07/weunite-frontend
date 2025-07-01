@@ -75,12 +75,7 @@ export const updatePostRequest = async (
     };
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
-
-    console.log("Erro completo:", error);
-    console.log("Status:", error.response?.status);
-    console.log("Dados do erro:", error.response?.data);
     
-
     return {
       success: false,
       data: null,
