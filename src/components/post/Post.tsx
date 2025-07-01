@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import type { Post } from "@/@types/post.types";
 import { getTimeAgo } from "@/hooks/useGetTimeAgo";
-import { useToggleLike } from "@/hooks/useLikes";
+import { useToggleLike } from "@/state/useLikes";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 const actions = [{ icon: Heart }, { icon: MessageCircle }, { icon: Repeat2 }];

@@ -2,13 +2,13 @@ import type { Like } from "./like.types";
 import type { User } from "./user.types";
 
 export interface CreatePost {
-  text?: string | null;
+  text: string | null;
   media?: File | null;
 }
 
 export interface UpdatePost {
   text: string | null;
-  image: File | null;
+  media?: File | null;
 }
 
 export interface GetPost {
@@ -29,4 +29,3 @@ export interface Post {
   updatedAt: string | null;
   user: User;
 }
-

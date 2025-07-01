@@ -1,5 +1,9 @@
-import type { CreatePost } from "@/@types/post.types";
-import { createPostRequest, getPostsRequest, updatePostRequest } from "@/api/services/postService";
+import type { CreatePost, UpdatePost } from "@/@types/post.types";
+import {
+  createPostRequest,
+  getPostsRequest,
+  updatePostRequest,
+} from "@/api/services/postService";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -36,19 +40,26 @@ export const useUpdatePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ data, userId, postId }: { data: CreatePost; userId: number; postId: number }) =>
-      updatePostRequest(data, userId, postId),
+    mutationFn: ({
+      data,
+      userId,
+      postId,
+    }: {
+      data: UpdatePost;
+      userId: number;
+      postId: number;
+    }) => updatePostRequest(data, userId, postId),
     onSuccess: (result) => {
       if (result.success) {
-        toast.success(result.message || "Publicação criada com sucesso!");
+        toast.success(result.message || "Publicação atualizada com sucesso!");
 
         queryClient.invalidateQueries({ queryKey: postKeys.lists() });
       } else {
-        toast.error(result.message || "Erro ao criar publicação");
+        toast.error(result.message || "Erro ao atualizar publicação");
       }
     },
     onError: () => {
-      toast.error("Erro inesperado ao criar postagem");
+      toast.error("Erro inesperado ao atualizar postagem");
     },
   });
 };

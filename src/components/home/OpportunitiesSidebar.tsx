@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Button } from "../ui/button";
 import CardSuggestionOpportunity from "../opportunity/CardSuggestionOpportunity";
 
 const cardSuggestion = Array.from({ length: 4 }, (_, i) => i);
