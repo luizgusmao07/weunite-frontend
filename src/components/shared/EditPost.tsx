@@ -10,19 +10,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreatePost } from "@/state/usePosts";
+import { useUpdatePost } from "@/state/usePosts";
 import { createPostSchema } from "@/schemas/post/createPost.schema";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import type { Post } from "@/@types/post.types";
+import { useEffect } from "react";
 
-interface CreatePostProps {
+interface EditPostProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  post?: Post;
 }
 
-export function CreatePost({ open, onOpenChange }: CreatePostProps) {
+export function EditPost({ open, onOpenChange, post }: EditPostProps) {
   const form = useForm<z.infer<typeof createPostSchema>>({
     resolver: zodResolver(createPostSchema),
     defaultValues: {
@@ -32,15 +35,27 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
   });
 
   const { user } = useAuthStore();
+  const updatePostMutation = useUpdatePost();
 
-  const createPostMutation = useCreatePost();
+  useEffect(() => {
+    if (post && open) {
+        form.reset ({
+            text: post.text || "",
+            media: null,
+        })
+    }
+  }, [post, open, form])
 
   async function onSubmit(values: z.infer<typeof createPostSchema>) {
     if (!user?.id) return;
 
-    const result = await createPostMutation.mutateAsync({
-      data: values,
+    const result = await updatePostMutation.mutateAsync({
+      data: {
+        text: values.text,
+        media: values.media,
+      },
       userId: Number(user.id),
+      postId: Number(post?.id),
     });
 
     if (result.success) {
@@ -53,7 +68,7 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]" aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>Criar nova publicação</DialogTitle>
+          <DialogTitle>Editar publicação</DialogTitle>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
           <div className="grid gap-4 py-2">
@@ -100,7 +115,7 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
               <Button variant="outline" className="hover:cursor-pointer">Cancelar</Button>
             </DialogClose>
             <Button type="submit" className="bg-third hover:bg-third-hover hover:cursor-pointer">
-              Publicar
+              Editar
             </Button>
           </DialogFooter>
         </form>

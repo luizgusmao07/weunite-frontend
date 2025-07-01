@@ -22,6 +22,7 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-third: var(--third);
   --color-third-foreground: var(--third-foreground);
+  --color-third-hover: var(--third-hover);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
@@ -61,6 +62,7 @@
   --secondary: #f5f5f5;
   --secondary-foreground: #171717;
   --third: #22c55e;
+  --third-hover: #39e177;
   --thrid-foreground: #000000;
   --muted: #f5f5f5;
   --muted-foreground: #737373;

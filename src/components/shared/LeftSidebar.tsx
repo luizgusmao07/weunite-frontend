@@ -230,11 +230,12 @@ export function LeftSidebar() {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
-          <SidebarMenu>
+          <SidebarMenu className="mb-3">
             <SidebarMenuItem
               className={
                 state === "collapsed" ? "w-full flex justify-center" : ""
-              }
+              } 
+              
             >
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -247,7 +248,7 @@ export function LeftSidebar() {
                   >
                     <Avatar className={state === "collapsed" ? "mx-auto" : ""}>
                       <AvatarImage
-                        src="https://github.com/shadcn.png"
+                        src={user?.profileImg}
                         alt="@shadcn"
                       />
                       <AvatarFallback>CN</AvatarFallback>
@@ -283,7 +284,7 @@ export function LeftSidebar() {
 
                   <div className="h-px bg-gray-100 my-1"></div>
                   <DropdownMenuItem
-                    className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer text-red-600 hover:bg-red-50 transition-colors"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer text-red-400 hover:bg-red-50 transition-colors"
                     onClick={handleLogout}
                   >
                     <LogOut className="h-4 w-4 -scale-x-100" />

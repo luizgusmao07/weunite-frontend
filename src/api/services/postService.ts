@@ -63,8 +63,8 @@ export const updatePostRequest = async (
       formData.append("image", data.media);
     }
 
-    const response = await axios.post(
-      `/post/update/${userId}/${postId}`,
+    const response = await axios.put(
+      `/posts/update/${userId}/${postId}`,
       formData
     );
 
@@ -76,6 +76,11 @@ export const updatePostRequest = async (
     };
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
+
+    console.log("Erro completo:", error);
+    console.log("Status:", error.response?.status);
+    console.log("Dados do erro:", error.response?.data);
+    
 
     return {
       success: false,
@@ -130,13 +135,12 @@ export const getPostsRequest = async () => {
   }
 };
 
-export const deletePostRequest = async (data: DeletePost) => {
+export const deletePostRequest = async (userId: number, postId: number) => {
   try {
-    const response = await axios.post(`/post/delete/${data}`);
+    const response = await axios.post(`/posts/delete/${userId}/${postId}`);
 
     return {
       success: true,
-      data: response.data,
       message: response.data.message || "Publicação deletada com sucesso!",
       error: null,
     };
