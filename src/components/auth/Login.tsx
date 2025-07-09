@@ -130,7 +130,7 @@ export function Login({
               />
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full "
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? (

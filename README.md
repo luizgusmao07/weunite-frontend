@@ -1,54 +1,140 @@
-# React + TypeScript + Vite
+# WeUnite - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Sobre o Projeto
+WeUnite é uma rede social que conecta pessoas e oportunidades. Este é o frontend da aplicação, desenvolvido em React com TypeScript e Vite.
 
-Currently, two official plugins are available:
+## Tecnologias Utilizadas
+- **React 18+**
+- **TypeScript**
+- **Vite** (Build tool)
+- **Tailwind CSS** (Estilização)
+- **Shadcn/UI** (Componentes UI)
+- **React Hook Form** (Formulários)
+- **Zod** (Validação de schemas)
+- **Tanstack Query** (Gerenciamento de estado de servidor)
+- **Zustand** (Gerenciamento de estado global)
+- **Axios** (Cliente HTTP)
+- **React Router DOM** (Roteamento)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Funcionalidades
+- ✅ Autenticação de usuários (Login/Registro)
+- ✅ Verificação de email
+- ✅ Reset de senha
+- ✅ Feed de posts
+- ✅ Criação de posts com texto e imagens
+- ✅ Sistema de likes e comentários
+- ✅ Sidebar com navegação
+- ✅ Busca de usuários
+- ✅ Perfil de usuário
+- ✅ Design responsivo
 
-## Expanding the ESLint configuration
+## Como Executar
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Pré-requisitos
+- Node.js 18+ 
+- npm ou yarn
+- Backend WeUnite rodando na porta 8080
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Passos para execução
+
+1. **Clone o repositório**
+```bash
+git clone https://github.com/luizgusmao07/weunite-frontend.git
+cd weunite-frontend
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+2. **Instale as dependências**
+```bash
+npm install
+# ou
+yarn install
 ```
+
+3. **Configure as variáveis de ambiente**
+O projeto está configurado para usar proxy para o backend:
+- Backend: `http://localhost:8080`
+- Frontend: `http://localhost:3000`
+
+4. **Execute a aplicação**
+```bash
+npm run dev
+# ou
+yarn dev
+```
+
+5. **Acesse a aplicação**
+- Frontend: `http://localhost:3000`
+
+## Scripts Disponíveis
+
+- `npm run dev` - Inicia o servidor de desenvolvimento
+
+## Estrutura do Projeto
+```
+src/
+├── @types/              # Tipos TypeScript
+├── api/                 # Configuração do Axios e services
+├── assets/              # Imagens e recursos estáticos
+├── components/          # Componentes React
+│   ├── auth/           # Componentes de autenticação
+│   ├── home/           # Componentes da home
+│   ├── shared/         # Componentes compartilhados
+│   └── ui/             # Componentes UI base (Shadcn)
+├── hooks/              # Hooks customizados
+├── lib/                # Utilitários e helpers
+├── pages/              # Páginas da aplicação
+├── routes/             # Configuração de rotas
+├── schemas/            # Schemas de validação (Zod)
+├── stores/             # Stores do Zustand
+└── validators/         # Validadores customizados
+```
+
+## Componentes Principais
+
+### Autenticação
+- `Login.tsx` - Tela de login
+- `SignUp.tsx` - Cadastro de usuário
+- `SignUpCompany.tsx` - Cadastro de empresa
+- `VerifyEmail.tsx` - Verificação de email
+- `ResetPassword.tsx` - Reset de senha
+
+### Home/Feed
+- `FeedHome.tsx` - Feed principal
+- `CreatePost.tsx` - Criação de posts
+- `Post.tsx` - Componente de post
+- `LeftSidebar.tsx` - Sidebar de navegação
+
+### UI Components
+Utiliza componentes do Shadcn/UI customizados:
+- `Button`, `Input`, `Card`, `Dialog`
+- `Form`, `Avatar`, `Badge`, `Skeleton`
+- `Sidebar`, `Tabs`, `Tooltip`
+
+## Estilização
+
+### Tailwind CSS
+- Utility-first CSS framework
+- Design system consistente
+- Responsividade built-in
+
+### Tema
+- Dark/Light mode support
+- Cores personalizadas
+- Componentes com variantes
+
+## Validação
+
+### Zod Schemas
+- `createPostSchema` - Validação de criação de posts
+- `authSchemas` - Validação de formulários de auth
+- Validação client-side com React Hook Form
+
+## Contribuição
+1. Faça fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
+
+## Licença
+Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
