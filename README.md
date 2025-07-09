@@ -39,7 +39,7 @@ WeUnite é uma rede social que conecta pessoas e oportunidades. Este é o fronte
 
 1. **Clone o repositório**
 ```bash
-git clone [url-do-repositorio]
+git clone https://github.com/luizgusmao07/weunite-frontend.git
 cd weunite-frontend
 ```
 
@@ -68,9 +68,6 @@ yarn dev
 ## Scripts Disponíveis
 
 - `npm run dev` - Inicia o servidor de desenvolvimento
-- `npm run build` - Gera build de produção
-- `npm run preview` - Visualiza o build de produção
-- `npm run lint` - Executa o linter
 
 ## Estrutura do Projeto
 ```
@@ -113,28 +110,6 @@ Utiliza componentes do Shadcn/UI customizados:
 - `Form`, `Avatar`, `Badge`, `Skeleton`
 - `Sidebar`, `Tabs`, `Tooltip`
 
-## Gerenciamento de Estado
-
-### Zustand Stores
-- `useAuthStore` - Estado de autenticação do usuário
-
-### Tanstack Query
-- `usePosts` - Gerenciamento de posts
-- `useCreatePost` - Criação de posts
-- Cache automático e sincronização com servidor
-
-## Roteamento
-
-### Rotas Públicas
-- `/` - Login
-- `/signup` - Cadastro
-- `/verify-email` - Verificação de email
-- `/reset-password` - Reset de senha
-
-### Rotas Privadas (Autenticadas)
-- `/home` - Feed principal
-- `/profile` - Perfil do usuário
-
 ## Estilização
 
 ### Tailwind CSS
@@ -154,34 +129,6 @@ Utiliza componentes do Shadcn/UI customizados:
 - `authSchemas` - Validação de formulários de auth
 - Validação client-side com React Hook Form
 
-## Configuração do Vite
-
-### Proxy
-```typescript
-server: {
-  port: 3000,
-  proxy: {
-    "/api": {
-      target: "http://localhost:8080",
-      changeOrigin: true,
-      secure: false,
-    },
-  },
-}
-```
-
-## Build e Deploy
-
-### Build de Produção
-```bash
-npm run build
-```
-
-### Preview do Build
-```bash
-npm run preview
-```
-
 ## Contribuição
 1. Faça fork do projeto
 2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
@@ -191,7 +138,3 @@ npm run preview
 
 ## Licença
 Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
-
-## Contato
-- Email: [seu-email@exemplo.com]
-- GitHub: [seu-usuario]
