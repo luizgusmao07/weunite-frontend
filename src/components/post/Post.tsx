@@ -148,7 +148,7 @@ export default function Post({ post }: { post: Post }) {
                         <AlertDialogCancel className="hover:cursor-pointer">Cancelar</AlertDialogCancel>
                         <AlertDialogAction 
                           onClick={handleDelete}
-                          className="bg-red-600 hover:bg-red-700 hover:cursor-pointer"
+                          className="bg-red-600 hover:bg-red-700 text-zinc-100 hover:cursor-pointer"
                           disabled={deletePost.isPending}
                         >
                           {deletePost.isPending ? "Deletando..." : "Excluir"}

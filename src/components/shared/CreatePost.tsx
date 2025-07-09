@@ -33,7 +33,7 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
 
   const { user } = useAuthStore();
 
-  const createPostMutation = useCreatePost();
+  const createPostMutation  = useCreatePost();
 
   async function onSubmit(values: z.infer<typeof createPostSchema>) {
     if (!user?.id) return;
@@ -99,9 +99,9 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
             <DialogClose asChild>
               <Button variant="outline" className="hover:cursor-pointer">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" className="bg-third hover:bg-third-hover hover:cursor-pointer">
-              Publicar
-            </Button>
+            <Button type="submit" className="bg-third hover:bg-third-hover hover:cursor-pointer" disabled={createPostMutation.isPending}>
+            {createPostMutation.isPending ? "Publicando..." : "Publicar"}
+          </Button>
           </DialogFooter>
         </form>
       </DialogContent>

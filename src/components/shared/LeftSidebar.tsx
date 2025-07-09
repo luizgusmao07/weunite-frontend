@@ -132,7 +132,7 @@ export function LeftSidebar() {
               <div className="flex items-center justify-between">
                 <span
                   className={`
-                        font-bold transition-all duration-200 overflow-hidden whitespace-nowrap max-w-xs opacity-100 text-xl ml-2
+                        font-bold transition-all duration-200 overflow-hidden whitespace-nowrap max-w-xs opacity-100 text-xl ml-2 
                       `}
                   style={{
                     transition: "all 0.2s",
@@ -238,7 +238,7 @@ export function LeftSidebar() {
               
             >
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+                <DropdownMenuTrigger asChild className="hover:cursor-pointer">
                   <SidebarMenuButton
                     className={`flex ${
                       state === "collapsed"

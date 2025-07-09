@@ -6,7 +6,8 @@ export function HomeRoutes() {
   return (
     <Routes>
       <Route element={<PrivateRoutes />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="" element={<Home />} />
       </Route>
     </Routes>
   );
