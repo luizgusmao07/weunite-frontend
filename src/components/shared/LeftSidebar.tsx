@@ -40,11 +40,16 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
+import { useBreakpoints } from "@/hooks/useBreakpoints";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export function LeftSidebar() {
   const { state, setOpen } = useSidebar();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
+
+  const { logout } = useAuthStore();
+  const { user } = useAuthStore();
 
   const { setTheme, theme } = useTheme();
   const themeIcon = theme === "dark" ? Sun : Moon;
@@ -53,8 +58,12 @@ export function LeftSidebar() {
   const getIncoColor = (path: string): string =>
     pathname === path ? "#22C55E" : "currentColor";
 
-  const { logout } = useAuthStore();
   const navigate = useNavigate();
+
+  const { isMobile, maxLeftSideBar } = useBreakpoints();
+  
+  const maxExtendSideBar = useMediaQuery("(max-width: 1290px)");
+  const [sidebarVisible, setSidebarVisible] = useState(!maxLeftSideBar);
 
   const handleSearchOpen = () => {
     if (state === "expanded") {
@@ -91,7 +100,22 @@ export function LeftSidebar() {
     if (isSearchOpen && state === "expanded") {
       setOpen(false);
     }
-  }, [isSearchOpen, state, setOpen]);
+
+    if (maxExtendSideBar && state === "expanded") {
+      setOpen(false);
+    }
+
+    if (!maxExtendSideBar && state === "collapsed") {
+      setOpen(true);
+    }
+
+    if (maxLeftSideBar) {
+      setSidebarVisible(false);
+    } else {
+      setSidebarVisible(true);
+    }
+
+  }, [maxLeftSideBar, maxExtendSideBar, isSearchOpen, state, setOpen]);
 
   const CustomSidebarTrigger = (
     props: React.ComponentProps<typeof SidebarTrigger>
@@ -107,23 +131,29 @@ export function LeftSidebar() {
     return <SidebarTrigger {...props} onClick={handleClick} />;
   };
 
-  const { user } = useAuthStore();
 
   return (
     <>
       <Search isOpen={isSearchOpen} onOpenChange={setIsSearchOpen} />
       <CreatePost open={isCreatePostOpen} onOpenChange={setIsCreatePostOpen} />
 
+      <div
+        className={`
+        transition-all duration-900 ease-in-out
+          ${sidebarVisible 
+            ? 'opacity-100 translate-x-0' 
+            : 'opacity-0 -translate-x-full absolute'
+          }
+        `}
+      >
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <div
-            className={`${
-              state === "collapsed"
-                ? "flex justify-center items-center"
-                : "pt-4 "
-            }`}
+            className={`
+              ${ state === "collapsed" ? "flex justify-center items-center" : "pt-4" }
+              `}
           >
-            {state === "collapsed" ? (
+            {state === "collapsed" || isMobile ? (
               <div className="flex items-center justify-center w-full py-4">
                 <span className="font-bold text-xl text-primary">W</span>
                 <CustomSidebarTrigger className="p-0 m-0" />
@@ -151,12 +181,12 @@ export function LeftSidebar() {
             <SidebarGroupLabel
               className={state === "collapsed" ? "text-center" : ""}
             >
-              {state !== "collapsed" && "Navegação"}
+              {state !== "collapsed" && !isMobile && "Navegação"}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu
                 className={
-                  state === "collapsed"
+                  state === "collapsed" || isMobile
                     ? "flex flex-col items-center gap-6"
                     : "gap-4"
                 }
@@ -233,7 +263,7 @@ export function LeftSidebar() {
           <SidebarMenu className="mb-3">
             <SidebarMenuItem
               className={
-                state === "collapsed" ? "w-full flex justify-center" : ""
+                state === "collapsed" || isMobile ? "w-full flex justify-center" : ""
               } 
               
             >
@@ -296,6 +326,7 @@ export function LeftSidebar() {
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
+      </div>
     </>
   );
 }
