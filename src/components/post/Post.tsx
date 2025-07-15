@@ -27,14 +27,14 @@ import {
   Flag,
 } from "lucide-react";
 
-import { 
-  AlertDialog, 
+import {
+  AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogTitle, 
-  AlertDialogTrigger 
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 
 import type { Post } from "@/@types/post.types";
@@ -70,7 +70,7 @@ export default function Post({ post }: { post: Post }) {
 
   const isOwner = post.user.id === user?.id;
 
-   const handleEditPostOpen = () => {
+  const handleEditPostOpen = () => {
     setIsEditPostOpen(true);
   };
 
@@ -78,17 +78,27 @@ export default function Post({ post }: { post: Post }) {
     if (!user?.id) return;
 
     deletePost.mutate({
-      userId: Number(user.id), 
+      userId: Number(user.id),
       postId: Number(post.id)
     });
 
     setIsDeleteDialogOpen(false);
   };
 
+  const getInitials = (name: String | undefined): string => {
+    if (!name) return "U"
+
+    const words = name.trim().split(" ");
+    if (words.length === 1) {
+      return words[0].charAt(0).toUpperCase();
+    }
+
+    return words[0].charAt(0) + words[words.length - 1].charAt(0).toUpperCase();
+  }
 
   return (
     <>
-      <EditPost 
+      <EditPost
         open={isEditPostOpen}
         onOpenChange={setIsEditPostOpen}
         post={post}
@@ -96,9 +106,9 @@ export default function Post({ post }: { post: Post }) {
 
       <Card className="w-full max-w-[700px] bg-red shadow-none border-0 border-b rounded-none border-foreground/50 ">
         <CardHeader className="flex flex-row items-center gap-4">
-          <Avatar className="hover:cursor-pointer">
+          <Avatar className="hover:cursor-pointer size-9">
             <AvatarImage src={user?.profileImg} alt="profile image" />
-            <AvatarFallback>UN</AvatarFallback>
+            <AvatarFallback className="">{getInitials(user?.name)}</AvatarFallback>
           </Avatar>
 
           <div className="flex flex-col">
@@ -125,7 +135,7 @@ export default function Post({ post }: { post: Post }) {
 
                   <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                     <AlertDialogTrigger asChild>
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         className="hover:cursor-pointer"
                         onSelect={(e) => {
                           e.preventDefault();
@@ -140,13 +150,13 @@ export default function Post({ post }: { post: Post }) {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Esta ação não pode ser desfeita. O post será permanentemente 
+                          Esta ação não pode ser desfeita. O post será permanentemente
                           removido da plataforma.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel className="hover:cursor-pointer">Cancelar</AlertDialogCancel>
-                        <AlertDialogAction 
+                        <AlertDialogAction
                           onClick={handleDelete}
                           className="bg-red-600 hover:bg-red-700 text-zinc-100 hover:cursor-pointer"
                           disabled={deletePost.isPending}
@@ -156,7 +166,7 @@ export default function Post({ post }: { post: Post }) {
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
-                  
+
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className=" hover:cursor-pointer">
                     <Share className="mr-2 h-4 w-4" />
@@ -177,7 +187,7 @@ export default function Post({ post }: { post: Post }) {
                 </>
               )}
             </DropdownMenuContent>
-          </DropdownMenu>   
+          </DropdownMenu>
 
         </CardHeader>
 
@@ -208,11 +218,10 @@ export default function Post({ post }: { post: Post }) {
                   onClick={index === 0 ? handleLikeClick : undefined}
                 >
                   <action.icon
-                    className={`h-5 w-5 transition-colors  ${
-                      index === 0 && isLiked
+                    className={`h-5 w-5 transition-colors  ${index === 0 && isLiked
                         ? "text-red-500 fill-red-500"
                         : "text-muted-foreground"
-                    }`}
+                      }`}
                   />
                 </div>
               ))}

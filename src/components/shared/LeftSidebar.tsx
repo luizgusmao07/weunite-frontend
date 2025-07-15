@@ -50,8 +50,7 @@ export function LeftSidebar() {
   const themeIcon = theme === "dark" ? Sun : Moon;
   const location = useLocation();
   const pathname = location.pathname;
-  const getIncoColor = (path: string): string =>
-    pathname === path ? "#22C55E" : "currentColor";
+  const getIncoColor = (path: string): string => pathname === path ? "#22C55E" : "currentColor";
 
   const { logout } = useAuthStore();
   const navigate = useNavigate();
@@ -87,6 +86,17 @@ export function LeftSidebar() {
     themeItem,
   ];
 
+  const getInitials = (name:String | undefined): string =>{
+    if (!name) return "U"
+
+    const words = name.trim().split(" ");
+    if (words.length === 1){
+      return words[0].charAt(0).toUpperCase();
+    }
+
+    return words[0].charAt(0) + words[words.length-1].charAt(0).toUpperCase();
+  }
+
   useEffect(() => {
     if (isSearchOpen && state === "expanded") {
       setOpen(false);
@@ -117,11 +127,10 @@ export function LeftSidebar() {
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <div
-            className={`${
-              state === "collapsed"
-                ? "flex justify-center items-center"
-                : "pt-4 "
-            }`}
+            className={`${state === "collapsed"
+              ? "flex justify-center items-center"
+              : "pt-4 "
+              }`}
           >
             {state === "collapsed" ? (
               <div className="flex items-center justify-center w-full py-4">
@@ -188,11 +197,10 @@ export function LeftSidebar() {
                             navigate(item.url);
                           }
                         }}
-                        className={`flex ${
-                          state === "collapsed"
-                            ? "justify-center w-full py-2"
-                            : "items-center gap-2"
-                        }`}
+                        className={`flex ${state === "collapsed"
+                          ? "justify-center w-full py-2"
+                          : "items-center gap-2"
+                          }`}
                       >
                         <div
                           className={
@@ -234,24 +242,23 @@ export function LeftSidebar() {
             <SidebarMenuItem
               className={
                 state === "collapsed" ? "w-full flex justify-center" : ""
-              } 
-              
+              }
+
             >
               <DropdownMenu>
                 <DropdownMenuTrigger asChild className="hover:cursor-pointer">
                   <SidebarMenuButton
-                    className={`flex ${
-                      state === "collapsed"
-                        ? "justify-center w-full"
-                        : "items-center gap-2"
-                    }`}
+                    className={`flex ${state === "collapsed"
+                      ? "justify-center w-full "
+                      : "items-center gap-2 "
+                      }` }
                   >
                     <Avatar className={state === "collapsed" ? "mx-auto" : ""}>
                       <AvatarImage
                         src={user?.profileImg}
                         alt="@shadcn"
                       />
-                      <AvatarFallback>CN</AvatarFallback>
+                      <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
                     </Avatar>
                     {state !== "collapsed" && <p>{user?.username}</p>}
                   </SidebarMenuButton>

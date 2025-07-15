@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 
 export default function CardSuggestionOpportunity() {
   return (
-    <Card className="bg-card-create shadow-md  transition-shadow duration-200 ">
+    <Card className=" shadow-md  transition-shadow duration-200 border-none ">
       <CardHeader>
         <CardTitle className="text-sidebar-foreground font-semibold">Título Oportunidade</CardTitle>
       </CardHeader>
