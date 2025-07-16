@@ -1,16 +1,12 @@
-import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { X as CloseIcon } from "lucide-react"; // Importando o ícone X para fechar
 import { Sun, Moon, Search as SearchIcon } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
@@ -57,12 +53,12 @@ export function HeaderMobile() {
 
             <Drawer >
               <DrawerTrigger>
-                <SearchIcon className="h-5 w-5"/>
+                <SearchIcon className="h-5 w-5 hover:cursor-pointer"/>
               </DrawerTrigger>
               <DrawerContent className="h-[80vh] data-[vaul-drawer-direction=bottom]:max-h-[100vh]  mt-0 ">
                 <DrawerHeader className="pt-8 px-6 relative">
-                  <DrawerClose className="absolute rounded-sm transition-opacity right-4">
-                    <CloseIcon className="h-5 w-5" />
+                  <DrawerClose className="absolute rounded-sm transition-opacity right-4 ">
+                    <CloseIcon className="h-5 w-5 hover:cursor-pointer" />
                   </DrawerClose>
                   <DrawerTitle className="mb-4">Pesquisar</DrawerTitle>
                   <div className="relative">

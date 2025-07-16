@@ -7,7 +7,7 @@ export function useBreakpoints() {
     const isSmallDesktop = useMediaQuery("(min-width: 769px) and (max-width: 900px)");
     const isDesktop = useMediaQuery("(min-width: 901px)");
 
-    const maxLeftSideBar = useMediaQuery("(max-width: 840px)");
+    const maxLeftSideBar = useMediaQuery("(max-width: 890px)");
 
     return { isMobile, isTablet, isSmallDesktop, isDesktop, maxLeftSideBar};
 }
