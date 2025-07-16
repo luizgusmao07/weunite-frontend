@@ -64,7 +64,7 @@ export function Search({
               onClick={() => handleOpenChange(false)}
               className="p-1 rounded-full hover:bg-muted transition-colors "
             >
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5 hover:cursor-pointer" />
             </button>
           </div>
           <Input placeholder="Pesquisa por..." />

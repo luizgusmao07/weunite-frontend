@@ -38,7 +38,7 @@ import { useTheme } from "@/components/ThemeProvider";
 import { useLocation } from "react-router-dom";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -60,10 +60,11 @@ export function LeftSidebar() {
 
   const navigate = useNavigate();
 
-  const { isMobile, maxLeftSideBar } = useBreakpoints();
+  const { isMobile } = useBreakpoints();
   
-  const maxExtendSideBar = useMediaQuery("(max-width: 1290px)");
-  const [sidebarVisible, setSidebarVisible] = useState(!maxLeftSideBar);
+  const maxExtendSideBar = useMediaQuery("(max-width: 1290px)")
+  const prevMaxExtendSideBar = useRef(maxExtendSideBar);
+
 
   const handleSearchOpen = () => {
     if (state === "expanded") {
@@ -100,22 +101,14 @@ export function LeftSidebar() {
     if (isSearchOpen && state === "expanded") {
       setOpen(false);
     }
+  }, [isSearchOpen, state, setOpen]);
 
-    if (maxExtendSideBar && state === "expanded") {
+  useEffect(() => {
+    if (maxExtendSideBar && !prevMaxExtendSideBar.current) {
       setOpen(false);
     }
-
-    if (!maxExtendSideBar && state === "collapsed") {
-      setOpen(true);
-    }
-
-    if (maxLeftSideBar) {
-      setSidebarVisible(false);
-    } else {
-      setSidebarVisible(true);
-    }
-
-  }, [maxLeftSideBar, maxExtendSideBar, isSearchOpen, state, setOpen]);
+    prevMaxExtendSideBar.current = maxExtendSideBar;
+  }, [maxExtendSideBar, setOpen]);
 
   const CustomSidebarTrigger = (
     props: React.ComponentProps<typeof SidebarTrigger>
@@ -137,15 +130,7 @@ export function LeftSidebar() {
       <Search isOpen={isSearchOpen} onOpenChange={setIsSearchOpen} />
       <CreatePost open={isCreatePostOpen} onOpenChange={setIsCreatePostOpen} />
 
-      <div
-        className={`
-        transition-all duration-900 ease-in-out
-          ${sidebarVisible 
-            ? 'opacity-100 translate-x-0' 
-            : 'opacity-0 -translate-x-full absolute'
-          }
-        `}
-      >
+      
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <div
@@ -162,14 +147,14 @@ export function LeftSidebar() {
               <div className="flex items-center justify-between">
                 <span
                   className={`
-                        font-bold transition-all duration-200 overflow-hidden whitespace-nowrap max-w-xs opacity-100 text-xl ml-2 
+                        font-bold transition-all duration-200  whitespace-nowrap max-w-xs opacity-100 text-xl ml-2 
                       `}
                   style={{
                     transition: "all 0.2s",
                   }}
                 >
                   <span className="text-primary ">We</span>
-                  <span className="text-green-500">Unite</span>
+                  <span className="text-third">Unite</span>
                 </span>
                 <CustomSidebarTrigger />
               </div>
@@ -326,7 +311,6 @@ export function LeftSidebar() {
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      </div>
     </>
   );
 }

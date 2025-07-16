@@ -94,7 +94,7 @@ export default function Post({ post }: { post: Post }) {
         post={post}
       />
 
-      <Card className="w-full max-w-[700px] bg-red shadow-none border-0 border-b rounded-none border-foreground/50 ">
+      <Card className="w-full max-w-[700px] bg-red shadow-none border-0 border-b rounded-none border-foreground/50">
         <CardHeader className="flex flex-row items-center gap-4">
           <Avatar className="hover:cursor-pointer">
             <AvatarImage src={user?.profileImg} alt="profile image" />
@@ -192,7 +192,7 @@ export default function Post({ post }: { post: Post }) {
           <p className="">{post.text}</p>
         </CardContent>
 
-        <CardFooter className="flex flex-col mt-[-20px]  ">
+        <CardFooter className="flex flex-col mt-[-20px]">
           <div className="flex justify-between w-full mb-3">
             <span className="text-sm text-muted-foreground">
               {post.likes.length || 0} curtidas • {post.comments.length || 0}{" "}
