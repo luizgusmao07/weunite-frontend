@@ -1,11 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Lightbulb } from "lucide-react";
 import CardSuggestionOpportunity from "../opportunity/CardSuggestionOpportunity";
 
 const cardSuggestion = Array.from({ length: 4 }, (_, i) => i);
 
+// Hook para detectar se a tela é maior que 1500px
+const useCustomBreakpoint = (breakpoint: number = 1500) => {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= breakpoint);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, [breakpoint]);
+
+  return isDesktop;
+};
+
 export const OpportunitiesSidebar: React.FC = () => {
   const [showAll, setShowAll] = useState(false);
   const [visibleOpportunities, setVisibleOpportunities] = useState(1);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  
+  // Hook customizado - sidebar aparece apenas em telas 1500px+
+  const isDesktop = useCustomBreakpoint(1500);
 
   const handleShowMore = () => {
     if (!showAll) {
@@ -21,48 +52,105 @@ export const OpportunitiesSidebar: React.FC = () => {
 
   const displayedOpportunities = cardSuggestion.slice(0, visibleOpportunities);
 
-  return (
-    <div className="fixed right-0 top-0 h-screen w-80 z-10 pointer-events-none mr-6">
-          <div className="flex items-center justify-center mb-4 mt-6 ">
-            <h2 className="text-lg font-semibold text-sidebar-foreground">
-              Sugestões de oportunidade
-            </h2>
-         </div>
-
-        <div className="flex-1 pointer-events-auto ">
-            
-            <div className="space-y-4 justify-end"> 
-              {showAll && (
-
-                <div className="flex justify-end">
-                  <button
-                    onClick={handleClose} 
-                    className="text-sm text-third font-medium mr-1 bg-transparent hover:cursor-pointer hover:bg-transparent "
-                  >
-                    Fechar
-                  </button>
-                </div>
-              )}
-              
-              {displayedOpportunities.map((cardSuggestion) => (
-                <CardSuggestionOpportunity key={cardSuggestion} />
-              ))}
-            </div>
-
-            {!showAll && (
-              <div className="mt-4 flex justify-end">
-                <button
-                  onClick={handleShowMore}
-                  className="text-sm text-third font-medium duration-200 mr-0.6 bg-transparent hover:cursor-pointer  hover:bg-hover-button"
-                >
-                  Ver Outras 
-                </button>
-                
-              </div>
-            )}
-
+  // 🔹 COMPONENTE REUTILIZÁVEL - Mesmo conteúdo para desktop e mobile
+  const OpportunitiesContent = () => (
+    <>
+      {/* Botão Fechar */}
+      {showAll && (
+        <div className="flex justify-end">
+          <button
+            onClick={handleClose} 
+            className="text-sm text-third font-medium mr-1 bg-transparent hover:cursor-pointer hover:bg-transparent"
+          >
+            Fechar
+          </button>
         </div>
-      </div>   
+      )}
       
+      {/* Lista de cards */}
+      <div className="space-y-4 justify-end">
+        {displayedOpportunities.map((cardSuggestion) => (
+          <CardSuggestionOpportunity key={cardSuggestion} />
+        ))}
+      </div>
+
+      {/* Botão Ver Outras */}
+      {!showAll && (
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={handleShowMore}
+            className="text-sm text-third font-medium duration-200 mr-0.6 bg-transparent hover:cursor-pointer hover:bg-hover-button"
+          >
+            Ver Outras 
+          </button>
+        </div>
+      )}
+    </>
+  );
+
+  return (
+    <>
+      {isDesktop && (
+  <div className="fixed right-0 top-0 h-screen w-[400px] z-10 pointer-events-none mr-6 bg-background">
+    <div className="flex items-center justify-center mb-4 mt-6">
+      <h2 className="text-lg font-semibold text-sidebar-foreground">
+        Sugestões de oportunidade
+      </h2>
+    </div>
+    <div className="flex-1 h-full overflow-y-auto pointer-events-auto">
+      <OpportunitiesContent />
+    </div>
+  </div>
+)}
+
+
+      {/* Mobile abaixo 1350px */}
+      {!isDesktop && (
+        <div>
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+            
+            {/* Botão flutuante que abre o Sheet */}
+            <SheetTrigger asChild>
+              <Button
+                size="icon"
+                className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90"
+              >
+                <Lightbulb className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            
+            {/* Conteúdo do Sheet quando aberto - ÁREA AUMENTADA */}
+            <SheetContent side="right" className="w-[70vw] sm:w-[700px] max-w-[800px]">
+              
+              {/* Cabeçalho do Sheet */}
+              <SheetHeader className="mb-6">
+                <SheetTitle>Sugestões de oportunidade</SheetTitle>
+                <SheetDescription>
+                  Descubra novas oportunidades que podem interessar você
+                </SheetDescription>
+              </SheetHeader>
+              
+              {/* Conteúdo Mobile (mesmo que desktop) - SEM barra de scroll */}
+              <div 
+                className="overflow-y-auto h-[calc(100vh-8rem)] px-4"
+                style={{
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                }}
+              >
+                <style>{`
+                  div::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
+                <div className="max-w-sm mx-auto space-y-4">
+                  <OpportunitiesContent />
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      )}
+    </>
   );
 };

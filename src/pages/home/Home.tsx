@@ -1,5 +1,4 @@
 import { FeedHome } from "@/components/home/FeedHome";
-
 import { OpportunitiesSidebar } from "../../components/home/OpportunitiesSidebar";
 
 export function Home() {
