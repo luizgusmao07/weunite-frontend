@@ -38,13 +38,18 @@ import { useTheme } from "@/components/ThemeProvider";
 import { useLocation } from "react-router-dom";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
+import { useBreakpoints } from "@/hooks/useBreakpoints";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export function LeftSidebar() {
   const { state, setOpen } = useSidebar();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
+
+  const { logout } = useAuthStore();
+  const { user } = useAuthStore();
 
   const { setTheme, theme } = useTheme();
   const themeIcon = theme === "dark" ? Sun : Moon;
@@ -53,8 +58,13 @@ export function LeftSidebar() {
   const getIncoColor = (path: string): string =>
     pathname === path ? "#22C55E" : "currentColor";
 
-  const { logout } = useAuthStore();
   const navigate = useNavigate();
+
+  const { isMobile } = useBreakpoints();
+  
+  const maxExtendSideBar = useMediaQuery("(max-width: 1290px)")
+  const prevMaxExtendSideBar = useRef(maxExtendSideBar);
+
 
   const handleSearchOpen = () => {
     if (state === "expanded") {
@@ -93,6 +103,13 @@ export function LeftSidebar() {
     }
   }, [isSearchOpen, state, setOpen]);
 
+  useEffect(() => {
+    if (maxExtendSideBar && !prevMaxExtendSideBar.current) {
+      setOpen(false);
+    }
+    prevMaxExtendSideBar.current = maxExtendSideBar;
+  }, [maxExtendSideBar, setOpen]);
+
   const CustomSidebarTrigger = (
     props: React.ComponentProps<typeof SidebarTrigger>
   ) => {
@@ -107,23 +124,21 @@ export function LeftSidebar() {
     return <SidebarTrigger {...props} onClick={handleClick} />;
   };
 
-  const { user } = useAuthStore();
 
   return (
     <>
       <Search isOpen={isSearchOpen} onOpenChange={setIsSearchOpen} />
       <CreatePost open={isCreatePostOpen} onOpenChange={setIsCreatePostOpen} />
 
+      
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <div
-            className={`${
-              state === "collapsed"
-                ? "flex justify-center items-center"
-                : "pt-4 "
-            }`}
+            className={`
+              ${ state === "collapsed" ? "flex justify-center items-center" : "pt-4" }
+              `}
           >
-            {state === "collapsed" ? (
+            {state === "collapsed" || isMobile ? (
               <div className="flex items-center justify-center w-full py-4">
                 <span className="font-bold text-xl text-primary">W</span>
                 <CustomSidebarTrigger className="p-0 m-0" />
@@ -132,14 +147,14 @@ export function LeftSidebar() {
               <div className="flex items-center justify-between">
                 <span
                   className={`
-                        font-bold transition-all duration-200 overflow-hidden whitespace-nowrap max-w-xs opacity-100 text-xl ml-2 
+                        font-bold transition-all duration-200  whitespace-nowrap max-w-xs opacity-100 text-xl ml-2 
                       `}
                   style={{
                     transition: "all 0.2s",
                   }}
                 >
                   <span className="text-primary ">We</span>
-                  <span className="text-green-500">Unite</span>
+                  <span className="text-third">Unite</span>
                 </span>
                 <CustomSidebarTrigger />
               </div>
@@ -151,12 +166,12 @@ export function LeftSidebar() {
             <SidebarGroupLabel
               className={state === "collapsed" ? "text-center" : ""}
             >
-              {state !== "collapsed" && "Navegação"}
+              {state !== "collapsed" && !isMobile && "Navegação"}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu
                 className={
-                  state === "collapsed"
+                  state === "collapsed" || isMobile
                     ? "flex flex-col items-center gap-6"
                     : "gap-4"
                 }
@@ -233,7 +248,7 @@ export function LeftSidebar() {
           <SidebarMenu className="mb-3">
             <SidebarMenuItem
               className={
-                state === "collapsed" ? "w-full flex justify-center" : ""
+                state === "collapsed" || isMobile ? "w-full flex justify-center" : ""
               } 
               
             >

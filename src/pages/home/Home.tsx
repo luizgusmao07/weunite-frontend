@@ -5,11 +5,10 @@ export function Home() {
   return (
     <div className="relative min-h-screen">
 
-      <div className="pr-80">
+      <div>
         <FeedHome />
       </div>
       
-      <OpportunitiesSidebar />
     </div>
   );
 }
