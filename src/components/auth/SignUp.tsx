@@ -70,7 +70,7 @@ export function SignUp({
         />
       </div>
 
-      <Card className="w-125">
+      <Card className="w-110 lg:120 xl:w-125">
         <CardContent>
           <div className="text-center mb-3">
             <h2 className="text-2xl font-bold">Crie sua conta</h2>
