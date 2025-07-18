@@ -54,7 +54,7 @@ export function Login({
         />
       </div>
 
-      <Card className="w-110 lg:120 xl:w-125">
+      <Card className="w-105 lg:120 xl:w-125 ">
 
         <div className="flex flex-col item-center text-center">
                 <FormItem>

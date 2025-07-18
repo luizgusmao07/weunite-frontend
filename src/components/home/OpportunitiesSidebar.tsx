@@ -52,12 +52,11 @@ export const OpportunitiesSidebar: React.FC = () => {
 
   const displayedOpportunities = cardSuggestion.slice(0, visibleOpportunities);
 
-  // 🔹 COMPONENTE REUTILIZÁVEL - Mesmo conteúdo para desktop e mobile
   const OpportunitiesContent = () => (
     <>
-      {/* Botão Fechar */}
+
       {showAll && (
-        <div className="flex justify-end">
+        <div className="flex justify-end mb-2">
           <button
             onClick={handleClose} 
             className="text-sm text-third font-medium mr-1 bg-transparent hover:cursor-pointer hover:bg-transparent"
@@ -67,16 +66,14 @@ export const OpportunitiesSidebar: React.FC = () => {
         </div>
       )}
       
-      {/* Lista de cards */}
       <div className="space-y-4 justify-end">
         {displayedOpportunities.map((cardSuggestion) => (
           <CardSuggestionOpportunity key={cardSuggestion} />
         ))}
       </div>
 
-      {/* Botão Ver Outras */}
       {!showAll && (
-        <div className="mt-4 flex justify-end">
+        <div className="mt-2.5 flex justify-end">
           <button
             onClick={handleShowMore}
             className="text-sm text-third font-medium duration-200 mr-0.6 bg-transparent hover:cursor-pointer hover:bg-hover-button"
@@ -91,9 +88,9 @@ export const OpportunitiesSidebar: React.FC = () => {
   return (
     <>
       {isDesktop && (
-  <div className="fixed right-0 top-0 h-screen w-[400px] z-10 pointer-events-none mr-6 bg-background">
-    <div className="flex items-center justify-center mb-4 mt-6">
-      <h2 className="text-lg font-semibold text-sidebar-foreground">
+  <div className="fixed right-0 top-0 h-screen w-[20vw] z-10 pointer-events-none mr-6 bg-background">
+    <div className="flex items-center justify-center mb-2 mt-6">
+      <h2 className="text-lg font-semibold text-sidebar-foreground ml-2">
         Sugestões de oportunidade
       </h2>
     </div>
@@ -103,26 +100,21 @@ export const OpportunitiesSidebar: React.FC = () => {
   </div>
 )}
 
-
-      {/* Mobile abaixo 1350px */}
       {!isDesktop && (
         <div>
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             
-            {/* Botão flutuante que abre o Sheet */}
             <SheetTrigger asChild>
               <Button
                 size="icon"
-                className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90"
+                className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90 hover:cursor-pointer"
               >
                 <Lightbulb className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            
-            {/* Conteúdo do Sheet quando aberto - ÁREA AUMENTADA */}
+
             <SheetContent side="right" className="w-[70vw] sm:w-[700px] max-w-[800px]">
               
-              {/* Cabeçalho do Sheet */}
               <SheetHeader className="mb-6">
                 <SheetTitle>Sugestões de oportunidade</SheetTitle>
                 <SheetDescription>
@@ -130,7 +122,6 @@ export const OpportunitiesSidebar: React.FC = () => {
                 </SheetDescription>
               </SheetHeader>
               
-              {/* Conteúdo Mobile (mesmo que desktop) - SEM barra de scroll */}
               <div 
                 className="overflow-y-auto h-[calc(100vh-8rem)] px-4"
                 style={{
