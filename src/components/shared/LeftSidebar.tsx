@@ -33,7 +33,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Search } from "@/components/shared/Search";
 import { CreatePost } from "./CreatePost";
-
 import { useTheme } from "@/components/ThemeProvider";
 import { useLocation } from "react-router-dom";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -41,7 +40,6 @@ import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import { useEffect } from "react";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export function LeftSidebar() {
   const { state, setOpen } = useSidebar();
@@ -60,11 +58,9 @@ export function LeftSidebar() {
 
   const navigate = useNavigate();
 
-  const { isMobile } = useBreakpoints();
-  
-  const maxExtendSideBar = useMediaQuery("(max-width: 1290px)")
-  const prevMaxExtendSideBar = useRef(maxExtendSideBar);
+  const { isMobile, isSmallDesktop } = useBreakpoints();
 
+  const previsDesktop = useRef(isSmallDesktop);
 
   const handleSearchOpen = () => {
     if (state === "expanded") {
@@ -104,11 +100,12 @@ export function LeftSidebar() {
   }, [isSearchOpen, state, setOpen]);
 
   useEffect(() => {
-    if (maxExtendSideBar && !prevMaxExtendSideBar.current) {
+    if (isSmallDesktop && !previsDesktop.current) {
       setOpen(false);
     }
-    prevMaxExtendSideBar.current = maxExtendSideBar;
-  }, [maxExtendSideBar, setOpen]);
+    
+    previsDesktop.current = isSmallDesktop;
+  }, [isSmallDesktop, setOpen]);
 
   const CustomSidebarTrigger = (
     props: React.ComponentProps<typeof SidebarTrigger>

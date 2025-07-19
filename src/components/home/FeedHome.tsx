@@ -22,7 +22,5 @@ export function FeedHome() {
         ))}
       </div>
     </div>
-
-
   );
 }

@@ -7,8 +7,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
-import { X as CloseIcon } from "lucide-react"; // Importando o ícone X para fechar
-import { Sun, Moon, Search as SearchIcon } from "lucide-react";
+import { X as CloseIcon, Sun, Moon, Search as SearchIcon } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 
 export function HeaderMobile() {
