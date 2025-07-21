@@ -37,28 +37,26 @@ import {
   AlertDialogTrigger 
 } from "@/components/ui/alert-dialog";
 
-import type { Post } from "@/@types/post.types";
 import { getTimeAgo } from "@/hooks/useGetTimeAgo";
-import { useToggleLike } from "@/state/useLikes";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useState } from "react";
 import { AlertDialogFooter, AlertDialogHeader } from "../../ui/alert-dialog";
+import type { Comment } from "@/@types/comment.types";
 
 const actions = [{ icon: Heart }, { icon: MessageCircle}, { icon: Repeat2 }];
 
-export default function Comment() {
+export default function Comment( { comment }: { comment: Comment} ) {
 
     const { user } = useAuthStore();
 
-    const [ isCommentsOpen, setIsCommentsOpen ] = useState(false);
+    /* const [ isCommentsOpen, setIsCommentsOpen ] = useState(false); */
 
-    /* const isLiked = comment.likes.some((like) => like.user.id === user?.id); */
+    /* const isLiked = comment.likes.some((like) => like.user.id === user?.id);
+ */
+     const isOwner = comment.user.id === user?.id; 
 
-    /*  const isOwner = comment.user.id === user?.id;  */
-
-    const handleCommentsOpen = () => {
+    /* const handleCommentsOpen = () => {
         setIsCommentsOpen(true);
-    }
+    } */
 
   return (
     <Card className="w-full max-w-[45em] bg-red shadow-none border-0 border-b rounded-none border-foreground/30">
@@ -70,11 +68,11 @@ export default function Comment() {
 
           <div className="flex flex-col">
             <CardTitle className="text-base font-medium hover:cursor-pointer">
-              {/* {comment.user.username} */}
+              {comment.user.username}
             </CardTitle>
 
             <CardDescription className="text-xs">
-              Publicado há {/* {getTimeAgo(comment.createdAt)} */}
+              Publicado há {getTimeAgo(comment.createdAt)}
             </CardDescription>
           </div>
 
@@ -83,22 +81,22 @@ export default function Comment() {
               <EllipsisVertical className="ml-auto h-5 w-5 text-muted-foreground cursor-pointer hover:text-primary transition-colors" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              {/* {isOwner ? (
+              {isOwner ? (
                 <>
-                  <DropdownMenuItem /* onClick={handleEditCommentOpen} função editar comentário 
+                  <DropdownMenuItem  /* onClick={handleEditCommentOpen} função editar comentário  */
                     className=" hover:cursor-pointer">
                     <Edit className="mr-2 h-4 w-4" />
                     Editar
                   </DropdownMenuItem>
 
-                  <AlertDialog /* open={isDeleteDialogOpen} função deletar comentário*/ /* onOpenChange={setIsDeleteDialogOpen} >
+                  <AlertDialog /*  open={isDeleteDialogOpen}  onOpenChange={setIsDeleteDialogOpen}  */>
                     <AlertDialogTrigger asChild>
                       <DropdownMenuItem 
                         className="hover:cursor-pointer"
-                        onSelect={(e) => {
+                        /* onSelect={(e) => {
                           e.preventDefault();
-                          /* setIsDeleteDialogOpen(true) ;
-                        }}
+                           setIsDeleteDialogOpen(true) ;
+                        }} */
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
                         Excluir
@@ -115,11 +113,11 @@ export default function Comment() {
                       <AlertDialogFooter>
                         <AlertDialogCancel className="hover:cursor-pointer">Cancelar</AlertDialogCancel>
                         <AlertDialogAction 
-                          /* onClick={handleDelete} 
+                           /* onClick={handleDelete}  */
                           className="bg-red-600 hover:bg-red-700 text-zinc-100 hover:cursor-pointer"
-                          /* disabled={deletePost.isPending} 
+                           /* disabled={deletePost.isPending}  */
                         >
-                          {/* {deletePost.isPending ? "Deletando..." : "Excluir"} }
+                          {/* { {deletePost.isPending ? "Deletando..." : "Excluir"} } */}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
@@ -143,7 +141,7 @@ export default function Comment() {
                     Denunciar
                   </DropdownMenuItem>
                 </>
-              )} */}
+              )} 
             </DropdownMenuContent>
           </DropdownMenu>   
 
@@ -151,13 +149,13 @@ export default function Comment() {
 
         <CardContent className="mt-[-18px]">
           
-          <p className="">{/* {comment.text} */}TEXTO DO COMENTÁRIO</p>
+          <p className="">{comment.text}</p>
         </CardContent>
 
         <CardFooter className="flex flex-col mt-[-20px]">
           <div className="flex justify-between w-full mb-3">
             <span className="text-sm text-muted-foreground">
-             {/*  {comment.likes.length || 0} curtidas • {comment.comments.length || 0}{" "} */}
+              {/* comment.likes.length  || */ 0} curtidas • {comment.comments.length || 0}{" "}
               comentários
             </span>
           </div>
@@ -167,18 +165,19 @@ export default function Comment() {
               {actions.map((action, index) => (
                 <div
                   key={index}
-                  /* onClick={(e) => {
+                  /* 
+                    onClick={(e) => {
                     e.preventDefault();
-                     if (action.icon === Heart) {
-                       handleLikeClick();
+                      if (action.icon === Heart) {
+                        handleLikeClick();
                     } else if (action.icon === MessageCircle){
                       handleCommentsOpen();
-                    }
-                  }} */
+                    } 
+                  }}*/
                 >
                   <action.icon
                     className={`h-5 w-5 transition-colors  ${
-                      index === 0 /* && isLiked */
+                      index === 0 /*  && isLiked  */
                         ? "text-red-500 fill-red-500"
                         : "text-muted-foreground"
                     }`}
@@ -195,6 +194,6 @@ export default function Comment() {
           </div>
 
         </CardFooter>
-      </Card>
+      </Card> 
   );
 }
