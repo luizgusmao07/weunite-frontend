@@ -15,8 +15,8 @@ export function FeedHome() {
   }
 
   return (
-    <div className="flex justify-center w-full ">
-      <div className="max-w-[700px] w-full  flex flex-col items-center">
+    <div className="flex justify-center w-full">
+      <div className="max-w-[700px] w-full flex flex-col items-center ">
         {posts.map((post: PostType,) => (
           <Post key={post.id} post={post} />
         ))}
