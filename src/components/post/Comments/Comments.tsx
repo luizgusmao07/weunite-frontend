@@ -42,6 +42,8 @@ export default function Comments({
 
   const { mutate: createComment } = useCreateComment();
   
+  const max_chars = 500;
+
   const handleCreateComment = () => {
     if (!user || !commentText.trim()) return;
 
@@ -80,6 +82,7 @@ export default function Comments({
                   {user?.name.substring(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
+              
               <div className="w-full max-w-full min-w-0">
                 <p className="text-sm text-muted-foreground mb-1">
                   Respondendo a{" "}
@@ -93,16 +96,24 @@ export default function Comments({
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                 />
-                <div className="flex justify-end mt-2">
-                  <Button
-                    size="sm"
-                    className="rounded-full px-5 hover:cursor-pointer"
-                    onClick={handleCreateComment}
-                    disabled={!commentText.trim()}
-                  >
-                    Publicar
-                  </Button>
-                </div>
+
+                 <div className="flex justify-end items-center gap-2 mt-3">
+
+                    <span
+                      className={`text-xs font-medium text-muted-foreground ${commentText.length > max_chars ? "text-red-500" : ""}`}
+                    >
+                      {commentText.length}/{max_chars}
+                    </span>
+
+                    <Button
+                      size="sm"
+                      className="rounded-full px-5 hover:cursor-pointer"
+                      onClick={handleCreateComment}
+                      disabled={!commentText.trim() || commentText.length > max_chars}
+                    >
+                      Publicar
+                    </Button>
+                  </div>
               </div>
             </div>
 
@@ -167,23 +178,33 @@ export default function Comments({
                     {user?.name.substring(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
+
                 <div className="flex-1 min-w-0">
                   <Textarea
                     placeholder="Poste sua resposta"
-                    className="bg-transparent border-none resize-none w-full min-h-[8vh] max-h-[9vh] overflow-y-auto focus-visible:ring-2 p-2 text-base break-all"
+                    className="bg-transparent border-none resize-none w-full min-h-[8vh] max-h-[8vh] overflow-y-auto custom-scrollbar focus-visible:ring-2 p-2 text-base break-all"
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
                   />
-                  <div className="flex justify-end mt-2">
+
+                  <div className="flex justify-end items-center gap-2 mt-3">
+
+                    <span
+                      className={`text-xs font-medium text-muted-foreground ${commentText.length > max_chars ? "text-red-500" : ""}`}
+                    >
+                      {commentText.length}/{max_chars}
+                    </span>
+
                     <Button
                       size="sm"
                       className="rounded-full px-5 hover:cursor-pointer"
                       onClick={handleCreateComment}
-                      disabled={!commentText.trim()}
+                      disabled={!commentText.trim() || commentText.length > max_chars}
                     >
                       Publicar
                     </Button>
                   </div>
+
                 </div>
               </div>
             </div>
