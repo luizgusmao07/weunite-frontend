@@ -80,7 +80,7 @@ export default function Comments({
                   {user?.name.substring(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <div className="w-full min-w-0">
+              <div className="w-full max-w-full min-w-0">
                 <p className="text-sm text-muted-foreground mb-1">
                   Respondendo a{" "}
                   <span className="text-sky-500 hover:cursor-pointer">
@@ -167,10 +167,10 @@ export default function Comments({
                     {user?.name.substring(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <Textarea
                     placeholder="Poste sua resposta"
-                    className="bg-transparent border-none resize-none focus-visible:ring-2 p-2 text-base min-h-[60px]"
+                    className="bg-transparent border-none resize-none w-full min-h-[8vh] max-h-[9vh] overflow-y-auto focus-visible:ring-2 p-2 text-base break-all"
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
                   />
