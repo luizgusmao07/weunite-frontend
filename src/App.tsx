@@ -3,6 +3,7 @@ import "./App.css";
 import { AuthRoutes } from "./routes/auth/AuthRoutes";
 import { HomeRoutes } from "./routes/home/HomeRoutes";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { ProfileRoutes } from "./routes/profile/ProfileRoutes";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/auth/*" element={<AuthRoutes />} />
         <Route path="/home/*" element={<HomeRoutes />} />
+        <Route path="/profile/*" element={<ProfileRoutes />} />
         <Route path="/*" element={<Navigate to="/home" replace/>} />
       </Routes>
     </ThemeProvider>
