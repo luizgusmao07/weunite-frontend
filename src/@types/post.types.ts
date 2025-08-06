@@ -1,5 +1,6 @@
 import type { Like } from "./like.types";
 import type { User } from "./user.types";
+import type { Comment } from "./comment.types";
 
 export interface CreatePost {
   text: string | null;

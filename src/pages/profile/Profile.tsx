@@ -1,10 +1,14 @@
-import HeaderProfile from "@/components/perfil/HeaderProfile";
+import FeedProfile from "@/components/profile/FeedProfile";
+import HeaderProfile from "@/components/profile/HeaderProfile";
 
 export function Profile() {
     return (
-        <div className="realative min-h-screen">
-            <HeaderProfile />
-        </div>
+        <>
+            <div className="realative h-full mb-10">
+                <HeaderProfile />
+            </div>
+            <FeedProfile />
+        </>
 
     );
 }

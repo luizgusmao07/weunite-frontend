@@ -49,4 +49,5 @@ export const getCommentsPostRequest = async (postId: number) => {
       error: error.response?.data?.message || "Erro ao consultar comentários",
     }
   }
-}
+};
+

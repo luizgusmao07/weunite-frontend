@@ -10,5 +10,7 @@ export function useBreakpoints() {
     const commentDesktop = useMediaQuery("(min-width: 1100px)");
     const maxLeftSideBar = useMediaQuery("(max-width: 890px)");
 
-    return { isMobile, isTablet, isSmallDesktop, isDesktop, commentDesktop,  maxLeftSideBar };
+    const headerProfileDesktop = useMediaQuery("(min-width: 1100px)");
+
+    return { isMobile, isTablet, isSmallDesktop, isDesktop, commentDesktop,  maxLeftSideBar, headerProfileDesktop };
 }

@@ -18,3 +18,7 @@ export interface Comment {
   post: Post;
   parentComment?: Comment | null;
 }
+
+export interface GetComment {
+  id: string;
+}

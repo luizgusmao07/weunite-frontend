@@ -1,21 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CreateComment } from "@/@types/comment.types";
-import { createCommentRequest, getCommentsPostRequest } from "@/api/services/commentService";
+import { createCommentRequest, getCommentsPostRequest} from "@/api/services/commentService";
 import { toast } from "sonner";
 
 export const commentKeys = {
-  all: ["comments"] as const,
-  lists: () => [...commentKeys.all, "list"] as const,
-  list: (filters: string) => [...commentKeys.lists(), { filters }] as const,
-  details: () => [...commentKeys.all, "detail"] as const,
-  detail: (id: string) => [...commentKeys.details(), id] as const,
+    all: ["comments"] as const,
+    lists: () => [...commentKeys.all, "list"] as const,
+    list: (filters: string) => [...commentKeys.lists(), { filters }] as const,
+    details: () => [...commentKeys.all, "detail"] as const,
+    detail: (id: string) => [...commentKeys.details(), id] as const,
 };
 
 export const useCreateComment = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ data, userId, postId }: {data: CreateComment; userId: number; postId: number}) =>
+        mutationFn: ({ data, userId, postId }: { data: CreateComment; userId: number; postId: number }) =>
             createCommentRequest(data, userId, postId),
         onSuccess: (result, { postId }) => {
             if (result.success) {
