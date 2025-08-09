@@ -16,6 +16,7 @@ import type {
 } from "@/@types/auth.types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { User } from "@/@types/user.types";
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -28,6 +29,7 @@ export const useAuthStore = create<AuthState>()(
       message: null,
 
       clearMessages: async () => set({ message: null, error: null }),
+      setUser: (user: User) => set({ user }),
 
       logout: () => {
         set({

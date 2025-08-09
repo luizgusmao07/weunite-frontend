@@ -10,20 +10,28 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { createPostSchema } from "@/schemas/post/createPost.schema";
-import { useAuthStore } from "@/stores/useAuthStore";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Pencil } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
-import type { z } from "zod";
-
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useUpdateProfile } from "@/state/useUsers";
-import { updateProfileSchema, type UpdateProfileForm } from "@/schemas/updateProfile.schema";
+import {
+  updateProfileSchema,
+  type UpdateProfileForm,
+} from "@/schemas/updateProfile.schema";
+import { useAuthStore } from "@/stores/useAuthStore";
+import {
+  Form,
+  FormItem,
+  FormField,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { data } from "react-router-dom";
 
-export default function EditProfile({ }) {
+export default function EditProfile() {
   const { user } = useAuthStore();
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -37,8 +45,11 @@ export default function EditProfile({ }) {
     },
   });
 
-  const handleFile = (file?: File) => {
-    if (!file) return;
+  const handleFile = (file?: File | null) => {
+    if (!file) {
+      form.setValue("media", null);
+      return;
+    }
     form.setValue("media", file);
     const url = URL.createObjectURL(file);
     setPreview((old) => {
@@ -60,97 +71,136 @@ export default function EditProfile({ }) {
         profileImg: values?.media || undefined,
       },
       username: user.username,
+      
     });
 
+    console.log(result)
+
     if (result.success) {
-      form.reset({...values, media: null});
+      form.reset({ ...values, media: null });
     }
   }
 
   return (
     <>
       <Dialog>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <DialogTrigger asChild>
-            <Pencil className="h-4 w-4 text-black cursor-pointer rotate-90" />
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Editar Perfil</DialogTitle>
-              <DialogDescription>
-                Faça as alterações necessárias no seu perfil.
-              </DialogDescription>
-            </DialogHeader>
+        <DialogTrigger asChild>
+          <Pencil className="h-4 w-4 text-black cursor-pointer rotate-90" />
+        </DialogTrigger>
 
-            <div className="grid gap-4">
-              <div className=" grid gap-3 justify-center">
-                <Controller
-                  name="media"
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Editar Perfil</DialogTitle>
+            <DialogDescription>
+              Faça as alterações necessárias no seu perfil.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Form precisa estar DENTRO do DialogContent */}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="grid gap-4">
+                {/* Upload do Avatar */}
+                <div className="grid gap-3 justify-center">
+                  <FormField
+                    control={form.control}
+                    name="media"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <>
+                            <Input
+                              id="avatar-upload"
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0] ?? null;
+                                handleFile(file);
+                                field.onChange(file);
+                              }}
+                            />
+                            <label
+                              htmlFor="avatar-upload"
+                              className="relative group cursor-pointer"
+                            >
+                              <Avatar className="w-28 h-28 rounded-full">
+                                <AvatarImage
+                                  src={preview || user?.profileImg || "/placeholder.png"}
+                                  alt="Foto de perfil"
+                                  className="object-cover"
+                                />
+                                <AvatarFallback className="text-xl">
+                                  {user?.name?.substring(0, 2).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs text-white font-medium transition-opacity">
+                                Alterar
+                              </div>
+                            </label>
+                          </>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Nome */}
+                <FormField
                   control={form.control}
-                  render={() => (
-                    <div>
-                      <Input
-                        id="avatar-upload"
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => handleFile(e.target.files?.[0])}
-                      />
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="grid gap-3">
+                      <FormLabel htmlFor="name">Nome</FormLabel>
+                      <FormControl>
+                        <Input id="name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                      <label
-                        htmlFor="avatar-upload"
-                        className="relative group cursor-pointer"
-                      >
-                        <Avatar className="w-28 h-28 rounded-full">
-                          <AvatarImage
-                            src={
-                              user?.profileImg || preview || "/placeholder.png"
-                            }
-                            alt="Foto de perfil"
-                            className="object-cover"
-                          />
-                          <AvatarFallback className="text-xl">
-                            {user?.name?.substring(0, 2).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
+                {/* Username */}
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem className="grid gap-3">
+                      <FormLabel htmlFor="username">Username</FormLabel>
+                      <FormControl>
+                        <Input id="username" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                        <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs text-white font-medium transition-opacity">
-                          Alterar
-                        </div>
-                      </label>
-                    </div>
+                {/* Email */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem className="grid gap-3">
+                      <FormLabel htmlFor="email">Email</FormLabel>
+                      <FormControl>
+                        <Input id="email" type="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
                 />
               </div>
 
-              <div className="grid gap-3">
-                <Label htmlFor="name-1">Nome</Label>
-                <Input id="name" {...form.register("name")} defaultValue={user?.name} />
-              </div>
-
-              <div className="grid gap-3">
-                <Label htmlFor="username-1">Username</Label>
-                <Input
-                  id="username"
-                  {...form.register("username")}
-                  defaultValue={user?.username}
-                />
-              </div>
-
-              <div className="grid gap-3">
-                <Label htmlFor="bio-1">Email</Label>
-                <Input id="email" {...form.register("email")} defaultValue={user?.email} />
-              </div>
-            </div>
-
-            <DialogFooter className="flex flex-row-reverse gap-2">
-              <Button type="submit">Salvar</Button>
-              <DialogClose asChild>
-                <Button variant="outline">Cancelar</Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </form>
+              <DialogFooter className="flex flex-row-reverse gap-2">
+                <Button type="submit">Salvar</Button>
+                <DialogClose asChild>
+                  <Button variant="outline" type="button">Cancelar</Button>
+                </DialogClose>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
       </Dialog>
     </>
   );

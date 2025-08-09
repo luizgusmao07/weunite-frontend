@@ -8,6 +8,7 @@ export interface AuthState {
   error: string | null;
   message: string | null;
   clearMessages: () => Promise<void>;
+  setUser: (user: User) => void;
   signup: (data: SignUp) => Promise<Result>;
   verifyEmail: (data: VerifyCode, email: string) => Promise<void>;
   sendResetPassword: (data: SendResetPassword) => Promise<Result>;

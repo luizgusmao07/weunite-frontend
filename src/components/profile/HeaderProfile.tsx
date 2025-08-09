@@ -27,7 +27,7 @@ export default function HeaderProfile() {
                     <div className='relative flex ml-[0.8em]'>
                         <Avatar className='w-27 h-27 rounded-full border-5 border-background mt-[-50px] bg-background'>
                             <AvatarImage
-                                src=""
+                                src={user?.profileImg}
                                 alt="Foto de perfil"
                                 className='w-full h-full rounded-full object-cover hover:cursor-pointer'
                             />
