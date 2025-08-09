@@ -3,6 +3,7 @@ import { ImageUp } from 'lucide-react';
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
 import EditProfile from './EditProfile';
+import { useInitials } from '@/hooks/useInitials';
 
 
 export default function HeaderProfile() {
@@ -10,6 +11,7 @@ export default function HeaderProfile() {
     const { } = useBreakpoints();
 
     const { user } = useAuthStore();
+    const initials = useInitials(user?.name);
     
     return (
 
@@ -25,12 +27,12 @@ export default function HeaderProfile() {
                     <div className='relative flex ml-[0.8em]'>
                         <Avatar className='w-27 h-27 rounded-full border-5 border-background mt-[-50px] bg-background'>
                             <AvatarImage
-                                src="/cori.jpeg"
+                                src=""
                                 alt="Foto de perfil"
                                 className='w-full h-full rounded-full object-cover hover:cursor-pointer'
                             />
-                            <AvatarFallback className='w-full h-full flex items-center border-1 rounded-full justify-center text-primary text-5xl '>
-                                CN
+                            <AvatarFallback className='w-full h-full flex items-center border-1 border-primary rounded-full justify-center text-primary text-5xl '>
+                                {initials}
                             </AvatarFallback>
 
                             <div className="absolute bottom-2 right-0 bg-[#a1a1a1] rounded-full p-1 border border-gray-200 shadow-sm">

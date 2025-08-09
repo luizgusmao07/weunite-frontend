@@ -11,3 +11,10 @@ export interface User {
 export interface GetUserByUsername {
   username: string;
 }
+
+export interface UpdateUser {
+  name?: string,
+  username?: string,
+  email?: string,
+  profileImg?: File,
+}

@@ -40,6 +40,7 @@ import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import { useEffect } from "react";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
+import { useInitials } from "@/hooks/useInitials";
 
 export function LeftSidebar() {
   const { state, setOpen } = useSidebar();
@@ -48,6 +49,7 @@ export function LeftSidebar() {
 
   const { logout } = useAuthStore();
   const { user } = useAuthStore();
+  const initials = useInitials(user?.name);
 
   const { setTheme, theme } = useTheme();
   const themeIcon = theme === "dark" ? Sun : Moon;
@@ -263,7 +265,7 @@ export function LeftSidebar() {
                         src={user?.profileImg}
                         alt="@shadcn"
                       />
-                      <AvatarFallback>CN</AvatarFallback>
+                      <AvatarFallback> {initials}</AvatarFallback>
                     </Avatar>
                     {state !== "collapsed" && <p>{user?.username}</p>}
                   </SidebarMenuButton>

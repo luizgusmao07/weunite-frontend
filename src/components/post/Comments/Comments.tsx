@@ -18,6 +18,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useCreateComment, useGetComments } from "@/state/useComments";
 import type { Comment as CommentType } from "@/@types/comment.types";
 import { useState } from "react";
+import { useInitials } from "@/hooks/useInitials";
 
 interface CommentsProps {
   isOpen?: boolean;
@@ -34,6 +35,7 @@ export default function Comments({
   const [commentText, setCommentText] = useState("");
 
   const { user } = useAuthStore();
+  const initials = useInitials(user?.name);
 
   const { commentDesktop } = useBreakpoints();
 
@@ -77,7 +79,7 @@ export default function Comments({
               <Avatar>
                 <AvatarImage src={user?.profileImg} />
                 <AvatarFallback>
-                  {user?.name.substring(0, 2).toUpperCase()}
+                  {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="w-full min-w-0">
@@ -142,7 +144,7 @@ export default function Comments({
               <Avatar>
                 <AvatarImage src={post.user.profileImg} />
                 <AvatarFallback>
-                  {post.user.name.substring(0, 2).toUpperCase()}
+                 {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col">

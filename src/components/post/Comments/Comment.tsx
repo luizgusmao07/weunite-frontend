@@ -41,12 +41,15 @@ import { getTimeAgo } from "@/hooks/useGetTimeAgo";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { AlertDialogFooter, AlertDialogHeader } from "../../ui/alert-dialog";
 import type { Comment } from "@/@types/comment.types";
+import { useInitials
 
+ } from "@/hooks/useInitials";
 const actions = [{ icon: Heart }, { icon: MessageCircle}, { icon: Repeat2 }];
 
 export default function Comment( { comment }: { comment: Comment} ) {
 
     const { user } = useAuthStore();
+    const initials = useInitials(comment.user.name);
 
     /* const [ isCommentsOpen, setIsCommentsOpen ] = useState(false); */
 
@@ -63,7 +66,7 @@ export default function Comment( { comment }: { comment: Comment} ) {
         <CardHeader className="flex flex-row items-center gap-4">
           <Avatar className="hover:cursor-pointer">
             <AvatarImage src={user?.profileImg} alt="profile image" />
-            <AvatarFallback>UN</AvatarFallback>
+            <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
 
           <div className="flex flex-col">

@@ -46,10 +46,16 @@ import { EditPost } from "../shared/EditPost";
 import { useDeletePost } from "@/state/usePosts";
 import { AlertDialogFooter, AlertDialogHeader } from "../ui/alert-dialog";
 import Comments from "./Comments/Comments";
+import { useInitials } from "@/hooks/useInitials";
+
+
 
 const actions = [{ icon: Heart }, { icon: MessageCircle}, { icon: Repeat2 }];
 
 export default function Post({ post }: { post: Post }) {
+
+  const initials = useInitials(post.user.name)
+
   const { user } = useAuthStore();
 
   const toggleLike = useToggleLike();
@@ -107,7 +113,7 @@ export default function Post({ post }: { post: Post }) {
         <CardHeader className="flex flex-row items-center gap-4">
           <Avatar className="hover:cursor-pointer">
             <AvatarImage src={user?.profileImg} alt="profile image" />
-            <AvatarFallback>UN</AvatarFallback>
+            <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
 
           <div className="flex flex-col">
