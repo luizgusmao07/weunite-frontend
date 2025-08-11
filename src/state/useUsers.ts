@@ -18,7 +18,6 @@ export const useUpdateProfile = () => {
 
   return useMutation({
     mutationFn: ({ data, username }: { data: UpdateUser; username: string }) => {
-      console.log("Dados a serem enviados:", data, "Username:", username);
       return updateUser(data, username);
     },
     onSuccess: (result) => {

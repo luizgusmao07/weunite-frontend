@@ -36,8 +36,6 @@ export const updateUser = async (data: UpdateUser, username: string) => {
   } catch (err) {
     const error = err as AxiosError<{ message: string }>;
 
-    console.log(error)
-
     return {
       success: false,
       data: null,
