@@ -7,11 +7,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -29,12 +27,18 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { data } from "react-router-dom";
 
-export default function EditProfile() {
+interface EditProfileProps {
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
+}
+
+export default function EditProfile({isOpen, onOpenChange}: EditProfileProps) {
   const { user } = useAuthStore();
   const [preview, setPreview] = useState<string | null>(null);
 
+  const editProfile = useUpdateProfile();
+  
   const form = useForm<UpdateProfileForm>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
@@ -58,12 +62,10 @@ export default function EditProfile() {
     });
   };
 
-  const updateProfileMutation = useUpdateProfile();
-
   async function onSubmit(values: UpdateProfileForm) {
     if (!user?.id) return;
 
-    const result = await updateProfileMutation.mutateAsync({
+    const result = await editProfile.mutateAsync({
       data: {
         name: values.name.trim(),
         username: values.username.trim(),
@@ -74,21 +76,16 @@ export default function EditProfile() {
       
     });
 
-    console.log(result)
-
     if (result.success) {
       form.reset({ ...values, media: null });
+
+      onOpenChange?.(false);
     }
   }
 
   return (
-    <>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Pencil className="h-4 w-4 text-black cursor-pointer rotate-90" />
-        </DialogTrigger>
-
-        <DialogContent className="sm:max-w-[425px]">
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[30em] md:max-w-[40em]">
           <DialogHeader>
             <DialogTitle>Editar Perfil</DialogTitle>
             <DialogDescription>
@@ -96,7 +93,6 @@ export default function EditProfile() {
             </DialogDescription>
           </DialogHeader>
 
-          {/* Form precisa estar DENTRO do DialogContent */}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="grid gap-4">
@@ -108,7 +104,7 @@ export default function EditProfile() {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <>
+                          <div>
                             <Input
                               id="avatar-upload"
                               type="file"
@@ -138,7 +134,7 @@ export default function EditProfile() {
                                 Alterar
                               </div>
                             </label>
-                          </>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -146,7 +142,6 @@ export default function EditProfile() {
                   />
                 </div>
 
-                {/* Nome */}
                 <FormField
                   control={form.control}
                   name="name"
@@ -161,7 +156,6 @@ export default function EditProfile() {
                   )}
                 />
 
-                {/* Username */}
                 <FormField
                   control={form.control}
                   name="username"
@@ -176,7 +170,6 @@ export default function EditProfile() {
                   )}
                 />
 
-                {/* Email */}
                 <FormField
                   control={form.control}
                   name="email"
@@ -192,8 +185,10 @@ export default function EditProfile() {
                 />
               </div>
 
-              <DialogFooter className="flex flex-row-reverse gap-2">
-                <Button type="submit">Salvar</Button>
+              <DialogFooter className="flex flex-row-reverse gap-2 mt-4">
+                <Button type="submit" disabled={editProfile.isPending}>
+                  {editProfile.isPending ? "Salvando..." : "Salvar"}
+                </Button>
                 <DialogClose asChild>
                   <Button variant="outline" type="button">Cancelar</Button>
                 </DialogClose>
@@ -202,6 +197,5 @@ export default function EditProfile() {
           </Form>
         </DialogContent>
       </Dialog>
-    </>
   );
 }

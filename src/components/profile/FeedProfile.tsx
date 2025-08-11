@@ -51,6 +51,7 @@ export default function FeedProfile() {
                     )}
                 </div>
             )}
+            
             {activeTab === "comentarios" && (
                 <div className="flex flex-col items-center justify-center">
                     {userComments.length > 0 ? (
