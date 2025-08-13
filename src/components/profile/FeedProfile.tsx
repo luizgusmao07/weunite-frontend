@@ -5,6 +5,7 @@ import type { Post as PostType } from "@/@types/post.types";
 import type { Comment as CommentType } from "@/@types/comment.types";
 import { useGetPosts } from "@/state/usePosts";
 import { useAuthStore } from "@/stores/useAuthStore";
+import AboutProfile from "./AboutProfile";
 
 export default function FeedProfile() {
     const { data } = useGetPosts();
@@ -32,11 +33,11 @@ export default function FeedProfile() {
                     <p className="">Comentários</p>
                 </div>
 
-                <div className={`w-full justify-center flex cursor-pointer py-2 ${activeTab === "caracteristicas" ? "border-b-2 border-primary" : ""
+                <div className={`w-full justify-center flex cursor-pointer py-2 ${activeTab === "Sobre" ? "border-b-2 border-primary" : ""
                     }`}
-                    onClick={() => setActiveTab("caracteristicas")}
+                    onClick={() => setActiveTab("Sobre")}
                 >
-                    <p className="">Caractéristicas</p>
+                    <p className="">Sobre</p>
                 </div>
             </div>
 
@@ -62,6 +63,11 @@ export default function FeedProfile() {
                     ) : (
                         <p className="text-gray-500 mt-8">Nenhum comentário encontrado</p>
                     )}
+                </div>
+            )}
+            {activeTab === "Sobre" && (
+                <div className="flex flex-col items-center justify-center mt-3">
+                    <AboutProfile />
                 </div>
             )}
 
