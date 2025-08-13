@@ -5,6 +5,9 @@ import { useBreakpoints } from "@/hooks/useBreakpoints";
 import EditProfile from "./EditProfile";
 import { useInitials } from "@/hooks/useInitials";
 import { useState } from "react";
+import Following from "./Following";
+import { set } from "react-hook-form";
+import Followers from "./Followers";
 
 export default function HeaderProfile() {
   const {} = useBreakpoints();
@@ -13,16 +16,26 @@ export default function HeaderProfile() {
   const initials = useInitials(user?.name);
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isFollowingOpen, setIsFollowingOpen] = useState(false);
+  const [isFollowersOpen, setIsFollowersOpen] = useState(false);
 
   const handleEditProfileOpen = () => {
     setIsEditProfileOpen(true);
   };
+  const handleFollowingOpen = () => {
+    setIsFollowingOpen(true);
+  };
+
+  const handleFollowersOpen = () => {
+      setIsFollowersOpen(true);
+  };
 
   return (
     <>
+      <EditProfile isOpen={isEditProfileOpen} onOpenChange={setIsEditProfileOpen} />
+      <Followers isOpen={isFollowersOpen} onOpenChange={setIsFollowersOpen} />
+      <Following isOpen={isFollowingOpen} onOpenChange={setIsFollowingOpen} />
 
-    <EditProfile isOpen={isEditProfileOpen} onOpenChange={setIsEditProfileOpen} />
-    
       <div className="">
         <div className="h-35 relative">
           <img className="h-full w-full" src="/BannerLinkedin.png" alt="" />
@@ -55,13 +68,13 @@ export default function HeaderProfile() {
           </div>
 
           <div className="flex w-full ml-5 mt-1 gap-10 text-primary text-sm justify-center ">
-            <div className="flex flex-col items-center gap-1">
+            <div className="flex flex-col items-center gap-1" onClick={handleFollowingOpen}>
               <p className="hover:cursor-pointer">Seguindo</p>
               <p className="hover:cursor-pointer">0</p>
             </div>
 
-            <div className="flex flex-col items-center gap-1">
-              <p className="hover:cursor-pointer">Seguidores</p>
+            <div className="flex flex-col items-center gap-1" onClick={handleFollowersOpen}>
+              <p className="hover:cursor-pointer" >Seguidores</p>
               <p className="hover:cursor-pointer">0</p>
             </div>
           </div>

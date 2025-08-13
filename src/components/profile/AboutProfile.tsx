@@ -5,11 +5,9 @@ import {
   MapPin,
   Weight
 } from "lucide-react";
-import {
+import {  
   Card,
   CardTitle,
-  CardAction,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
