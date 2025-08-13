@@ -5,8 +5,10 @@ import type { Post as PostType } from "@/@types/post.types";
 import type { Comment as CommentType } from "@/@types/comment.types";
 import { useGetPosts } from "@/state/usePosts";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useBreakpoints } from "@/hooks/useBreakpoints";
 
 export default function FeedProfile() {
+    const { isDesktop } = useBreakpoints();
     const { data } = useGetPosts();
     const { user } = useAuthStore();
     const [activeTab, setActiveTab] = useState("publicacoes");
@@ -14,8 +16,9 @@ export default function FeedProfile() {
 
     const userPosts = posts.filter((post: PostType) => post.user?.id === user?.id) || [];
     const userComments = data?.data?.filter((comment: CommentType) => comment.user?.id === user?.id  ) || [];
+    
     return (
-        <div>
+        <div className={`${isDesktop ? 'max-w-2xl mx-auto' : ''}`}>
             <div className="flex border-b border-primary justify-center">
 
                 <div className={`w-full justify-center flex cursor-pointer py-2 ${activeTab === "publicacoes" ? "border-b-2 border-primary" : ""
