@@ -5,21 +5,21 @@ import type { Post as PostType } from "@/@types/post.types";
 import type { Comment as CommentType } from "@/@types/comment.types";
 import { useGetPosts } from "@/state/usePosts";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useGetCommentsByUserId } from "@/state/useComments";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
+import { useGetCommentsByUserId } from "@/state/useComments";
 import AboutProfile from "./AboutProfile";
 
 export default function FeedProfile() {
   const { user } = useAuthStore();
   const { data } = useGetPosts();
+  const { isDesktop } = useBreakpoints();
+
   const { data: dataComments } = useGetCommentsByUserId(
     user?.id ? Number(user.id) : 0,
   );
   const [activeTab, setActiveTab] = useState("publicacoes");
   const posts = data?.data || [];
   const comments = dataComments?.data || [];
-
-  const { isDesktop } = useBreakpoints();
 
   const userPosts =
     posts.filter((post: PostType) => post.user?.id === user?.id) || [];

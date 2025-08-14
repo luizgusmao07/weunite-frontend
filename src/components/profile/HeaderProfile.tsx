@@ -77,7 +77,6 @@ export default function HeaderProfile() {
               </div>
             </div>
 
-            {/* seguidores desktop */}
             {isDesktop && (
               <div className="flex gap-15 text-primary text-sm mb-2">
                 <div className="flex flex-col items-center gap-1">
