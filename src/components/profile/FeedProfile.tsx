@@ -6,6 +6,7 @@ import type { Comment as CommentType } from "@/@types/comment.types";
 import { useGetPosts } from "@/state/usePosts";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useGetCommentsByUserId } from "@/state/useComments";
+import { useBreakpoints } from "@/hooks/useBreakpoints";
 import AboutProfile from "./AboutProfile";
 
 export default function FeedProfile() {
@@ -18,6 +19,8 @@ export default function FeedProfile() {
   const posts = data?.data || [];
   const comments = dataComments?.data || [];
 
+  const { isDesktop } = useBreakpoints();
+
   const userPosts =
     posts.filter((post: PostType) => post.user?.id === user?.id) || [];
   const userComments =
@@ -25,7 +28,7 @@ export default function FeedProfile() {
     [];
 
   return (
-    <div>
+    <div className={`${isDesktop ? "max-w-2xl mx-auto" : ""}`}>
       <div className="flex border-b border-primary justify-center">
         <div
           className={`w-full justify-center flex cursor-pointer py-2 ${
@@ -78,6 +81,7 @@ export default function FeedProfile() {
           )}
         </div>
       )}
+
       {activeTab === "Sobre" && (
         <div className="flex flex-col items-center justify-center mt-3">
           <AboutProfile />
