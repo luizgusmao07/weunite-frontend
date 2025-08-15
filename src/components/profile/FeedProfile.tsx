@@ -11,8 +11,9 @@ import AboutProfile from "./AboutProfile";
 
 export default function FeedProfile() {
   const { user } = useAuthStore();
-    const { isDesktop } = useBreakpoints();
   const { data } = useGetPosts();
+  const { isDesktop } = useBreakpoints();
+
   const { data: dataComments } = useGetCommentsByUserId(
     user?.id ? Number(user.id) : 0,
   );
@@ -26,9 +27,8 @@ export default function FeedProfile() {
     comments.filter((comment: CommentType) => comment.user?.id === user?.id) ||
     [];
 
-    
   return (
-    <div className={`${isDesktop ? 'max-w-2xl mx-auto' : ''}`}>
+    <div className={`${isDesktop ? "max-w-2xl mx-auto" : ""}`}>
       <div className="flex border-b border-primary justify-center">
         <div
           className={`w-full justify-center flex cursor-pointer py-2 ${
@@ -81,6 +81,7 @@ export default function FeedProfile() {
           )}
         </div>
       )}
+
       {activeTab === "Sobre" && (
         <div className="flex flex-col items-center justify-center mt-3">
           <AboutProfile />
