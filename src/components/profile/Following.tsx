@@ -1,6 +1,5 @@
-
 import {
-    Drawer,
+  Drawer,
   DrawerClose,
   DrawerContent,
   DrawerHeader,
@@ -8,6 +7,7 @@ import {
 } from "../ui/drawer";
 import { X as CloseIcon } from "lucide-react";
 import { Input } from "../ui/input";
+import CardFollowing from "./CardFollowing";
 
 interface FollowingProps {
   isOpen?: boolean;
@@ -27,7 +27,34 @@ export default function Following({ isOpen, onOpenChange }: FollowingProps) {
             <Input placeholder="Pesquisar..." />
           </div>
         </DrawerHeader>
-        
+        <div
+          className=" overflow-y-auto px-4"
+          style={{
+            scrollbarWidth: "thin",
+            scrollbarColor: "transparent transparent",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.scrollbarColor =
+              "rgba(0,0,0,0.3) transparent";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.scrollbarColor = "transparent transparent";
+          }}
+        >
+          <CardFollowing />
+          <CardFollowing />
+          <CardFollowing />
+          <CardFollowing />
+          <CardFollowing />
+          <CardFollowing />
+          <CardFollowing />
+          <CardFollowing />
+          <CardFollowing />
+          <CardFollowing />
+          <CardFollowing />
+          <CardFollowing />
+          <CardFollowing />
+        </div>
       </DrawerContent>
     </Drawer>
   );

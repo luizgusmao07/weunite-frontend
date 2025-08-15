@@ -3,7 +3,7 @@ import {
   RulerDimensionLine,
   Footprints,
   MapPin,
-  Weight
+  Weight,
 } from "lucide-react";
 import {  
   Card,
