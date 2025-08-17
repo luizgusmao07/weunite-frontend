@@ -8,24 +8,35 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
 import { useGetCommentsByUserId } from "@/state/useComments";
 import AboutProfile from "./AboutProfile";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
-export default function FeedProfile() {
+interface FeedProfileProps {
+  profileUsername?: string;
+}
+
+export default function FeedProfile({ profileUsername }: FeedProfileProps) {
   const { user } = useAuthStore();
+  const { data: profileUser } = useUserProfile(profileUsername);
+
+  const isOwnProfile = !profileUsername || profileUsername === user?.username;
+  const displayUser = isOwnProfile ? user : profileUser;
+
   const { data } = useGetPosts();
   const { isDesktop } = useBreakpoints();
 
   const { data: dataComments } = useGetCommentsByUserId(
-    user?.id ? Number(user.id) : 0,
+    user?.id ? Number(user.id) : 0
   );
   const [activeTab, setActiveTab] = useState("publicacoes");
   const posts = data?.data || [];
   const comments = dataComments?.data || [];
 
   const userPosts =
-    posts.filter((post: PostType) => post.user?.id === user?.id) || [];
+    posts.filter((post: PostType) => post.user?.id === displayUser?.id) || [];
   const userComments =
-    comments.filter((comment: CommentType) => comment.user?.id === user?.id) ||
-    [];
+    comments.filter(
+      (comment: CommentType) => comment.user?.id === displayUser?.id
+    ) || [];
 
   return (
     <div className={`${isDesktop ? "max-w-2xl mx-auto" : ""}`}>
