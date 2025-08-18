@@ -5,7 +5,6 @@ import type { Post as PostType } from "@/@types/post.types";
 import type { Comment as CommentType } from "@/@types/comment.types";
 import { useGetPosts } from "@/state/usePosts";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useBreakpoints } from "@/hooks/useBreakpoints";
 import { useGetCommentsByUserId } from "@/state/useComments";
 import AboutProfile from "./AboutProfile";
 import { useUserProfile } from "@/hooks/useUserProfile";
@@ -22,7 +21,6 @@ export default function FeedProfile({ profileUsername }: FeedProfileProps) {
   const displayUser = isOwnProfile ? user : profileUser;
 
   const { data } = useGetPosts();
-  const { isDesktop } = useBreakpoints();
 
   const { data: dataComments } = useGetCommentsByUserId(
     user?.id ? Number(user.id) : 0
