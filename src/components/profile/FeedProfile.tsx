@@ -39,7 +39,7 @@ export default function FeedProfile({ profileUsername }: FeedProfileProps) {
     ) || [];
 
   return (
-    <div className={`${isDesktop ? "max-w-2xl mx-auto" : ""}`}>
+    <div className="max-w-2xl xl:w-[48em] mx-auto">
       <div className="flex border-b border-primary justify-center">
         <div
           className={`w-full justify-center flex cursor-pointer py-2 ${

@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
+import { CardContent } from "../ui/card";
 import { useInitials } from "@/hooks/useInitials";
 import { useAuthStore } from "@/stores/useAuthStore";
 

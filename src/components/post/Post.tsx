@@ -121,7 +121,7 @@ export default function Post({ post }: { post: Post }) {
 
       <Card className="w-full max-w-[45em] bg-red shadow-none border-0 border-b rounded-none border-foreground/50">
         <CardHeader className="flex flex-row items-center gap-4">
-          <Avatar className="hover:cursor-pointer" onClick={handleProfileClick}>
+          <Avatar className="hover:cursor-pointer h-[2.8em] w-[2.8em] " onClick={handleProfileClick}>
             <AvatarImage src={post.user.profileImg} alt="profile image" />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>

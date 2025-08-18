@@ -15,7 +15,7 @@ import {
 
 export default function AboutProfile() {
   return (
-    <Card className="w-[28em]">
+    <Card className="w-[42.5em]">
       <CardHeader className="items-start">
         <CardTitle className="text-lg">Sobre</CardTitle>
         <CardDescription className="gap-2">

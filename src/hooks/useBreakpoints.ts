@@ -8,7 +8,7 @@ export function useBreakpoints() {
     const isDesktop = useMediaQuery("(min-width: 1290px)");
 
     const commentDesktop = useMediaQuery("(min-width: 1100px)");
-    const maxLeftSideBar = useMediaQuery("(max-width: 890px)");
+    const maxLeftSideBar = useMediaQuery("(max-width: 891px)");
 
     const headerProfileDesktop = useMediaQuery("(min-width: 1100px)");
 
