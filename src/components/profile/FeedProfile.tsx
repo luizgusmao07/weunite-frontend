@@ -23,7 +23,7 @@ export default function FeedProfile({ profileUsername }: FeedProfileProps) {
   const { data } = useGetPosts();
 
   const { data: dataComments } = useGetCommentsByUserId(
-    user?.id ? Number(user.id) : 0
+    displayUser?.id ? Number(displayUser.id) : 0,
   );
   const [activeTab, setActiveTab] = useState("publicacoes");
   const posts = data?.data || [];
@@ -33,7 +33,7 @@ export default function FeedProfile({ profileUsername }: FeedProfileProps) {
     posts.filter((post: PostType) => post.user?.id === displayUser?.id) || [];
   const userComments =
     comments.filter(
-      (comment: CommentType) => comment.user?.id === displayUser?.id
+      (comment: CommentType) => comment.user?.id === displayUser?.id,
     ) || [];
 
   return (
