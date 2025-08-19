@@ -20,17 +20,8 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
   const { user } = useAuthStore();
   const { data: profileUser } = useUserProfile(profileUsername);
 
-  console.log("🔍 Debug:", {
-    profileUsername,
-    authUser: user?.username,
-    profileUser,
-  });
-
-  
-
   const isOwnProfile = !profileUsername || profileUsername === user?.username;
   const displayUser = isOwnProfile ? user : profileUser;
-  console.log("👤 Display User:", displayUser);
 
   const initials = useInitials(displayUser?.name);
 
@@ -49,13 +40,12 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
     setIsFollowersOpen(true);
   };
 
-  const {isDesktop} = useBreakpoints();
+  const { isDesktop } = useBreakpoints();
 
-  const isTablet = useMediaQuery('(min-width: 891px) and (max-width: 1290px)');
-  
+  const isTablet = useMediaQuery("(min-width: 891px) and (max-width: 1290px)");
 
   if (isTablet) {
-    return(
+    return (
       <>
         {isOwnProfile && (
           <EditProfile
@@ -68,8 +58,8 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
 
         <div className="max-w-2xl w-[48em] mx-auto px-4">
           <div className="h-36 relative">
-            <img 
-              className="object-cover rounded-b-sm w-full h-full" 
+            <img
+              className="object-cover rounded-b-sm w-full h-full"
               src="/BannerLinkedin.png"
             />
             {isOwnProfile && (
@@ -210,10 +200,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
 
               <div className="ml-auto mr-4 mt-2 gap-3 flex">
                 {isOwnProfile ? (
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2"
-                  >
+                  <Button variant="outline" className="flex items-center gap-2">
                     Configurações
                   </Button>
                 ) : (
@@ -341,4 +328,3 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
     </>
   );
 }
-
