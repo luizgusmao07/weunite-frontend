@@ -31,7 +31,6 @@ export default function Comments({
   onOpenChange,
   post,
 }: CommentsProps) {
-
   const [commentText, setCommentText] = useState("");
 
   const { user } = useAuthStore();
@@ -42,27 +41,29 @@ export default function Comments({
   const { data } = useGetComments(Number(post.id));
   const comments = data?.data;
 
-  const { mutate: createComment } = useCreateComment();
-  
+  const { mutate: createCommentMutation } = useCreateComment();
+
   const max_chars = 500;
 
-  const handleCreateComment = () => {
+  function handleCreateComment() {
     if (!user || !commentText.trim()) return;
 
-    createComment (
+    createCommentMutation(
       {
-        data: { text: commentText, image: null},
+        data: { text: commentText, image: null },
         userId: Number(user.id),
         postId: Number(post.id),
       },
       {
-        onSuccess: () => {
-          setCommentText("");
+        onSuccess: (result: any) => {
+          if (result.success) {
+            setCommentText("");
+          }
         },
-      }
+      },
     );
-  };
-  
+  }
+
   if (!commentDesktop) {
     return (
       <Drawer open={isOpen} onOpenChange={onOpenChange}>
@@ -80,11 +81,9 @@ export default function Comments({
             <div className="w-full max-w-[45em] border-y border-foreground/30 px-4 py-3 flex gap-4">
               <Avatar>
                 <AvatarImage src={user?.profileImg} />
-                <AvatarFallback>
-                  {initials}
-                </AvatarFallback>
+                <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
-              
+
               <div className="w-full max-w-full min-w-0">
                 <p className="text-sm text-muted-foreground mb-1">
                   Respondendo a{" "}
@@ -99,30 +98,31 @@ export default function Comments({
                   onChange={(e) => setCommentText(e.target.value)}
                 />
 
-                 <div className="flex justify-end items-center gap-2 mt-3">
+                <div className="flex justify-end items-center gap-2 mt-3">
+                  <span
+                    className={`text-xs font-medium text-muted-foreground ${commentText.length > max_chars ? "text-red-500" : ""}`}
+                  >
+                    {commentText.length}/{max_chars}
+                  </span>
 
-                    <span
-                      className={`text-xs font-medium text-muted-foreground ${commentText.length > max_chars ? "text-red-500" : ""}`}
-                    >
-                      {commentText.length}/{max_chars}
-                    </span>
-
-                    <Button
-                      size="sm"
-                      className="rounded-full px-5 hover:cursor-pointer"
-                      onClick={handleCreateComment}
-                      disabled={!commentText.trim() || commentText.length > max_chars}
-                    >
-                      Publicar
-                    </Button>
-                  </div>
+                  <Button
+                    size="sm"
+                    className="rounded-full px-5 hover:cursor-pointer"
+                    onClick={handleCreateComment}
+                    disabled={
+                      !commentText.trim() || commentText.length > max_chars
+                    }
+                  >
+                    Publicar
+                  </Button>
+                </div>
               </div>
             </div>
 
             <div className="w-full max-w-[45em] p-2">
-              {comments?.map((comment: CommentType,) => (
-                  <Comment key={comment.id} comment={comment} />
-                ))}
+              {comments?.map((comment: CommentType) => (
+                <Comment key={comment.id} comment={comment} />
+              ))}
             </div>
           </div>
         </DrawerContent>
@@ -154,9 +154,7 @@ export default function Comments({
             <div className="p-4 border-b flex gap-2 ">
               <Avatar>
                 <AvatarImage src={post.user.profileImg} />
-                <AvatarFallback>
-                 {initials}
-                </AvatarFallback>
+                <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
                 <span className="font-semibold">{post.user.username}</span>
@@ -166,7 +164,7 @@ export default function Comments({
 
             <div className="flex-1 max-h-[68vh] overflow-y-auto -mt-5 p-4 custom-scrollbar">
               <div className="space-y-4">
-                {comments?.map((comment: CommentType,) => (
+                {comments?.map((comment: CommentType) => (
                   <Comment key={comment.id} comment={comment} />
                 ))}
               </div>
@@ -190,7 +188,6 @@ export default function Comments({
                   />
 
                   <div className="flex justify-end items-center gap-2 mt-3">
-
                     <span
                       className={`text-xs font-medium text-muted-foreground ${commentText.length > max_chars ? "text-red-500" : ""}`}
                     >
@@ -201,12 +198,13 @@ export default function Comments({
                       size="sm"
                       className="rounded-full px-5 hover:cursor-pointer"
                       onClick={handleCreateComment}
-                      disabled={!commentText.trim() || commentText.length > max_chars}
+                      disabled={
+                        !commentText.trim() || commentText.length > max_chars
+                      }
                     >
                       Publicar
                     </Button>
                   </div>
-
                 </div>
               </div>
             </div>

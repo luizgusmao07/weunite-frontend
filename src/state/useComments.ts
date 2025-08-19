@@ -10,9 +10,8 @@ import { toast } from "sonner";
 export const commentKeys = {
   all: ["comments"] as const,
   lists: () => [...commentKeys.all, "list"] as const,
-  list: (filters: string) => [...commentKeys.lists(), { filters }] as const,
-  details: () => [...commentKeys.all, "detail"] as const,
-  detail: (id: string) => [...commentKeys.details(), id] as const,
+  listByPost: (postId: number) => [...commentKeys.lists(), { postId }] as const,
+  listByUser: (userId: number) => [...commentKeys.lists(), { userId }] as const,
 };
 
 export const useCreateComment = () => {
@@ -28,12 +27,16 @@ export const useCreateComment = () => {
       userId: number;
       postId: number;
     }) => createCommentRequest(data, userId, postId),
-    onSuccess: (result, { postId }) => {
+    onSuccess: (result, { postId, userId }) => {
       if (result.success) {
         toast.success(result.message || "Comentário criado com sucesso!");
 
         queryClient.invalidateQueries({
-          queryKey: [commentKeys.lists(), postId],
+          queryKey: commentKeys.listByPost(postId),
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: commentKeys.listByUser(userId),
         });
       } else {
         toast.error(result.message || "Erro ao criar comentário.");
@@ -48,7 +51,7 @@ export const useCreateComment = () => {
 
 export const useGetComments = (postId: number) => {
   return useQuery({
-    queryKey: [commentKeys.lists(), postId],
+    queryKey: commentKeys.listByPost(postId),
     queryFn: () => getCommentsPostRequest(postId),
     staleTime: 5 * 60 * 1000,
     enabled: !!postId,
@@ -56,7 +59,7 @@ export const useGetComments = (postId: number) => {
 };
 export const useGetCommentsByUserId = (userId: number) => {
   return useQuery({
-    queryKey: [commentKeys.lists(), userId],
+    queryKey: commentKeys.listByUser(userId),
     queryFn: () => getCommentsUserId(userId),
     staleTime: 5 * 60 * 1000,
     enabled: !!userId,
