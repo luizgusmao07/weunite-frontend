@@ -18,3 +18,4 @@ export interface UpdateUser {
   email?: string,
   profileImg?: File,
 }
+
