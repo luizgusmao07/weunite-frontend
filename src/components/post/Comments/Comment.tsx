@@ -42,132 +42,160 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { AlertDialogFooter, AlertDialogHeader } from "../../ui/alert-dialog";
 import type { Comment } from "@/@types/comment.types";
 import { useInitials } from "@/hooks/useInitials";
+import { EditComment } from "@/components/shared/EditComment";
+import { useState } from "react";
+import { useDeleteComment } from "@/state/useComments";
 const actions = [{ icon: Heart }, { icon: MessageCircle }, { icon: Repeat2 }];
 
 export default function Comment({ comment }: { comment: Comment }) {
   const { user } = useAuthStore();
   const initials = useInitials(comment.user.name);
 
-  /* const [ isCommentsOpen, setIsCommentsOpen ] = useState(false); */
+  const [isEditCommentOpen, setIsEditCommentOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const deleteComment = useDeleteComment();
 
   /* const isLiked = comment.likes.some((like) => like.user.id === user?.id);
    */
   const isOwner = comment.user.id === user?.id;
 
-  /* const handleCommentsOpen = () => {
-        setIsCommentsOpen(true);
-    } */
+  const handleEditCommentOpen = () => {
+    setIsEditCommentOpen(true);
+  };
+
+  const handleDelete = () => {
+    if (!user?.id) return;
+
+    deleteComment.mutate({
+      userId: Number(user.id),
+      commentId: Number(comment.id),
+      postId: Number(comment.post.id),
+    });
+
+    setIsDeleteDialogOpen(false);
+  };
 
   return (
-    <Card className="w-full max-w-[45em] bg-red shadow-none border-0 border-b rounded-none border-foreground/30">
-      <CardHeader className="flex flex-row items-center gap-2 mb-[0.5em]">
-        <Avatar className="hover:cursor-pointer h-[2.8em] w-[2.8em]">
-          <AvatarImage src={user?.profileImg} alt="profile image" />
-          <AvatarFallback>{initials}</AvatarFallback>
-        </Avatar>
+    <>
+      <EditComment
+        open={isEditCommentOpen}
+        onOpenChange={setIsEditCommentOpen}
+        comment={comment}
+      />
 
-        <div className="flex flex-col">
-          <CardTitle className="text-base font-medium hover:cursor-pointer">
-            {comment.user.username}
-          </CardTitle>
+      <Card className="w-full max-w-[45em] bg-red shadow-none border-0 border-b rounded-none border-foreground/30">
+        <CardHeader className="flex flex-row items-center gap-2 mb-[0.5em]">
+          <Avatar className="hover:cursor-pointer h-[2.8em] w-[2.8em]">
+            <AvatarImage src={user?.profileImg} alt="profile image" />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
 
-          <CardDescription className="text-xs">
-            Publicado há {getTimeAgo(comment.createdAt)}
-          </CardDescription>
-        </div>
+          <div className="flex flex-col">
+            <CardTitle className="text-base font-medium hover:cursor-pointer">
+              {comment.user.username}
+            </CardTitle>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <EllipsisVertical className="ml-auto h-5 w-5 text-muted-foreground cursor-pointer hover:text-primary transition-colors" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            {isOwner ? (
-              <>
-                <DropdownMenuItem /* onClick={handleEditCommentOpen} função editar comentário  */
-                  className=" hover:cursor-pointer"
-                >
-                  <Edit className="mr-2 h-4 w-4" />
-                  Editar
-                </DropdownMenuItem>
+            <CardDescription className="text-xs">
+              Publicado há {getTimeAgo(comment.createdAt)}
+            </CardDescription>
+          </div>
 
-                <AlertDialog /*  open={isDeleteDialogOpen}  onOpenChange={setIsDeleteDialogOpen}  */
-                >
-                  <AlertDialogTrigger asChild>
-                    <DropdownMenuItem
-                      className="hover:cursor-pointer"
-                      /* onSelect={(e) => {
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <EllipsisVertical className="ml-auto h-5 w-5 text-muted-foreground cursor-pointer hover:text-primary transition-colors" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {isOwner ? (
+                <>
+                  <DropdownMenuItem
+                    onClick={handleEditCommentOpen}
+                    className=" hover:cursor-pointer"
+                  >
+                    <Edit className="mr-2 h-4 w-4" />
+                    Editar
+                  </DropdownMenuItem>
+
+                  <AlertDialog
+                    open={isDeleteDialogOpen}
+                    onOpenChange={setIsDeleteDialogOpen}
+                  >
+                    <AlertDialogTrigger asChild>
+                      <DropdownMenuItem
+                        className="hover:cursor-pointer"
+                        onSelect={(e) => {
                           e.preventDefault();
-                            setIsDeleteDialogOpen(true) ;
-                          }} */
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Excluir
-                    </DropdownMenuItem>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Esta ação não pode ser desfeita. O post será
-                        permanentemente removido da plataforma.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel className="hover:cursor-pointer">
-                        Cancelar
-                      </AlertDialogCancel>
-                      <AlertDialogAction
-                        /* onClick={handleDelete}  */
-                        className="bg-red-600 hover:bg-red-700 text-zinc-100 hover:cursor-pointer"
-                        /* disabled={deletePost.isPending}  */
+                          setIsDeleteDialogOpen(true);
+                        }}
                       >
-                        {/* { {deletePost.isPending ? "Deletando..." : "Excluir"} } */}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Excluir
+                      </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Esta ação não pode ser desfeita. O post será
+                          permanentemente removido da plataforma.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="hover:cursor-pointer">
+                          Cancelar
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleDelete}
+                          className="bg-red-600 hover:bg-red-700 text-zinc-100 hover:cursor-pointer"
+                          disabled={deleteComment.isPending}
+                        >
+                          {deleteComment.isPending ? "Deletando..." : "Excluir"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
 
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className=" hover:cursor-pointer">
-                  <Share className="mr-2 h-4 w-4" />
-                  Compartilhar
-                </DropdownMenuItem>
-              </>
-            ) : (
-              <>
-                <DropdownMenuItem className="hover:cursor-pointer">
-                  <Share className="mr-2 h-4 w-4" />
-                  Compartilhar
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600 hover:cursor-pointer">
-                  <Flag className="mr-2 h-4 w-4" />
-                  Denunciar
-                </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </CardHeader>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className=" hover:cursor-pointer">
+                    <Share className="mr-2 h-4 w-4" />
+                    Compartilhar
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <>
+                  <DropdownMenuItem className="hover:cursor-pointer">
+                    <Share className="mr-2 h-4 w-4" />
+                    Compartilhar
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-red-600 hover:cursor-pointer">
+                    <Flag className="mr-2 h-4 w-4" />
+                    Denunciar
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </CardHeader>
 
-      <CardContent className="mt-[-18px]">
-        <p className="">{comment.text}</p>
-      </CardContent>
+        <CardContent className="mt-[-18px]">
+          <p className="">{comment.text}</p>
+        </CardContent>
 
-      <CardFooter className="flex flex-col mt-[-20px]">
-        <div className="flex justify-between w-full mb-3">
-          <span className="text-sm text-muted-foreground">
-            {/* comment.likes.length  || */ 0} curtidas •{" "}
-            {comment.comments.length || 0} comentários
-          </span>
-        </div>
+        <CardFooter className="flex flex-col mt-[-20px]">
+          <div className="flex justify-between w-full mb-3">
+            <span className="text-sm text-muted-foreground">
+              {/* comment.likes.length  || */ 0} curtidas •{" "}
+              {comment.comments.length || 0} comentários
+            </span>
+          </div>
 
-        <div className="flex w-full justify-between">
-          <CardAction className="flex items-center gap-3 hover:cursor-pointer">
-            {actions.map((action, index) => (
-              <div
-                key={index}
-                /* 
+          <div className="flex w-full justify-between">
+            <CardAction className="flex items-center gap-3 hover:cursor-pointer">
+              {actions.map((action, index) => (
+                <div
+                  key={index}
+                  /* 
                       onClick={(e) => {
                       e.preventDefault();
                         if (action.icon === Heart) {
@@ -176,25 +204,26 @@ export default function Comment({ comment }: { comment: Comment }) {
                         handleCommentsOpen();
                       } 
                     }}*/
-              >
-                <action.icon
-                  className={`h-5 w-5 transition-colors  ${
-                    index === 0 /*  && isLiked  */
-                      ? "text-red-500 fill-red-500"
-                      : "text-muted-foreground"
-                  }`}
-                />
-              </div>
-            ))}
-          </CardAction>
+                >
+                  <action.icon
+                    className={`h-5 w-5 transition-colors  ${
+                      index === 0 /*  && isLiked  */
+                        ? "text-red-500 fill-red-500"
+                        : "text-muted-foreground"
+                    }`}
+                  />
+                </div>
+              ))}
+            </CardAction>
 
-          <CardAction className="flex items-right gap-2 hover:cursor-pointer">
-            <div>
-              <Bookmark className="h-5 w-5 text-muted-foreground varient-ghost" />
-            </div>
-          </CardAction>
-        </div>
-      </CardFooter>
-    </Card>
+            <CardAction className="flex items-right gap-2 hover:cursor-pointer">
+              <div>
+                <Bookmark className="h-5 w-5 text-muted-foreground varient-ghost" />
+              </div>
+            </CardAction>
+          </div>
+        </CardFooter>
+      </Card>
+    </>
   );
 }
