@@ -10,6 +10,8 @@ export const profileKeys = {
   all: ["profiles"] as const,
   lists: () => [...profileKeys.all, "list"] as const,
   listByUser: (userId: number) => [...profileKeys.lists(), { userId }] as const,
+  listByPostId: (postId: number) =>
+    [...profileKeys.lists(), { postId }] as const,
   detailByUsername: (username: String) =>
     [...profileKeys.all, "detail", username] as const,
 };
@@ -46,6 +48,8 @@ export const useUpdateProfile = () => {
         });
         queryClient.invalidateQueries({ queryKey: postKeys.lists() });
         queryClient.invalidateQueries({ queryKey: commentKeys.lists() });
+
+        console.log("=== QUERIES INVALIDADAS ===");
       } else {
         toast.error(result?.error || "Erro ao atualizar perfil");
       }
