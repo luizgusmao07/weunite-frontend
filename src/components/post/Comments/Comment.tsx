@@ -60,8 +60,8 @@ export default function Comment({ comment }: { comment: Comment }) {
 
   return (
     <Card className="w-full max-w-[45em] bg-red shadow-none border-0 border-b rounded-none border-foreground/30">
-      <CardHeader className="flex flex-row items-center gap-4">
-        <Avatar className="hover:cursor-pointer">
+      <CardHeader className="flex flex-row items-center gap-2 mb-[0.5em]">
+        <Avatar className="hover:cursor-pointer h-[2.8em] w-[2.8em]">
           <AvatarImage src={user?.profileImg} alt="profile image" />
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
