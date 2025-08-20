@@ -11,12 +11,11 @@ export const updateUser = async (data: UpdateUser, username: string) => {
         JSON.stringify({
           name: data.name,
           username: data.username,
-          email: data.email,
         }),
       ],
       {
         type: "application/json",
-      }
+      },
     );
 
     formData.append("user", postBlob);

@@ -1,17 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { CreateComment } from "@/@types/comment.types";
+import type { CreateComment, UpdateComment } from "@/@types/comment.types";
 import {
   createCommentRequest,
+  deleteCommentRequest,
   getCommentsPostRequest,
   getCommentsUserId,
+  updateCommentRequest,
 } from "@/api/services/commentService";
 import { toast } from "sonner";
 
 export const commentKeys = {
   all: ["comments"] as const,
   lists: () => [...commentKeys.all, "list"] as const,
-  listByPost: (postId: number) => [...commentKeys.lists(), { postId }] as const,
-  listByUser: (userId: number) => [...commentKeys.lists(), { userId }] as const,
+  listByPost: (postId: number) =>
+    [...commentKeys.lists(), "post", postId] as const,
+  listByUser: (userId: number) =>
+    [...commentKeys.lists(), "user", userId] as const,
 };
 
 export const useCreateComment = () => {
@@ -49,7 +53,45 @@ export const useCreateComment = () => {
   });
 };
 
+export const useUpdateComments = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      data,
+      userId,
+      commentId,
+    }: {
+      data: UpdateComment;
+      userId: number;
+      commentId: number;
+      postId: number;
+    }) => updateCommentRequest(data, userId, commentId),
+    onSuccess: (result, { userId, postId }) => {
+      if (result.success) {
+        toast.success(result.message || "Comentário atualizado com sucesso!");
+
+        queryClient.invalidateQueries({
+          queryKey: commentKeys.listByPost(postId),
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: commentKeys.listByUser(userId),
+        });
+      } else {
+        toast.error(result.message || "Erro ao atualizar comentário");
+      }
+    },
+    onError: () => {
+      toast.error("Erro inesperado ao atualizar postagem");
+    },
+  });
+};
+
 export const useGetComments = (postId: number) => {
+  console.log("useGetComments chamado com postId:", postId);
+  console.log("Chave gerada:", commentKeys.listByPost(postId));
+
   return useQuery({
     queryKey: commentKeys.listByPost(postId),
     queryFn: () => getCommentsPostRequest(postId),
@@ -63,5 +105,38 @@ export const useGetCommentsByUserId = (userId: number) => {
     queryFn: () => getCommentsUserId(userId),
     staleTime: 5 * 60 * 1000,
     enabled: !!userId,
+  });
+};
+
+export const useDeleteComment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      userId,
+      commentId,
+    }: {
+      userId: number;
+      commentId: number;
+      postId: number;
+    }) => deleteCommentRequest(userId, commentId),
+    onSuccess: (result, { postId, userId }) => {
+      if (result.success) {
+        toast.success(result.message || "Comentário deletado com sucesso!");
+
+        queryClient.invalidateQueries({
+          queryKey: commentKeys.listByPost(postId),
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: commentKeys.listByUser(userId),
+        });
+      } else {
+        toast.error(result.message || "Erro ao deletar comentário");
+      }
+    },
+    onError: () => {
+      toast.error("Erro inesperado ao deletar comentário");
+    },
   });
 };

@@ -3,7 +3,6 @@ import { z } from "zod";
 export const updateProfileSchema = z.object({
   name: z.string().min(2, "Nome muito curto").max(100),
   username: z.string().min(3, "Mín 3 caracteres").max(30),
-  email: z.string().email("E-mail inválido"),
   media: z.instanceof(File).optional().nullable(),
 });
 
