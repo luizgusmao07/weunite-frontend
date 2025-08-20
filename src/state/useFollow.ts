@@ -29,14 +29,17 @@ export const useFollowAndUnfollow = () => {
       followerId: number;
       followedId: number;
     }) => followAndUnfollowRequest({ followerId, followedId }),
-    onSuccess: (result, { followedId }) => {
+    onSuccess: (result, { followedId,  followerId }) => {
       if (result.success) {
         toast.success(result.message);
         queryCliente.invalidateQueries({
           queryKey: followKeys.followers(followedId),
         });
         queryCliente.invalidateQueries({
-          queryKey: followKeys.following(followedId),
+          queryKey: followKeys.following(followerId),
+        });
+        queryCliente.invalidateQueries({
+          queryKey: followKeys.detail(followerId, followedId),
         });
       } else {
         toast.error(result.error);
@@ -68,6 +71,6 @@ export const useGetFollow = (followerId: number, followedId: number) => {
   return useQuery({
     queryKey: followKeys.detail(followerId, followedId),
     queryFn: () => getFollowRequest({ followerId, followedId }),
-    enabled: !!followerId && !!followedId,
+    enabled: !isNaN(followerId) && !isNaN(followedId),
   });
 };

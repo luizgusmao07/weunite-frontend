@@ -11,6 +11,7 @@ import { Button } from "../ui/button";
 import { Send } from "lucide-react";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useFollowAction } from "@/hooks/useFollowAction";
 
 interface HeaderProfileProps {
   profileUsername?: string;
@@ -22,6 +23,23 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
 
   const isOwnProfile = !profileUsername || profileUsername === user?.username;
   const displayUser = isOwnProfile ? user : profileUser;
+
+  const {
+    isFollowing,
+    handleFollow,
+    isLoading: isFollowLoading,
+  } = useFollowAction(profileUsername);
+
+  const renderFollowButton = () => (
+    <Button
+      variant="outline"
+      onClick={handleFollow}
+      className="px-3 py-2 text-sm"
+      disabled={isFollowLoading}
+    >
+      {isFollowing ? "Deixar de seguir" : "Seguir"}
+    </Button>
+  );
 
   const initials = useInitials(displayUser?.name);
 
@@ -107,9 +125,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
                   </Button>
                 ) : (
                   <div className="flex gap-2">
-                    <Button variant="outline" className="px-3 py-2 text-sm">
-                      Seguir
-                    </Button>
+                    {renderFollowButton()}
                     <Button
                       variant="outline"
                       className="flex items-center gap-2 px-3 py-2 text-sm"
@@ -205,7 +221,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
                   </Button>
                 ) : (
                   <div className="flex gap-3">
-                    <Button variant="outline">Seguir</Button>
+                    {renderFollowButton()}
                     <Button
                       variant="outline"
                       className="flex items-center gap-2"
@@ -296,7 +312,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
                 </Button>
               ) : (
                 <div className="flex gap-3">
-                  <Button variant="outline">Seguir</Button>
+                  {renderFollowButton()}
                   <Button variant="outline" className="flex items-center gap-2">
                     <Send className="h-4 w-4" />
                     Conversar
