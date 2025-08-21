@@ -2,7 +2,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { ImageUp, Pencil } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
 import EditProfile from "./EditProfile";
-import { useInitials } from "@/hooks/useInitials";
 import { useState } from "react";
 import Following from "./Following";
 import Followers from "./Followers";
@@ -12,6 +11,7 @@ import { Send } from "lucide-react";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useFollowAction } from "@/hooks/useFollowAction";
+import { getInitials } from "@/utils/getInitials";
 
 interface HeaderProfileProps {
   profileUsername?: string;
@@ -41,7 +41,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
     </Button>
   );
 
-  const initials = useInitials(displayUser?.name);
+  const initials = getInitials(displayUser?.name);
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isFollowingOpen, setIsFollowingOpen] = useState(false);

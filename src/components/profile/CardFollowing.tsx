@@ -1,12 +1,12 @@
+import { getInitials } from "@/utils/getInitials";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { CardContent } from "../ui/card";
-import { useInitials } from "@/hooks/useInitials";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function CardFollowing() {
   const { user } = useAuthStore();
-  const initials = useInitials(user?.name);
+  const initials = getInitials(user?.name);
 
   return (
     <CardContent className="flex mt-5">

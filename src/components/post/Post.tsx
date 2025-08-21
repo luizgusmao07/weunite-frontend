@@ -46,13 +46,13 @@ import { EditPost } from "../shared/EditPost";
 import { useDeletePost } from "@/state/usePosts";
 import { AlertDialogFooter, AlertDialogHeader } from "../ui/alert-dialog";
 import Comments from "./Comments/Comments";
-import { useInitials } from "@/hooks/useInitials";
+import { getInitials } from "@/utils/getInitials";
 import { useNavigate } from "react-router-dom";
 
 const actions = [{ icon: Heart }, { icon: MessageCircle }, { icon: Repeat2 }];
 
 export default function Post({ post }: { post: Post }) {
-  const initials = useInitials(post.user.name);
+  const initials = getInitials(post.user.name);
 
   const { user } = useAuthStore();
 

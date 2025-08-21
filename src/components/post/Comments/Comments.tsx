@@ -18,7 +18,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useCreateComment, useGetComments } from "@/state/useComments";
 import type { Comment as CommentType } from "@/@types/comment.types";
 import { useState } from "react";
-import { useInitials } from "@/hooks/useInitials";
+import { getInitials } from "@/utils/getInitials";
 
 interface CommentsProps {
   isOpen?: boolean;
@@ -34,7 +34,7 @@ export default function Comments({
   const [commentText, setCommentText] = useState("");
 
   const { user } = useAuthStore();
-  const initials = useInitials(user?.name);
+  const initials = getInitials(user?.name);
 
   const { commentDesktop } = useBreakpoints();
 

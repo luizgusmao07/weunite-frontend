@@ -41,15 +41,15 @@ import { getTimeAgo } from "@/hooks/useGetTimeAgo";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { AlertDialogFooter, AlertDialogHeader } from "../../ui/alert-dialog";
 import type { Comment } from "@/@types/comment.types";
-import { useInitials } from "@/hooks/useInitials";
 import { EditComment } from "@/components/shared/EditComment";
 import { useState } from "react";
 import { useDeleteComment } from "@/state/useComments";
+import { getInitials } from "@/utils/getInitials";
 const actions = [{ icon: Heart }, { icon: MessageCircle }, { icon: Repeat2 }];
 
 export default function Comment({ comment }: { comment: Comment }) {
   const { user } = useAuthStore();
-  const initials = useInitials(comment.user.name);
+  const initials = getInitials(comment.user.name);
 
   const [isEditCommentOpen, setIsEditCommentOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);

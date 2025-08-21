@@ -40,7 +40,7 @@ import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import { useEffect } from "react";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
-import { useInitials } from "@/hooks/useInitials";
+import { getInitials } from "@/utils/getInitials";
 
 export function LeftSidebar() {
   const { state, setOpen } = useSidebar();
@@ -49,7 +49,7 @@ export function LeftSidebar() {
 
   const { logout } = useAuthStore();
   const { user } = useAuthStore();
-  const initials = useInitials(user?.name);
+  const initials = getInitials(user?.name);
 
   const { setTheme, theme } = useTheme();
   const themeIcon = theme === "dark" ? Sun : Moon;
