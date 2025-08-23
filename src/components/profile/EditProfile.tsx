@@ -72,6 +72,7 @@ export default function EditProfile({
         name: values.name.trim(),
         username: values.username.trim(),
         profileImg: values?.media || undefined,
+        bannerImg: values?.media || undefined,
       },
       username: user.username,
     });
@@ -96,7 +97,6 @@ export default function EditProfile({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid gap-4">
-              {/* Upload do Avatar */}
               <div className="grid gap-3 justify-center">
                 <FormField
                   control={form.control}

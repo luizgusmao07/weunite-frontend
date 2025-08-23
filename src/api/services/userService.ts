@@ -11,6 +11,7 @@ export const updateUser = async (data: UpdateUser, username: string) => {
         JSON.stringify({
           name: data.name,
           username: data.username,
+          email: data.email,
         }),
       ],
       {
@@ -21,7 +22,11 @@ export const updateUser = async (data: UpdateUser, username: string) => {
     formData.append("user", postBlob);
 
     if (data.profileImg) {
-      formData.append("image", data.profileImg);
+      formData.append("profileImage", data.profileImg);
+    }
+
+    if (data.bannerImg) {
+      formData.append("bannerImage", data.bannerImg);
     }
 
     const response = await axios.put(`/user/update/${username}`, formData);

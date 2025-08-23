@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { ImageUp, Pencil } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
 import EditProfile from "./EditProfile";
+import EditBanner from "./EditBanner";
 import { useState } from "react";
 import Following from "./Following";
 import Followers from "./Followers";
@@ -46,6 +47,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isFollowingOpen, setIsFollowingOpen] = useState(false);
   const [isFollowersOpen, setIsFollowersOpen] = useState(false);
+  const [isEditBannerOpen, setIsEditBannerOpen] = useState(false);
 
   const handleEditProfileOpen = () => {
     setIsEditProfileOpen(true);
@@ -58,9 +60,136 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
     setIsFollowersOpen(true);
   };
 
+  const handleBannerEdit = () => {
+    setIsEditBannerOpen(true);
+  };
+
   const { isDesktop } = useBreakpoints();
 
   const isTablet = useMediaQuery("(min-width: 891px) and (max-width: 1290px)");
+
+  if (isDesktop) {
+    return (
+      <>
+        {isOwnProfile && (
+          <EditProfile
+            isOpen={isEditProfileOpen}
+            onOpenChange={setIsEditProfileOpen}
+          />
+        )}
+
+        {isOwnProfile && (
+          <EditBanner
+            isOpen={isEditBannerOpen}
+            onOpenChange={setIsEditBannerOpen}
+          />
+        )}
+
+        <Followers isOpen={isFollowersOpen} onOpenChange={setIsFollowersOpen} />
+        <Following isOpen={isFollowingOpen} onOpenChange={setIsFollowingOpen} />
+
+        <div className="w-[48em] mx-auto px-4">
+          <div className="h-40 relative group">
+            <img
+              className="w-full h-full object-cover"
+              src={displayUser?.bannerImg || "/BannerLinkedin.png"}
+            />
+            {isOwnProfile && (
+              <>
+                <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                  <div className="flex items-center gap-2 text-white">
+                    <ImageUp className="h-6 w-6" />
+                    <span className="text-lg font-medium">
+                      Adicionar foto de capa
+                    </span>
+                  </div>
+                </div>
+
+                <ImageUp
+                  className="absolute right-6 text-white top-28 hover:cursor-pointer hover:scale-110 transition-transform z-10"
+                  onClick={handleBannerEdit}
+                />
+
+                <div
+                  className="absolute inset-0 cursor-pointer"
+                  onClick={handleBannerEdit}
+                />
+              </>
+            )}
+          </div>
+
+          <div className="flex flex-col w-full">
+            <div className="flex w-full">
+              <div className="relative flex ml-[0.8em]">
+                <Avatar
+                  className="w-27 h-27 rounded-full border-5 border-background mt-[-50px] bg-background"
+                  onClick={handleEditProfileOpen}
+                >
+                  <AvatarImage
+                    src={displayUser?.profileImg}
+                    alt="Foto de perfil"
+                    className="w-full h-full rounded-full object-cover hover:cursor-pointer"
+                  />
+                  <AvatarFallback className="w-full h-full flex items-center border-1 border-primary rounded-full justify-center text-primary text-5xl ">
+                    {initials}
+                  </AvatarFallback>
+                  {isOwnProfile && (
+                    <div className="absolute bottom-2 right-0 bg-background rounded-full p-1 border border-primary shadow-sm">
+                      <Pencil className="h-4 w-4 text-primary cursor-pointer rotate-90" />
+                    </div>
+                  )}
+                </Avatar>
+              </div>
+
+              <div className="flex flex-col ml-[0.5em]">
+                <p className="text-primary font-medium text-2xl">
+                  {displayUser?.username}
+                </p>
+                <p className="text-[#a1a1a1] text-xs">{displayUser?.name}</p>
+              </div>
+
+              <div className="ml-auto mr-4 mt-2 gap-3 flex">
+                {isOwnProfile ? (
+                  <Button variant="outline" className="flex items-center gap-2">
+                    Configurações
+                  </Button>
+                ) : (
+                  <div className="flex gap-3">
+                    {renderFollowButton()}
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-2"
+                    >
+                      <Send className="h-4 w-4" />
+                      Conversar
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-row w-full pl-5 mt-1 gap-3 text-primary text-sm ">
+              <div
+                className="flex flex-row items-center gap-1"
+                onClick={handleFollowingOpen}
+              >
+                <span className="hover:cursor-pointer">0</span>
+                <span className="hover:cursor-pointer">Seguindo</span>
+              </div>
+
+              <div
+                className="flex flex-row items-center gap-1"
+                onClick={handleFollowersOpen}
+              >
+                <span className="hover:cursor-pointer">0</span>
+                <span className="hover:cursor-pointer">Seguidores</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   if (isTablet) {
     return (
@@ -71,17 +200,44 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
             onOpenChange={setIsEditProfileOpen}
           />
         )}
+
+        {isOwnProfile && (
+          <EditBanner
+            isOpen={isEditBannerOpen}
+            onOpenChange={setIsEditBannerOpen}
+          />
+        )}
+
         <Followers isOpen={isFollowersOpen} onOpenChange={setIsFollowersOpen} />
         <Following isOpen={isFollowingOpen} onOpenChange={setIsFollowingOpen} />
 
         <div className="max-w-2xl w-[48em] mx-auto px-4">
-          <div className="h-36 relative">
+          <div className="h-36 relative group">
             <img
               className="object-cover rounded-b-sm w-full h-full"
-              src="/BannerLinkedin.png"
+              src={displayUser?.bannerImg || "/BannerLinkedin.png"}
             />
             {isOwnProfile && (
-              <ImageUp className="absolute right-6 text-white top-28 hover:cursor-pointer" />
+              <>
+                <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center rounded-b-sm">
+                  <div className="flex items-center gap-2 text-white">
+                    <ImageUp className="h-5 w-5" />
+                    <span className="text-base font-medium">
+                      Adicionar foto de capa
+                    </span>
+                  </div>
+                </div>
+
+                <ImageUp
+                  className="absolute right-6 text-white top-28 hover:cursor-pointer hover:scale-110 transition-transform z-10"
+                  onClick={handleBannerEdit}
+                />
+
+                <div
+                  className="absolute inset-0 cursor-pointer"
+                  onClick={handleBannerEdit}
+                />
+              </>
             )}
           </div>
 
@@ -160,102 +316,6 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
       </>
     );
   }
-  if (isDesktop) {
-    return (
-      <>
-        {isOwnProfile && (
-          <EditProfile
-            isOpen={isEditProfileOpen}
-            onOpenChange={setIsEditProfileOpen}
-          />
-        )}
-
-        <Followers isOpen={isFollowersOpen} onOpenChange={setIsFollowersOpen} />
-        <Following isOpen={isFollowingOpen} onOpenChange={setIsFollowingOpen} />
-
-        <div className="w-[48em] mx-auto px-4">
-          <div className="h-40 relative">
-            <img
-              className="object-cover rounded-b-sm w-full h-full"
-              src="/BannerLinkedin.png"
-            />
-            {isOwnProfile && (
-              <ImageUp className="absolute right-6 text-white top-32 hover:cursor-pointer" />
-            )}
-          </div>
-
-          <div className="flex flex-col w-full">
-            <div className="flex w-full">
-              <div className="relative flex ml-[0.8em]">
-                <Avatar
-                  className="w-27 h-27 rounded-full border-5 border-background mt-[-50px] bg-background"
-                  onClick={handleEditProfileOpen}
-                >
-                  <AvatarImage
-                    src={displayUser?.profileImg}
-                    alt="Foto de perfil"
-                    className="w-full h-full rounded-full object-cover hover:cursor-pointer"
-                  />
-                  <AvatarFallback className="w-full h-full flex items-center border-1 border-primary rounded-full justify-center text-primary text-5xl ">
-                    {initials}
-                  </AvatarFallback>
-                  {isOwnProfile && (
-                    <div className="absolute bottom-2 right-0 bg-background rounded-full p-1 border border-primary shadow-sm">
-                      <Pencil className="h-4 w-4 text-primary cursor-pointer rotate-90" />
-                    </div>
-                  )}
-                </Avatar>
-              </div>
-
-              <div className="flex flex-col ml-[0.5em]">
-                <p className="text-primary font-medium text-2xl">
-                  {displayUser?.username}
-                </p>
-                <p className="text-[#a1a1a1] text-xs">{displayUser?.name}</p>
-              </div>
-
-              <div className="ml-auto mr-4 mt-2 gap-3 flex">
-                {isOwnProfile ? (
-                  <Button variant="outline" className="flex items-center gap-2">
-                    Configurações
-                  </Button>
-                ) : (
-                  <div className="flex gap-3">
-                    {renderFollowButton()}
-                    <Button
-                      variant="outline"
-                      className="flex items-center gap-2"
-                    >
-                      <Send className="h-4 w-4" />
-                      Conversar
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex flex-row w-full pl-5 mt-1 gap-3 text-primary text-sm ">
-              <div
-                className="flex flex-row items-center gap-1"
-                onClick={handleFollowingOpen}
-              >
-                <span className="hover:cursor-pointer">0</span>
-                <span className="hover:cursor-pointer">Seguindo</span>
-              </div>
-
-              <div
-                className="flex flex-row items-center gap-1"
-                onClick={handleFollowersOpen}
-              >
-                <span className="hover:cursor-pointer">0</span>
-                <span className="hover:cursor-pointer">Seguidores</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
 
   return (
     <>
@@ -265,14 +325,46 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
           onOpenChange={setIsEditProfileOpen}
         />
       )}
+
+      {isOwnProfile && (
+        <EditBanner
+          isOpen={isEditBannerOpen}
+          onOpenChange={setIsEditBannerOpen}
+        />
+      )}
+
       <Followers isOpen={isFollowersOpen} onOpenChange={setIsFollowersOpen} />
       <Following isOpen={isFollowingOpen} onOpenChange={setIsFollowingOpen} />
 
       <div className="w-[98vw] md:max-w-[77vw] mx-auto">
-        <div className="h-35 relative">
-          <img className="h-full w-full" src="/BannerLinkedin.png" alt="" />
+        <div className="h-35 relative group">
+          <img
+            className="h-full w-full object-cover"
+            src={displayUser?.bannerImg || "/BannerLinkedin.png"}
+            alt="Banner do perfil"
+          />
           {isOwnProfile && (
-            <ImageUp className="absolute right-4 text-white mb-20 top-27 hover:cursor-pointer" />
+            <>
+              {/* Overlay hover */}
+              <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                <div className="flex items-center gap-2 text-white">
+                  <ImageUp className="h-5 w-5" />
+                  <span className="text-sm font-medium">
+                    Adicionar foto de capa
+                  </span>
+                </div>
+              </div>
+
+              <ImageUp
+                className="absolute right-6 text-white top-28 hover:cursor-pointer hover:scale-110 transition-transform z-10"
+                onClick={handleBannerEdit}
+              />
+
+              <div
+                className="absolute inset-0 cursor-pointer"
+                onClick={handleBannerEdit}
+              />
+            </>
           )}
         </div>
 

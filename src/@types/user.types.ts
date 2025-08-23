@@ -6,6 +6,7 @@ export interface User {
   password: string;
   cnpj?: string;
   profileImg?: string;
+  bannerImg?: string;
 }
 
 export interface GetUserByUsername {
@@ -13,9 +14,9 @@ export interface GetUserByUsername {
 }
 
 export interface UpdateUser {
-  name?: string,
-  username?: string,
-  email?: string,
-  profileImg?: File,
+  name?: string;
+  username?: string;
+  email?: string;
+  profileImg?: File;
+  bannerImg?: File;
 }
-

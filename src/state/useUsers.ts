@@ -40,16 +40,19 @@ export const useUpdateProfile = () => {
             name: result.data.data.name || user.name,
             username: result.data.data.username || user.username,
             profileImg: result.data.data.profileImg || user.profileImg,
+            bannerImg: result.data.data.bannerImg || user.bannerImg,
           });
         }
 
+        // Invalidar queries do perfil
+        queryClient.invalidateQueries({
+          queryKey: ["user-profile", user?.username],
+        });
         queryClient.invalidateQueries({
           queryKey: profileKeys.listByUser(result.data.data.userId),
         });
         queryClient.invalidateQueries({ queryKey: postKeys.lists() });
         queryClient.invalidateQueries({ queryKey: commentKeys.lists() });
-
-        console.log("=== QUERIES INVALIDADAS ===");
       } else {
         toast.error(result?.error || "Erro ao atualizar perfil");
       }

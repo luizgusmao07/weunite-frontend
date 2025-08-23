@@ -89,9 +89,6 @@ export const useUpdateComments = () => {
 };
 
 export const useGetComments = (postId: number) => {
-  console.log("useGetComments chamado com postId:", postId);
-  console.log("Chave gerada:", commentKeys.listByPost(postId));
-
   return useQuery({
     queryKey: commentKeys.listByPost(postId),
     queryFn: () => getCommentsPostRequest(postId),
