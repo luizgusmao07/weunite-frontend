@@ -111,7 +111,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
           <div className="h-40 relative group ">
             <img
               className="w-full h-full object-cover rounded-b-sm"
-              src={displayUser?.bannerImg}
+              src={displayUser?.bannerImg || "/BannerDefaultWhite.png"}
             />
             {isOwnProfile && (
               <>
@@ -229,7 +229,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
         <div className="h-35 relative group">
           <img
             className="h-full w-full object-cover"
-            src={displayUser?.bannerImg || "/BannerLinkedin.png"}
+            src={displayUser?.bannerImg || "/BannerDefaultWhite.png"}
             alt="Banner do perfil"
           />
           {isOwnProfile && (
