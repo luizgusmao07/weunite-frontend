@@ -72,7 +72,6 @@ export default function EditProfile({
         name: values.name.trim(),
         username: values.username.trim(),
         profileImg: values?.media || undefined,
-        bannerImg: values?.media || undefined,
       },
       username: user.username,
     });
