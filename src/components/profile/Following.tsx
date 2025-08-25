@@ -16,15 +16,40 @@ import { X as CloseIcon } from "lucide-react";
 import { Input } from "../ui/input";
 import CardFollowing from "./CardFollowing";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
+import { useGetFollowing } from "@/state/useFollow";
+import type { Follower } from "@/@types/follower.type";
 
 interface FollowingProps {
   isOpen?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
+  userId: number;
 }
 
-export default function Following({ isOpen, onOpenChange }: FollowingProps) {
-  const { isDesktop, isTablet} = useBreakpoints();
+export default function Following({
+  isOpen,
+  onOpenChange,
+  userId,
+}: FollowingProps) {
+  const { isDesktop, isTablet } = useBreakpoints();
+  const { data: followingData, error } = useGetFollowing(userId);
 
+ const renderFollowingList = () => {
+
+    if (error) {
+      return <p>Erro ao carregar usuários seguidos.</p>;
+    }
+    if (!followingData?.success) {
+      return <p>Erro ao buscar usuários seguidos.</p>;
+    }
+    const following = followingData?.data?.data;
+    if (!following || !Array.isArray(following) || following.length === 0) {
+      return <p>Você não está seguindo ninguém.</p>;
+    }
+
+    return following.map((followingItem: Follower) => (
+      <CardFollowing key={followingItem.id} user={followingItem.followed} />
+    ));
+  };
 
   if (!isDesktop && isTablet) {
     return (
@@ -53,8 +78,7 @@ export default function Following({ isOpen, onOpenChange }: FollowingProps) {
               e.currentTarget.style.scrollbarColor = "transparent transparent";
             }}
           >
-            <CardFollowing />
-            <CardFollowing />
+            {renderFollowingList()}
           </div>
         </DrawerContent>
       </Drawer>
@@ -85,18 +109,7 @@ export default function Following({ isOpen, onOpenChange }: FollowingProps) {
             e.currentTarget.style.scrollbarColor = "transparent transparent";
           }}
         >
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
+          {renderFollowingList()}
         </div>
       </DialogContent>
     </Dialog>

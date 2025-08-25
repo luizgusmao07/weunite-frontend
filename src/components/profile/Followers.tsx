@@ -16,14 +16,40 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import CardFollowing from "./CardFollowing";
+import { useGetFollowers } from "@/state/useFollow";
+import type { Follower } from "@/@types/follower.type";
 
 interface FollowersProps {
   isOpen?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
+  userId: number;
 }
 
-export default function Followers({ isOpen, onOpenChange }: FollowersProps) {
+export default function Followers({
+  isOpen,
+  onOpenChange,
+  userId,
+}: FollowersProps) {
   const { isDesktop, isTablet } = useBreakpoints();
+  const { data: followersData,  error } = useGetFollowers(userId);
+
+  const renderFollowersList = () => {
+    if (error) {
+      return <p>Erro ao carregar seguidores.</p>;
+    }
+    if (!followersData?.success) {
+      return <p>Erro ao buscar seguidores.</p>;
+    }
+
+    const followers = followersData?.data?.data;
+    if (!followers || !Array.isArray(followers) || followers.length === 0) {
+      return <p>Nenhum seguidor encontrado.</p>;
+    }
+
+    return followers.map((follower: Follower) => (
+      <CardFollowing key={follower.id} user={follower.follower} />
+    ));
+  };
 
   if (!isDesktop && isTablet) {
     return (
@@ -52,10 +78,7 @@ export default function Followers({ isOpen, onOpenChange }: FollowersProps) {
               e.currentTarget.style.scrollbarColor = "transparent transparent";
             }}
           >
-            <CardFollowing />
-            <CardFollowing />
-            <CardFollowing />
-           
+            {renderFollowersList()}
           </div>
         </DrawerContent>
       </Drawer>
@@ -85,18 +108,7 @@ export default function Followers({ isOpen, onOpenChange }: FollowersProps) {
             e.currentTarget.style.scrollbarColor = "transparent transparent";
           }}
         >
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
-          <CardFollowing />
+          {renderFollowersList()}
         </div>
       </DialogContent>
     </Dialog>

@@ -3,9 +3,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { CardContent } from "../ui/card";
 import { useAuthStore } from "@/stores/useAuthStore";
+import type { User } from "@/@types/user.types";
 
-export default function CardFollowing() {
-  const { user } = useAuthStore();
+interface CardFollowingProps {
+  user: User;
+}
+
+export default function CardFollowing({user}: CardFollowingProps) {
   const initials = getInitials(user?.name);
 
   return (

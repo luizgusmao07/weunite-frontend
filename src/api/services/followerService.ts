@@ -51,8 +51,8 @@ export const getFollowersRequest = async (data: GetFollowers) => {
 };
 
 export const getFollowingRequest = async (data: GetFollowing) => {
-  const response = await axios.get(`/follow/following/${data.id}`);
   try {
+    const response = await axios.get(`/follow/following/${data.id}`);
     return {
       success: true,
       data: response.data,

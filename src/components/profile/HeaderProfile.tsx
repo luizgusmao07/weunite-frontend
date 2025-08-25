@@ -12,6 +12,7 @@ import { Send } from "lucide-react";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useFollowAction } from "@/hooks/useFollowAction";
+import { useGetFollowers, useGetFollowing } from "@/state/useFollow";
 import { getInitials } from "@/utils/getInitials";
 
 interface HeaderProfileProps {
@@ -24,6 +25,19 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
 
   const isOwnProfile = !profileUsername || profileUsername === user?.username;
   const displayUser = isOwnProfile ? user : profileUser;
+
+  const { data: followersData } = useGetFollowers(Number(displayUser?.id));
+  const { data: followingData } = useGetFollowing(Number(displayUser?.id));
+
+  const followersCount =
+    followersData?.success && followersData?.data?.data
+      ? followersData.data.data.length
+      : 0;
+
+  const followingCount =
+    followingData?.success && followingData?.data?.data
+      ? followingData.data.data.length
+      : 0;
 
   const {
     isFollowing,
@@ -67,7 +81,9 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
   const { isDesktop } = useBreakpoints();
 
   const isTablet = useMediaQuery("(min-width: 891px) and (max-width: 1290px)");
-
+  console.log("followersData:", followersData);
+  console.log("followingData:", followingData);
+  console.log("displayUser?.id:", displayUser?.id);
   if (isDesktop) {
     return (
       <>
@@ -85,8 +101,16 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
           />
         )}
 
-        <Followers isOpen={isFollowersOpen} onOpenChange={setIsFollowersOpen} />
-        <Following isOpen={isFollowingOpen} onOpenChange={setIsFollowingOpen} />
+        <Followers
+          isOpen={isFollowersOpen}
+          onOpenChange={setIsFollowersOpen}
+          userId={Number(displayUser?.id)}
+        />
+        <Following
+          isOpen={isFollowingOpen}
+          onOpenChange={setIsFollowingOpen}
+          userId={Number(displayUser?.id)}
+        />
 
         <div className="w-[48em] mx-auto px-4">
           <div className="h-40 relative group">
@@ -173,7 +197,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
                 className="flex flex-row items-center gap-1"
                 onClick={handleFollowingOpen}
               >
-                <span className="hover:cursor-pointer">0</span>
+                <span className="hover:cursor-pointer">{followingCount}</span>
                 <span className="hover:cursor-pointer">Seguindo</span>
               </div>
 
@@ -181,7 +205,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
                 className="flex flex-row items-center gap-1"
                 onClick={handleFollowersOpen}
               >
-                <span className="hover:cursor-pointer">0</span>
+                <span className="hover:cursor-pointer">{followersCount}</span>
                 <span className="hover:cursor-pointer">Seguidores</span>
               </div>
             </div>
@@ -208,8 +232,16 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
           />
         )}
 
-        <Followers isOpen={isFollowersOpen} onOpenChange={setIsFollowersOpen} />
-        <Following isOpen={isFollowingOpen} onOpenChange={setIsFollowingOpen} />
+        <Followers
+          isOpen={isFollowersOpen}
+          onOpenChange={setIsFollowersOpen}
+          userId={Number(displayUser?.id)}
+        />
+        <Following
+          isOpen={isFollowingOpen}
+          onOpenChange={setIsFollowingOpen}
+          userId={Number(displayUser?.id)}
+        />
 
         <div className="max-w-2xl w-[48em] mx-auto px-4">
           <div className="h-36 relative group">
@@ -299,7 +331,9 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
                 className="flex flex-row items-center gap-1"
                 onClick={handleFollowingOpen}
               >
-                <span className="hover:cursor-pointer font-medium">0</span>
+                <span className="hover:cursor-pointer font-medium">
+                  {followingCount}
+                </span>
                 <span className="hover:cursor-pointer">Seguindo</span>
               </div>
 
@@ -307,7 +341,9 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
                 className="flex flex-row items-center gap-1"
                 onClick={handleFollowersOpen}
               >
-                <span className="hover:cursor-pointer font-medium">0</span>
+                <span className="hover:cursor-pointer font-medium">
+                  {followersCount}
+                </span>
                 <span className="hover:cursor-pointer">Seguidores</span>
               </div>
             </div>
@@ -333,8 +369,16 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
         />
       )}
 
-      <Followers isOpen={isFollowersOpen} onOpenChange={setIsFollowersOpen} />
-      <Following isOpen={isFollowingOpen} onOpenChange={setIsFollowingOpen} />
+      <Followers
+        isOpen={isFollowersOpen}
+        onOpenChange={setIsFollowersOpen}
+        userId={Number(displayUser?.id)}
+      />
+      <Following
+        isOpen={isFollowingOpen}
+        onOpenChange={setIsFollowingOpen}
+        userId={Number(displayUser?.id)}
+      />
 
       <div className="w-[98vw] md:max-w-[77vw] mx-auto">
         <div className="h-35 relative group">
@@ -419,7 +463,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
               className="flex flex-row items-center gap-1"
               onClick={handleFollowingOpen}
             >
-              <span className="hover:cursor-pointer">0</span>
+              <span className="hover:cursor-pointer">{followingCount}</span>
               <span className="hover:cursor-pointer">Seguindo</span>
             </div>
 
@@ -427,7 +471,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
               className="flex flex-row items-center gap-1"
               onClick={handleFollowersOpen}
             >
-              <span className="hover:cursor-pointer">0</span>
+              <span className="hover:cursor-pointer">{followersCount}</span>
               <span className="hover:cursor-pointer">Seguidores</span>
             </div>
           </div>

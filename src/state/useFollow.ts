@@ -19,7 +19,7 @@ export const followKeys = {
 };
 
 export const useFollowAndUnfollow = () => {
-  const queryCliente = useQueryClient();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({
@@ -32,13 +32,13 @@ export const useFollowAndUnfollow = () => {
     onSuccess: (result, { followedId,  followerId }) => {
       if (result.success) {
         toast.success(result.message);
-        queryCliente.invalidateQueries({
+        queryClient.invalidateQueries({
           queryKey: followKeys.followers(followedId),
         });
-        queryCliente.invalidateQueries({
+        queryClient.invalidateQueries({
           queryKey: followKeys.following(followerId),
         });
-        queryCliente.invalidateQueries({
+        queryClient.invalidateQueries({
           queryKey: followKeys.detail(followerId, followedId),
         });
       } else {
