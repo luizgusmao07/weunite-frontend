@@ -10,7 +10,6 @@ import { useBreakpoints } from "@/hooks/useBreakpoints";
 import { Button } from "../ui/button";
 import { Send } from "lucide-react";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useFollowAction } from "@/hooks/useFollowAction";
 import { useGetFollowers, useGetFollowing } from "@/state/useFollow";
 import { getInitials } from "@/utils/getInitials";
@@ -80,10 +79,6 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
 
   const { isDesktop } = useBreakpoints();
 
-  const isTablet = useMediaQuery("(min-width: 891px) and (max-width: 1290px)");
-  console.log("followersData:", followersData);
-  console.log("followingData:", followingData);
-  console.log("displayUser?.id:", displayUser?.id);
   if (isDesktop) {
     return (
       <>
@@ -113,31 +108,19 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
         />
 
         <div className="w-[48em] mx-auto px-4">
-          <div className="h-40 relative group">
+          <div className="h-40 relative group ">
             <img
-              className="w-full h-full object-cover"
-              src={displayUser?.bannerImg || "/BannerLinkedin.png"}
+              className="w-full h-full object-cover rounded-b-sm"
+              src={displayUser?.bannerImg}
             />
             {isOwnProfile && (
               <>
-                <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                  <div className="flex items-center gap-2 text-white">
-                    <ImageUp className="h-6 w-6" />
-                    <span className="text-lg font-medium">
-                      Adicionar foto de capa
-                    </span>
-                  </div>
-                </div>
 
                 <ImageUp
-                  className="absolute right-6 text-white top-28 hover:cursor-pointer hover:scale-110 transition-transform z-10"
+                  className="absolute right-6 text-white top-31 hover:cursor-pointer hover:scale-110 transition-transform z-10"
                   onClick={handleBannerEdit}
                 />
 
-                <div
-                  className="absolute inset-0 cursor-pointer"
-                  onClick={handleBannerEdit}
-                />
               </>
             )}
           </div>
@@ -206,144 +189,6 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
                 onClick={handleFollowersOpen}
               >
                 <span className="hover:cursor-pointer">{followersCount}</span>
-                <span className="hover:cursor-pointer">Seguidores</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (isTablet) {
-    return (
-      <>
-        {isOwnProfile && (
-          <EditProfile
-            isOpen={isEditProfileOpen}
-            onOpenChange={setIsEditProfileOpen}
-          />
-        )}
-
-        {isOwnProfile && (
-          <EditBanner
-            isOpen={isEditBannerOpen}
-            onOpenChange={setIsEditBannerOpen}
-          />
-        )}
-
-        <Followers
-          isOpen={isFollowersOpen}
-          onOpenChange={setIsFollowersOpen}
-          userId={Number(displayUser?.id)}
-        />
-        <Following
-          isOpen={isFollowingOpen}
-          onOpenChange={setIsFollowingOpen}
-          userId={Number(displayUser?.id)}
-        />
-
-        <div className="max-w-2xl w-[48em] mx-auto px-4">
-          <div className="h-36 relative group">
-            <img
-              className="object-cover rounded-b-sm w-full h-full"
-              src={displayUser?.bannerImg || "/BannerLinkedin.png"}
-            />
-            {isOwnProfile && (
-              <>
-                <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center rounded-b-sm">
-                  <div className="flex items-center gap-2 text-white">
-                    <ImageUp className="h-5 w-5" />
-                    <span className="text-base font-medium">
-                      Adicionar foto de capa
-                    </span>
-                  </div>
-                </div>
-
-                <ImageUp
-                  className="absolute right-6 text-white top-28 hover:cursor-pointer hover:scale-110 transition-transform z-10"
-                  onClick={handleBannerEdit}
-                />
-
-                <div
-                  className="absolute inset-0 cursor-pointer"
-                  onClick={handleBannerEdit}
-                />
-              </>
-            )}
-          </div>
-
-          <div className="flex flex-col w-full">
-            <div className="flex w-full">
-              <div className="relative flex ml-[0.8em]">
-                <Avatar
-                  className="w-24 h-24 rounded-full border-4 border-background mt-[-40px] bg-background"
-                  onClick={handleEditProfileOpen}
-                >
-                  <AvatarImage
-                    src={displayUser?.profileImg}
-                    alt="Foto de perfil"
-                    className="w-full h-full rounded-full object-cover hover:cursor-pointer"
-                  />
-                  <AvatarFallback className="w-full h-full flex items-center border-1 border-primary rounded-full justify-center text-primary text-3xl">
-                    {initials}
-                  </AvatarFallback>
-                  {isOwnProfile && (
-                    <div className="absolute bottom-1 right-0 bg-background rounded-full p-1 border border-primary shadow-sm">
-                      <Pencil className="h-3 w-3 text-primary cursor-pointer rotate-90" />
-                    </div>
-                  )}
-                </Avatar>
-              </div>
-
-              <div className="flex flex-col ml-[0.5em] justify-center">
-                <p className="text-primary font-medium text-xl">
-                  {displayUser?.username}
-                </p>
-                <p className="text-[#a1a1a1] text-sm">{displayUser?.name}</p>
-              </div>
-
-              <div className="ml-auto mr-4 mt-2 gap-2 flex">
-                {isOwnProfile ? (
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2 px-3 py-2 text-sm"
-                  >
-                    Configurações
-                  </Button>
-                ) : (
-                  <div className="flex gap-2">
-                    {renderFollowButton()}
-                    <Button
-                      variant="outline"
-                      className="flex items-center gap-2 px-3 py-2 text-sm"
-                    >
-                      <Send className="h-4 w-4" />
-                      Conversar
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex flex-row w-full pl-5 mt-2 gap-4 text-primary text-sm">
-              <div
-                className="flex flex-row items-center gap-1"
-                onClick={handleFollowingOpen}
-              >
-                <span className="hover:cursor-pointer font-medium">
-                  {followingCount}
-                </span>
-                <span className="hover:cursor-pointer">Seguindo</span>
-              </div>
-
-              <div
-                className="flex flex-row items-center gap-1"
-                onClick={handleFollowersOpen}
-              >
-                <span className="hover:cursor-pointer font-medium">
-                  {followersCount}
-                </span>
                 <span className="hover:cursor-pointer">Seguidores</span>
               </div>
             </div>

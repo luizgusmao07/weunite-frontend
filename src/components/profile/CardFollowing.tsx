@@ -21,7 +21,7 @@ export default function CardFollowing({user}: CardFollowingProps) {
             alt="Foto de perfil"
             className="w-full h-full rounded-full object-cover hover:cursor-pointer"
           />
-          <AvatarFallback className="w-full h-full flex items-center border-1 border-primary rounded-full justify-center text-primary text-5xl ">
+          <AvatarFallback className="w-full h-full flex items-center border-1 border-primary rounded-full justify-center text-primary text-2xl ">
             {initials}
           </AvatarFallback>
         </Avatar>
