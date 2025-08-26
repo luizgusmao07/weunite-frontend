@@ -7,6 +7,11 @@ export interface ToggleLike {
   commentId: string | "";
 }
 
+export interface ToggleLikeComment {
+  userId: string;
+  commentId: string;
+}
+
 export interface Like {
   id: string;
   createdAt: string;

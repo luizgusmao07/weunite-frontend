@@ -1,9 +1,10 @@
-import type { ToggleLike } from "@/@types/like.types";
+import type { ToggleLike, ToggleLikeComment } from "@/@types/like.types";
 import {
   toggleLikeRequest,
   toggleLikeRequestComment,
+  getCommentLikes,
 } from "@/api/services/likeService";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { postKeys } from "./usePosts";
 import { toast } from "sonner";
 import { commentKeys } from "./useComments";
@@ -42,12 +43,16 @@ export const useToggleLikeComment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: ToggleLike) => toggleLikeRequestComment(data),
-    onSuccess: (result) => {
+    mutationFn: (data: ToggleLikeComment) => toggleLikeRequestComment(data),
+    onSuccess: (result, variables) => {
       if (result.success) {
         toast.success(result.message || "Like atualizado com sucesso!");
 
-        queryClient.invalidateQueries({ queryKey: commentKeys.lists() });
+        queryClient.invalidateQueries({ queryKey: commentKeys.all });
+
+        queryClient.invalidateQueries({
+          queryKey: [...likeKeys.all, "comment", variables.commentId],
+        });
 
         queryClient.invalidateQueries({ queryKey: likeKeys.lists() });
       } else {
@@ -57,5 +62,13 @@ export const useToggleLikeComment = () => {
     onError: () => {
       toast.error("Erro inesperado ao atualizar like");
     },
+  });
+};
+
+export const useCommentLikes = (commentId: number) => {
+  return useQuery({
+    queryKey: [...likeKeys.all, "comment", commentId],
+    queryFn: () => getCommentLikes(commentId),
+    staleTime: 1000 * 30 * 1,
   });
 };

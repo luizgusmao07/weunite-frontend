@@ -1,4 +1,4 @@
-import type { ToggleLike } from "@/@types/like.types";
+import type { ToggleLike, ToggleLikeComment } from "@/@types/like.types";
 import { instance as axios } from "../axios";
 import { AxiosError } from "axios";
 
@@ -24,7 +24,7 @@ export const toggleLikeRequest = async (data: ToggleLike) => {
   }
 };
 
-export const toggleLikeRequestComment = async (data: ToggleLike) => {
+export const toggleLikeRequestComment = async (data: ToggleLikeComment) => {
   try {
     const response = await axios.post(
       `/likes/toggleLikeComment/${data.userId}/${data.commentId}`,
@@ -32,6 +32,26 @@ export const toggleLikeRequestComment = async (data: ToggleLike) => {
     return {
       success: true,
       data: response.data,
+      message: response.data.message,
+      error: null,
+    };
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    return {
+      success: false,
+      data: null,
+      message: null,
+      error: error.response?.data?.message,
+    };
+  }
+};
+
+export const getCommentLikes = async (commentId: number) => {
+  try {
+    const response = await axios.get(`/likes/comments/${commentId}`);
+    return {
+      success: true,
+      data: response.data.data,
       message: response.data.message,
       error: null,
     };

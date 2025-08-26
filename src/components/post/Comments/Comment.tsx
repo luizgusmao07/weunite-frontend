@@ -45,7 +45,8 @@ import { EditComment } from "@/components/shared/EditComment";
 import { useState } from "react";
 import { useDeleteComment } from "@/state/useComments";
 import { getInitials } from "@/utils/getInitials";
-import { useToggleLikeComment } from "@/state/useLikes";
+import { useToggleLikeComment, useCommentLikes } from "@/state/useLikes";
+import { useEffect } from "react";
 
 const actions = [{ icon: Heart }, { icon: MessageCircle }, { icon: Repeat2 }];
 
@@ -55,6 +56,22 @@ export default function Comment({ comment }: { comment: Comment }) {
 
   const [isEditCommentOpen, setIsEditCommentOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { data: likesData } = useCommentLikes(Number(comment.id));
+  const serverLikes = likesData?.success ? likesData.data : [];
+
+  const [likesCount, setLikesCount] = useState(comment.likes?.length || 0);
+  const [isLikedState, setIsLikedState] = useState(
+    (comment.likes || []).some((like) => like.user.id === user?.id),
+  );
+
+  useEffect(() => {
+    if (serverLikes.length > 0 || likesData?.success) {
+      setLikesCount(serverLikes.length);
+      setIsLikedState(
+        serverLikes.some((like: any) => like.user.id === user?.id),
+      );
+    }
+  }, [serverLikes, user?.id, likesData]);
 
   const deleteComment = useDeleteComment();
 
@@ -62,15 +79,13 @@ export default function Comment({ comment }: { comment: Comment }) {
 
   const isOwner = comment.user.id === user?.id;
 
-  const isLiked = (comment.likes || []).some(
-    (like) => like.user.id === user?.id,
-  );
-
   const handleLikeClick = () => {
     if (!user?.id) return;
 
+    setIsLikedState(!isLikedState);
+    setLikesCount(isLikedState ? likesCount - 1 : likesCount + 1);
+
     toggleLike.mutate({
-      postId: comment.post.id,
       userId: user.id,
       commentId: comment.id,
     });
@@ -201,8 +216,7 @@ export default function Comment({ comment }: { comment: Comment }) {
         <CardFooter className="flex flex-col mt-[-20px]">
           <div className="flex justify-between w-full mb-3">
             <span className="text-sm text-muted-foreground">
-              {comment.likes.length || [] || 0} curtidas •
-              {comment.comments.length || 0} comentários
+              {likesCount} curtidas • {comment.comments.length || 0} comentários
             </span>
           </div>
 
@@ -220,7 +234,7 @@ export default function Comment({ comment }: { comment: Comment }) {
                 >
                   <action.icon
                     className={`h-5 w-5 transition-colors  ${
-                      index === 0 && isLiked
+                      index === 0 && isLikedState
                         ? "text-red-500 fill-red-500"
                         : "text-muted-foreground"
                     }`}

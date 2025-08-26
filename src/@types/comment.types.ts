@@ -11,7 +11,7 @@ export interface Comment {
   id: string;
   text: string | null;
   imageUrl: string | null;
-  likes: Like[];
+  likes?: Like[];
   comments: Comment[];
   createdAt: string;
   updatedAt: string | null;
