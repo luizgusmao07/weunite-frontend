@@ -219,14 +219,17 @@ export default function Post({ post }: { post: Post }) {
           </DropdownMenu>
         </CardHeader>
 
-        <CardContent className="mt-[-18px]">
-          {post.imageUrl && (
-            <img
-              src={post.imageUrl}
-              alt="Post media"
-              className="w-full h-auto rounded-sm mb-2"
-            />
-          )}
+        <CardContent className="w-full mt-[-18px]">
+          <div className="w-full flex justify-center items-center">
+            {post.imageUrl && (
+              <img
+                src={post.imageUrl}
+                alt="Post media"
+                className="rounded-sm mb-2"
+              />
+            )}
+          </div>
+
           <p className="">{post.text}</p>
         </CardContent>
 

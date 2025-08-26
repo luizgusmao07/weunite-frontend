@@ -8,6 +8,7 @@ import {
   updateCommentRequest,
 } from "@/api/services/commentService";
 import { toast } from "sonner";
+import { postKeys } from "./usePosts";
 
 export const commentKeys = {
   all: ["comments"] as const,
@@ -16,6 +17,8 @@ export const commentKeys = {
     [...commentKeys.lists(), "post", postId] as const,
   listByUser: (userId: number) =>
     [...commentKeys.lists(), "user", userId] as const,
+  listByComment: (commentId: number) =>
+    [...commentKeys.lists(), "comment", commentId] as const,
 };
 
 export const useCreateComment = () => {
@@ -41,6 +44,10 @@ export const useCreateComment = () => {
 
         queryClient.invalidateQueries({
           queryKey: commentKeys.listByUser(userId),
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: postKeys.lists(),
         });
       } else {
         toast.error(result.message || "Erro ao criar comentário.");

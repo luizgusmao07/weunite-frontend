@@ -151,7 +151,7 @@ export default function Comments({
           <div
             className={`${post.imageUrl ? "w-1/2" : "w-full"} flex flex-col`}
           >
-            <div className="p-4 border-b flex gap-2 ">
+            <div className="p-4 border-b flex gap-2 bg-card z-2">
               <Avatar>
                 <AvatarImage src={post.user.profileImg} />
                 <AvatarFallback>{initials}</AvatarFallback>
@@ -162,7 +162,7 @@ export default function Comments({
               </div>
             </div>
 
-            <div className="flex-1 max-h-[68vh] overflow-y-auto -mt-5 p-4 custom-scrollbar">
+            <div className="flex-1 max-h-[64vh] overflow-y-auto -mt-5 p-4 custom-scrollbar">
               <div className="space-y-4">
                 {comments?.map((comment: CommentType) => (
                   <Comment key={comment.id} comment={comment} />

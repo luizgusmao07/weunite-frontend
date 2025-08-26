@@ -69,6 +69,6 @@ export const useCommentLikes = (commentId: number) => {
   return useQuery({
     queryKey: [...likeKeys.all, "comment", commentId],
     queryFn: () => getCommentLikes(commentId),
-    staleTime: 1000 * 30 * 1,
+    staleTime: 1000 * 10 * 1,
   });
 };
