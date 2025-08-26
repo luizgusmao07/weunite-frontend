@@ -45,6 +45,8 @@ import { EditComment } from "@/components/shared/EditComment";
 import { useState } from "react";
 import { useDeleteComment } from "@/state/useComments";
 import { getInitials } from "@/utils/getInitials";
+import { useToggleLikeComment } from "@/state/useLikes";
+
 const actions = [{ icon: Heart }, { icon: MessageCircle }, { icon: Repeat2 }];
 
 export default function Comment({ comment }: { comment: Comment }) {
@@ -56,9 +58,23 @@ export default function Comment({ comment }: { comment: Comment }) {
 
   const deleteComment = useDeleteComment();
 
-  /* const isLiked = comment.likes.some((like) => like.user.id === user?.id);
-   */
+  const toggleLike = useToggleLikeComment();
+
   const isOwner = comment.user.id === user?.id;
+
+  const isLiked = (comment.likes || []).some(
+    (like) => like.user.id === user?.id,
+  );
+
+  const handleLikeClick = () => {
+    if (!user?.id) return;
+
+    toggleLike.mutate({
+      postId: comment.post.id,
+      userId: user.id,
+      commentId: comment.id,
+    });
+  };
 
   const handleEditCommentOpen = () => {
     setIsEditCommentOpen(true);
@@ -185,7 +201,7 @@ export default function Comment({ comment }: { comment: Comment }) {
         <CardFooter className="flex flex-col mt-[-20px]">
           <div className="flex justify-between w-full mb-3">
             <span className="text-sm text-muted-foreground">
-              {/* comment.likes.length  || */ 0} curtidas •{" "}
+              {comment.likes.length || [] || 0} curtidas •
               {comment.comments.length || 0} comentários
             </span>
           </div>
@@ -195,19 +211,16 @@ export default function Comment({ comment }: { comment: Comment }) {
               {actions.map((action, index) => (
                 <div
                   key={index}
-                  /* 
-                      onClick={(e) => {
-                      e.preventDefault();
-                        if (action.icon === Heart) {
-                          handleLikeClick();
-                      } else if (action.icon === MessageCircle){
-                        handleCommentsOpen();
-                      } 
-                    }}*/
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (action.icon === Heart) {
+                      handleLikeClick();
+                    }
+                  }}
                 >
                   <action.icon
                     className={`h-5 w-5 transition-colors  ${
-                      index === 0 /*  && isLiked  */
+                      index === 0 && isLiked
                         ? "text-red-500 fill-red-500"
                         : "text-muted-foreground"
                     }`}

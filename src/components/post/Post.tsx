@@ -71,7 +71,7 @@ export default function Post({ post }: { post: Post }) {
   const handleLikeClick = () => {
     if (!user?.id) return;
 
-    toggleLike.mutate({ postId: post.id, userId: user.id });
+    toggleLike.mutate({ postId: post.id, userId: user.id, commentId: "" });
   };
 
   const isOwner = post.user.id === user?.id;
