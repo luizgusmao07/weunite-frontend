@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X, Check, ImageUp } from "lucide-react";
+import { X, Check, ImageUp, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useUpdateProfile } from "@/state/useUsers";
+import { useUpdateProfile, useDeleteProfileBanner } from "@/state/useUsers";
 import {
   updateProfileSchema,
   type UpdateProfileForm,
@@ -23,6 +23,7 @@ export default function EditBanner({ isOpen, onOpenChange }: EditBannerProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const updateProfileBanner = useUpdateProfile();
+  const deleteProfileBanner = useDeleteProfileBanner();
 
   const form = useForm<UpdateProfileForm>({
     resolver: zodResolver(updateProfileSchema),
@@ -135,6 +136,19 @@ export default function EditBanner({ isOpen, onOpenChange }: EditBannerProps) {
     }
   };
 
+  const handleDelete = async () => {
+    if (!user?.username) return;
+
+    try {
+      await deleteProfileBanner.mutateAsync(user.username);
+      handleCancel();
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Erro ao excluir banner:", error);
+      alert("Erro ao excluir o banner. Tente novamente.");
+    }
+  };
+
   const handleCancel = () => {
     setSelectedFile(null);
     if (preview) {
@@ -172,7 +186,7 @@ export default function EditBanner({ isOpen, onOpenChange }: EditBannerProps) {
             )}
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-2">
             <Input
               id="banner-file-input"
               type="file"
@@ -188,11 +202,22 @@ export default function EditBanner({ isOpen, onOpenChange }: EditBannerProps) {
               onClick={() =>
                 document.getElementById("banner-file-input")?.click()
               }
-              className="w-full"
+              className="flex-1"
             >
               <ImageUp className="h-4 w-4 mr-2" />
               {selectedFile ? "Alterar imagem" : "Selecionar imagem"}
             </Button>
+
+            {user?.bannerImg && (
+              <Button
+                variant="outline"
+                onClick={handleDelete}
+                disabled={deleteProfileBanner.isPending}
+                className="text-red-600 hover:text-red-700 hover:border-red-300"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
           </div>
 
           <div className="flex justify-end gap-2">

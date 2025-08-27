@@ -1,5 +1,5 @@
 import type { UpdateUser } from "@/@types/user.types";
-import { updateUser } from "@/api/services/userService";
+import { deleteBannerUser, updateUser } from "@/api/services/userService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -60,6 +60,37 @@ export const useUpdateProfile = () => {
     onError: (error: any) => {
       const errorMessage =
         error.response?.data?.message || "Erro inesperado ao atualizar perfil";
+      toast.error(errorMessage);
+    },
+  });
+};
+export const useDeleteProfileBanner = () => {
+  const queryClient = useQueryClient();
+  const { user, setUser } = useAuthStore();
+
+  return useMutation({
+    mutationFn: (username: string) => deleteBannerUser(username),
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success(result.message || "Banner deletado com sucesso!");
+
+        if (user && result.data?.data) {
+          setUser({
+            ...user,
+            bannerImg: result.data.bannerImg ?? null,
+          });
+        }
+
+        queryClient.invalidateQueries({
+          queryKey: ["user-profile", user?.username],
+        });
+      } else {
+        toast.error(result?.error || "Erro ao deletar banner");
+      }
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error.response?.data?.message || "Erro inesperado ao deletar banner";
       toast.error(errorMessage);
     },
   });

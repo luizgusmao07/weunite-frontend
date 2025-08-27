@@ -78,3 +78,25 @@ export const getUserByUsername = async (username: string) => {
     };
   }
 };
+
+export const deleteBannerUser = async (username: string) => {
+  try {
+    const response = await axios.delete(`/user/banner/delete/${username}`);
+
+    return {
+      success: true,
+      data: response.data,
+      message: response.data.message || "Banner deletado com sucesso!",
+      error: null,
+    };
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+
+    return {
+      success: false,
+      data: null,
+      message: null,
+      error: error.response?.data?.message,
+    };
+  }
+};
