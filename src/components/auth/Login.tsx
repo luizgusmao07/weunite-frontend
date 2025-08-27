@@ -103,7 +103,7 @@ export function Login({
                         />
                       </div>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-chart-5" />
                   </div>
                 )}
               />
@@ -145,7 +145,7 @@ export function Login({
                         </button>
                       </div>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-chart-5" />
                   </div>
                 )}
               />

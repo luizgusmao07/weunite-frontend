@@ -106,7 +106,7 @@
   --muted-foreground: #a1a1a1;
   --accent: #262626;
   --accent-foreground: #fafafa;
-  --destructive: #22c55e;
+  --destructive: #e7000b;
   --border: #ffffff1a;
   --separator-post: #848484;
   --input: #ffffff26;
@@ -150,10 +150,6 @@ html::-webkit-scrollbar-thumb:hover {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
 }
-
-
-
-
 
 @layer base {
   * {
