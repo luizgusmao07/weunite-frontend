@@ -15,6 +15,7 @@ import {
 import { X as CloseIcon } from "lucide-react";
 import { Input } from "../ui/input";
 import CardFollowing from "./CardFollowing";
+import { useCallback } from "react";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
 import { useGetFollowing } from "@/state/useFollow";
 import type { Follower } from "@/@types/follower.type";
@@ -33,8 +34,11 @@ export default function Following({
   const { isDesktop, isTablet } = useBreakpoints();
   const { data: followingData, error } = useGetFollowing(userId);
 
- const renderFollowingList = () => {
+  const handleClose = useCallback(() => {
+    if (onOpenChange) onOpenChange(false);
+  }, [onOpenChange]);
 
+  const renderFollowingList = () => {
     if (error) {
       return <p>Erro ao carregar usuários seguidos.</p>;
     }
@@ -47,7 +51,11 @@ export default function Following({
     }
 
     return following.map((followingItem: Follower) => (
-      <CardFollowing key={followingItem.id} user={followingItem.followed} />
+      <CardFollowing
+        key={followingItem.id}
+        user={followingItem.followed}
+        onUserClick={handleClose}
+      />
     ));
   };
 

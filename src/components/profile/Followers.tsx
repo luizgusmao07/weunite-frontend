@@ -31,7 +31,11 @@ export default function Followers({
   userId,
 }: FollowersProps) {
   const { isDesktop, isTablet } = useBreakpoints();
-  const { data: followersData,  error } = useGetFollowers(userId);
+  const { data: followersData, error } = useGetFollowers(userId);
+
+  const handleClose = () => {
+    if (onOpenChange) onOpenChange(false);
+  };
 
   const renderFollowersList = () => {
     if (error) {
@@ -47,7 +51,11 @@ export default function Followers({
     }
 
     return followers.map((follower: Follower) => (
-      <CardFollowing key={follower.id} user={follower.follower} />
+      <CardFollowing
+        key={follower.id}
+        user={follower.follower}
+        onUserClick={handleClose}
+      />
     ));
   };
 
