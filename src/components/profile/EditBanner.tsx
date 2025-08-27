@@ -11,7 +11,6 @@ import {
   updateProfileSchema,
   type UpdateProfileForm,
 } from "@/schemas/updateProfile.schema";
-import { useUserProfile } from "@/hooks/useUserProfile";
 
 interface EditBannerProps {
   isOpen: boolean;
@@ -220,20 +219,21 @@ export default function EditBanner({ isOpen, onOpenChange }: EditBannerProps) {
             )}
           </div>
 
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-center md:justify-end gap-2">
             <Button
-              variant="outline"
               onClick={handleClose}
+              className="w-[10em] md:w-[8em]"
               disabled={updateProfileBanner.isPending}
             >
-              <X className="h-4 w-4 mr-2" />
+              <X className="h-4 w-4" />
               Cancelar
             </Button>
             <Button
               onClick={handleSave}
+              className="w-[10em] md:w-[8em] bg-third hover:bg-third-hover hover:cursor-pointer"
               disabled={updateProfileBanner.isPending || !selectedFile}
             >
-              <Check className="h-4 w-4 mr-2" />
+              <Check className="h-4 w-4" />
               {updateProfileBanner.isPending ? "Salvando..." : "Salvar"}
             </Button>
           </div>

@@ -107,7 +107,7 @@ export default function Comments({
 
                   <Button
                     size="sm"
-                    className="rounded-full px-5 hover:cursor-pointer"
+                    className="bg-third hover:bg-third-hover hover:cursor-pointer rounded-full w-[7em]"
                     onClick={handleCreateComment}
                     disabled={
                       !commentText.trim() || commentText.length > max_chars
@@ -162,7 +162,7 @@ export default function Comments({
               </div>
             </div>
 
-            <div className="flex-1 max-h-[64vh] overflow-y-auto -mt-5 p-4 custom-scrollbar">
+            <div className="flex-1 max-h-[66vh] overflow-y-auto -mt-5 p-4 custom-scrollbar">
               <div className="space-y-4">
                 {comments?.map((comment: CommentType) => (
                   <Comment key={comment.id} comment={comment} />
@@ -196,7 +196,7 @@ export default function Comments({
 
                     <Button
                       size="sm"
-                      className="rounded-full px-5 hover:cursor-pointer"
+                      className="bg-third hover:bg-third-hover hover:cursor-pointer rounded-full w-[7em]"
                       onClick={handleCreateComment}
                       disabled={
                         !commentText.trim() || commentText.length > max_chars

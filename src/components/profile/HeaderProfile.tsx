@@ -115,12 +115,15 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
             />
             {isOwnProfile && (
               <>
-
                 <ImageUp
-                  className="absolute right-6 text-white top-31 hover:cursor-pointer hover:scale-110 transition-transform z-10"
+                  className="absolute right-6 text-primary top-31 hover:cursor-pointer hover:scale-110 transition-transform z-10"
                   onClick={handleBannerEdit}
                 />
 
+                <div
+                  className="absolute inset-0 cursor-pointer"
+                  onClick={handleBannerEdit}
+                />
               </>
             )}
           </div>
@@ -234,18 +237,8 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
           />
           {isOwnProfile && (
             <>
-              {/* Overlay hover */}
-              <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                <div className="flex items-center gap-2 text-white">
-                  <ImageUp className="h-5 w-5" />
-                  <span className="text-sm font-medium">
-                    Adicionar foto de capa
-                  </span>
-                </div>
-              </div>
-
               <ImageUp
-                className="absolute right-6 text-white top-28 hover:cursor-pointer hover:scale-110 transition-transform z-10"
+                className="absolute right-6 text-primary top-28 hover:cursor-pointer hover:scale-110 transition-transform z-10"
                 onClick={handleBannerEdit}
               />
 
