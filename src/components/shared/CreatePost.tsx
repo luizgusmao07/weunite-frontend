@@ -49,6 +49,8 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
     }
   }
 
+  const isSubmitting = createPostMutation.isPending;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]" aria-describedby={undefined}>
@@ -99,9 +101,14 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
             <DialogClose asChild>
               <Button variant="outline" className="hover:cursor-pointer">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" className="bg-third hover:bg-third-hover hover:cursor-pointer" disabled={createPostMutation.isPending}>
-            {createPostMutation.isPending ? "Publicando..." : "Publicar"}
-          </Button>
+            <Button
+              type="submit"
+              variant="third"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+            >
+              {isSubmitting ? "Publicando..." : "Publicar"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

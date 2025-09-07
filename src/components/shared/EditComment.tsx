@@ -66,6 +66,8 @@ export function EditComment({ open, onOpenChange, comment }: EditCommentProps) {
     }
   }
 
+  const isSubmitting = updateCommentMutation.isPending;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]" aria-describedby={undefined}>
@@ -120,9 +122,11 @@ export function EditComment({ open, onOpenChange, comment }: EditCommentProps) {
             </DialogClose>
             <Button
               type="submit"
-              className="bg-third hover:bg-third-hover hover:cursor-pointer"
+              variant="third"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
             >
-              Editar
+              {isSubmitting ? "Salvando..." : "Editar"}
             </Button>
           </DialogFooter>
         </form>

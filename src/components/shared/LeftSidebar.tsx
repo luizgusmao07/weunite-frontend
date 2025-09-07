@@ -88,7 +88,7 @@ export function LeftSidebar() {
 
   const items = [
     { title: "Home", url: "/home", icon: Home, color: getIncoColor("/home") },
-    { title: "Oportunidade", url: "#", icon: Link },
+    { title: "Oportunidade", url: "/opportunity", icon: Link },
     { title: "Chat", url: "#", icon: MessageCircleMore },
     { title: "Pesquisar", url: "#", icon: SearchIcon },
     { title: "Criar Publicação", url: "#", icon: DiamondPlus },

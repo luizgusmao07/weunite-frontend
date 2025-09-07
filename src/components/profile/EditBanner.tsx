@@ -230,7 +230,8 @@ export default function EditBanner({ isOpen, onOpenChange }: EditBannerProps) {
             </Button>
             <Button
               onClick={handleSave}
-              className="w-[10em] md:w-[8em] bg-third hover:bg-third-hover hover:cursor-pointer"
+              variant="third"
+              className="w-[10em] md:w-[8em]"
               disabled={updateProfileBanner.isPending || !selectedFile}
             >
               <Check className="h-4 w-4" />

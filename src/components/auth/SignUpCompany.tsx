@@ -32,7 +32,9 @@ export function SignUpCompany({
     },
   });
 
-  function onSubmit(values: z.infer<typeof signUpCompanySchema>) {}
+  function onSubmit(values: z.infer<typeof signUpCompanySchema>) {
+    console.log(values);
+  }
 
   return (
     <div className="flex flex-col space-y-2">

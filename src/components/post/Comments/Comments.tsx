@@ -55,7 +55,7 @@ export default function Comments({
         postId: Number(post.id),
       },
       {
-        onSuccess: (result: any) => {
+        onSuccess: (result: { success: boolean }) => {
           if (result.success) {
             setCommentText("");
           }
@@ -107,7 +107,8 @@ export default function Comments({
 
                   <Button
                     size="sm"
-                    className="bg-third hover:bg-third-hover hover:cursor-pointer rounded-full w-[7em]"
+                    variant="third"
+                    className="rounded-full w-[7em]"
                     onClick={handleCreateComment}
                     disabled={
                       !commentText.trim() || commentText.length > max_chars
@@ -196,7 +197,8 @@ export default function Comments({
 
                     <Button
                       size="sm"
-                      className="bg-third hover:bg-third-hover hover:cursor-pointer rounded-full w-[7em]"
+                      variant="third"
+                      className="rounded-full w-[7em]"
                       onClick={handleCreateComment}
                       disabled={
                         !commentText.trim() || commentText.length > max_chars

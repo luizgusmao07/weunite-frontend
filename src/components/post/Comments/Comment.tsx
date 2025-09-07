@@ -56,8 +56,9 @@ export default function Comment({ comment }: { comment: Comment }) {
 
   const [isEditCommentOpen, setIsEditCommentOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  type LikeUser = { user: { id: string | number } };
   const { data: likesData } = useCommentLikes(Number(comment.id));
-  const serverLikes = likesData?.success ? likesData.data : [];
+  const serverLikes: LikeUser[] = likesData?.success ? (likesData.data as LikeUser[]) : [];
 
   const [likesCount, setLikesCount] = useState(comment.likes?.length || 0);
   const [isLikedState, setIsLikedState] = useState(
@@ -67,9 +68,7 @@ export default function Comment({ comment }: { comment: Comment }) {
   useEffect(() => {
     if (serverLikes.length > 0 || likesData?.success) {
       setLikesCount(serverLikes.length);
-      setIsLikedState(
-        serverLikes.some((like: any) => like.user.id === user?.id),
-      );
+      setIsLikedState(serverLikes.some((like) => like.user.id === user?.id));
     }
   }, [serverLikes, user?.id, likesData]);
 

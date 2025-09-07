@@ -12,7 +12,7 @@ export const profileKeys = {
   listByUser: (userId: number) => [...profileKeys.lists(), { userId }] as const,
   listByPostId: (postId: number) =>
     [...profileKeys.lists(), { postId }] as const,
-  detailByUsername: (username: String) =>
+  detailByUsername: (username: string) =>
     [...profileKeys.all, "detail", username] as const,
 };
 
@@ -57,9 +57,10 @@ export const useUpdateProfile = () => {
         toast.error(result?.error || "Erro ao atualizar perfil");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      const err = error as { response?: { data?: { message?: string } } };
       const errorMessage =
-        error.response?.data?.message || "Erro inesperado ao atualizar perfil";
+        err.response?.data?.message || "Erro inesperado ao atualizar perfil";
       toast.error(errorMessage);
     },
   });
@@ -88,9 +89,10 @@ export const useDeleteProfileBanner = () => {
         toast.error(result?.error || "Erro ao deletar banner");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      const err = error as { response?: { data?: { message?: string } } };
       const errorMessage =
-        error.response?.data?.message || "Erro inesperado ao deletar banner";
+        err.response?.data?.message || "Erro inesperado ao deletar banner";
       toast.error(errorMessage);
     },
   });

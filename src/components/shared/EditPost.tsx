@@ -64,6 +64,8 @@ export function EditPost({ open, onOpenChange, post }: EditPostProps) {
     }
   }
 
+  const isSubmitting = updatePostMutation.isPending;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]" aria-describedby={undefined}>
@@ -114,8 +116,8 @@ export function EditPost({ open, onOpenChange, post }: EditPostProps) {
             <DialogClose asChild>
               <Button variant="outline" className="hover:cursor-pointer">Cancelar</Button>
             </DialogClose>
-            <Button type="submit" className="bg-third hover:bg-third-hover hover:cursor-pointer">
-              Editar
+            <Button type="submit" variant="third" disabled={isSubmitting} aria-busy={isSubmitting}>
+              {isSubmitting ? "Salvando..." : "Editar"}
             </Button>
           </DialogFooter>
         </form>

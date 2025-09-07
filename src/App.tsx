@@ -4,6 +4,7 @@ import { AuthRoutes } from "./routes/auth/AuthRoutes";
 import { HomeRoutes } from "./routes/home/HomeRoutes";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { ProfileRoutes } from "./routes/profile/ProfileRoutes";
+import { OpportunityRoutes } from "./routes/opportunity/OpportunityRoutes";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/auth/*" element={<AuthRoutes />} />
         <Route path="/home/*" element={<HomeRoutes />} />
         <Route path="/profile/*" element={<ProfileRoutes />} />
+        <Route path="/opportunity/*" element={<OpportunityRoutes />} />
         <Route path="/*" element={<Navigate to="/home" replace/>} />
       </Routes>
     </ThemeProvider>

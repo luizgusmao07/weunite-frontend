@@ -63,7 +63,7 @@
   --secondary-foreground: #171717;
   --third: #22c55e;
   --third-hover: #39e177;
-  --thrid-foreground: #000000;
+  --third-foreground: #0a0a0a;
   --muted: #f5f5f5;
   --muted-foreground: #737373;
   --accent: #f5f5f5;
@@ -102,6 +102,7 @@
   --secondary: #262626;
   --secondary-foreground: #fafafa;
   --third: #22c55e;
+  --third-foreground: #fafafa;
   --muted: #262626;
   --muted-foreground: #a1a1a1;
   --accent: #262626;
