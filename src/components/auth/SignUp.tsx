@@ -43,6 +43,7 @@ export function SignUp({
       username: "",
       email: "",
       password: "",
+      role: "athlete",
     },
   });
   const [showPassword, setShowPassword] = useState(false);

@@ -12,7 +12,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { User, AtSign, UserCircle, Building2 } from "lucide-react";
+import { User, AtSign, UserCircle, Building2, KeyRound } from "lucide-react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Checkbox } from "../ui/checkbox";
 import { signUpCompanySchema } from "@/schemas/auth/signUp.schema";
@@ -29,6 +29,8 @@ export function SignUpCompany({
       username: "",
       email: "",
       cnpj: "",
+      password: "",
+      role: "company",
     },
   });
 
@@ -115,6 +117,27 @@ export function SignUpCompany({
                           <Input
                             type="email"
                             placeholder="joaosilva@provedor.com"
+                            className="pl-8"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Senha</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <KeyRound className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="senha"
+                            placeholder="xxxxxxxxx"
                             className="pl-8"
                             {...field}
                           />

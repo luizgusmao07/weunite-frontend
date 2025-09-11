@@ -15,7 +15,7 @@ export interface AuthState {
   verifyResetToken: (data: VerifyCode, email: string) => Promise<Result>;
   resetPassword: (
     data: ResetPassword,
-    verificationToken: string
+    verificationToken: string,
   ) => Promise<void>;
   login: (data: Login) => Promise<void>;
   logout: () => void;
@@ -26,6 +26,7 @@ export interface SignUp {
   username: string;
   email: string;
   password: string;
+  role: "athlete";
 }
 
 export interface VerifyCode {
@@ -37,6 +38,7 @@ export interface SignUpCompany {
   username: string;
   email: string;
   cnpj: string;
+  role: "company";
 }
 
 export interface SendResetPassword {
