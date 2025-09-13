@@ -103,7 +103,7 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
             </DialogClose>
             <Button
               type="submit"
-              variant="third"
+              className="variant-third"
               disabled={isSubmitting}
               aria-busy={isSubmitting}
             >

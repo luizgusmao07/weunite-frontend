@@ -1,4 +1,5 @@
-import { OpportunityModal } from "@/components/opportunity/Opportunity";
+import { CreateOpportunity } from "@/components/opportunity/CreateOpportunity";
+import { OpportunityModal } from "@/components/opportunity/OpportunityDescription";
 
 export function Opportunity() {
   return (
@@ -16,6 +17,7 @@ export function Opportunity() {
           userName="Santos FC"
           date="06/02/2025"
         />
+        <CreateOpportunity />
       </div>
     </div>
   );

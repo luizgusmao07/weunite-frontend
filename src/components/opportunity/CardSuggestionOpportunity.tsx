@@ -5,15 +5,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { OpportunityModal } from "./Opportunity";
+import { OpportunityModal } from "./OpportunityDescription";
 
 export default function CardSuggestionOpportunity() {
   return (
