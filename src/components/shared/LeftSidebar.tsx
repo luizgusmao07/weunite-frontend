@@ -88,7 +88,12 @@ export function LeftSidebar() {
 
   const items = [
     { title: "Home", url: "/home", icon: Home, color: getIncoColor("/home") },
-    { title: "Oportunidade", url: "/opportunity", icon: Link },
+    {
+      title: "Oportunidade",
+      url: "/opportunity",
+      icon: Link,
+      color: getIncoColor("/opportunity"),
+    },
     { title: "Chat", url: "#", icon: MessageCircleMore },
     { title: "Pesquisar", url: "#", icon: SearchIcon },
     { title: "Criar Publicação", url: "#", icon: DiamondPlus },
@@ -105,15 +110,15 @@ export function LeftSidebar() {
     if (isSmallDesktop && !previsDesktop.current) {
       setOpen(false);
     }
-    
+
     previsDesktop.current = isSmallDesktop;
   }, [isSmallDesktop, setOpen]);
 
   const CustomSidebarTrigger = (
-    props: React.ComponentProps<typeof SidebarTrigger>
+    props: React.ComponentProps<typeof SidebarTrigger>,
   ) => {
     const handleClick = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     ) => {
       if (isSearchOpen && state === "collapsed") {
         return;
@@ -123,18 +128,16 @@ export function LeftSidebar() {
     return <SidebarTrigger {...props} onClick={handleClick} />;
   };
 
-
   return (
     <>
       <Search isOpen={isSearchOpen} onOpenChange={setIsSearchOpen} />
       <CreatePost open={isCreatePostOpen} onOpenChange={setIsCreatePostOpen} />
 
-      
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <div
             className={`
-              ${ state === "collapsed" ? "flex justify-center items-center" : "pt-4" }
+              ${state === "collapsed" ? "flex justify-center items-center" : "pt-4"}
               `}
           >
             {state === "collapsed" || isMobile ? (
@@ -185,57 +188,52 @@ export function LeftSidebar() {
                     }
                   >
                     <SidebarMenuButton
-                      asChild
                       tooltip={state === "collapsed" ? item.title : undefined}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (item.title === "Modo de cor") {
+                          setTheme(theme === "dark" ? "light" : "dark");
+                        } else if (item.title === "Pesquisar") {
+                          handleSearchOpen();
+                        } else if (item.title === "Criar Publicação") {
+                          handleCreatePostOpen();
+                        } else if (item.url !== "#") {
+                          navigate(item.url);
+                        }
+                      }}
+                      className={`flex ${
+                        state === "collapsed"
+                          ? "justify-center w-full py-2"
+                          : "items-center gap-2"
+                      }`}
                     >
-                      <a
-                        href={item.url}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (item.title === "Modo de cor") {
-                            setTheme(theme === "dark" ? "light" : "dark");
-                          } else if (item.title === "Pesquisar") {
-                            handleSearchOpen();
-                          } else if (item.title === "Criar Publicação") {
-                            handleCreatePostOpen();
-                          } else if (item.url !== "#") {
-                            navigate(item.url);
-                          }
-                        }}
-                        className={`flex ${
-                          state === "collapsed"
-                            ? "justify-center w-full py-2"
-                            : "items-center gap-2"
-                        }`}
+                      <div
+                        className={
+                          state === "collapsed" ? "flex justify-center" : ""
+                        }
                       >
-                        <div
+                        <item.icon
+                          style={{
+                            width: "24px",
+                            height: "24px",
+                            color:
+                              item.url !== "#" && pathname === item.url
+                                ? "#22C55E"
+                                : "currentColor",
+                          }}
+                        />
+                      </div>
+                      {state !== "collapsed" && (
+                        <span
                           className={
-                            state === "collapsed" ? "flex justify-center" : ""
+                            item.url !== "#" && pathname === item.url
+                              ? "text-[#22C55E]"
+                              : ""
                           }
                         >
-                          <item.icon
-                            style={{
-                              width: "24px",
-                              height: "24px",
-                              color:
-                                item.url !== "#" && pathname === item.url
-                                  ? "#22C55E"
-                                  : "currentColor",
-                            }}
-                          />
-                        </div>
-                        {state !== "collapsed" && (
-                          <span
-                            className={
-                              item.url !== "#" && pathname === item.url
-                                ? "text-[#22C55E]"
-                                : ""
-                            }
-                          >
-                            {item.title}
-                          </span>
-                        )}
-                      </a>
+                          {item.title}
+                        </span>
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -247,9 +245,10 @@ export function LeftSidebar() {
           <SidebarMenu className="mb-3">
             <SidebarMenuItem
               className={
-                state === "collapsed" || isMobile ? "w-full flex justify-center" : ""
-              } 
-              
+                state === "collapsed" || isMobile
+                  ? "w-full flex justify-center"
+                  : ""
+              }
             >
               <DropdownMenu>
                 <DropdownMenuTrigger asChild className="hover:cursor-pointer">
@@ -261,10 +260,7 @@ export function LeftSidebar() {
                     }`}
                   >
                     <Avatar className={state === "collapsed" ? "mx-auto" : ""}>
-                      <AvatarImage
-                        src={user?.profileImg}
-                        alt="@shadcn"
-                      />
+                      <AvatarImage src={user?.profileImg} alt="@shadcn" />
                       <AvatarFallback> {initials}</AvatarFallback>
                     </Avatar>
                     {state !== "collapsed" && <p>{user?.username}</p>}
@@ -285,8 +281,9 @@ export function LeftSidebar() {
                   </div>
 
                   <div className="space-y-1 py-1">
-                    <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors"
-                    onClick={() => navigate("/profile")}
+                    <DropdownMenuItem
+                      className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors"
+                      onClick={() => navigate("/profile")}
                     >
                       <User className="h-4 w-4 text-gray-500" />
                       <p>Perfil</p>

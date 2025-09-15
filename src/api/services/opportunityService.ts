@@ -1,42 +1,31 @@
 import type { CreateOpportunity } from "@/@types/opportunity.types";
-import axios, { AxiosError } from "axios";
+import { instance as axios } from "../axios";
+import { AxiosError } from "axios";
 
 export const createOpportunityRequest = async (
   data: CreateOpportunity,
   companyId: number,
 ) => {
   try {
-    const formData = new FormData();
+    const toLocalDateString = (d: Date | string) => {
+      const date = d instanceof Date ? d : new Date(d);
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    };
 
-    const opportunityBlob = new Blob(
-      [
-        JSON.stringify({
-          title: data.title,
-          description: data.description,
-          location: data.location,
-          localDate: data.localDate,
-          skills: data.skills,
-        }),
-      ],
-      {
-        type: "application/json",
-      },
-    );
-
-    formData.append("opportunity", opportunityBlob);
-
-    if (data.media) {
-      formData.append("image", data.media);
-    }
+    const payload = {
+      title: data.title,
+      description: data.description,
+      location: data.location,
+      dateEnd: toLocalDateString(data.dateEnd),
+      skills: data.skills,
+    };
 
     const response = await axios.post(
       `/opportunities/create/${companyId}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
+      payload,
     );
 
     return {

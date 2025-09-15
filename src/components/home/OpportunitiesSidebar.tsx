@@ -85,7 +85,7 @@ export const OpportunitiesSidebar: React.FC = () => {
   return (
     <>
       {isDesktop && (
-        <div className="fixed right-0 top-0 h-screen w-[20vw] z-10 pointer-events-none mr-6 bg-background">
+        <div className="fixed right-0 top-0 h-screen w-[20vw] z-30 pointer-events-none mr-6 bg-background">
           <div className="flex items-center justify-center mb-2 mt-6">
             <h2 className="text-lg font-semibold text-sidebar-foreground ml-2">
               Sugestões de oportunidade
@@ -103,7 +103,8 @@ export const OpportunitiesSidebar: React.FC = () => {
             <SheetTrigger asChild>
               <Button
                 size="icon"
-                className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90 hover:cursor-pointer"
+                className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-[60] bg-primary hover:bg-primary/90 hover:cursor-pointer pointer-events-auto"
+                aria-label="Abrir sugestões de oportunidade"
               >
                 <Lightbulb className="h-6 w-6" />
               </Button>

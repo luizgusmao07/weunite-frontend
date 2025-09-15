@@ -1,4 +1,4 @@
-import { instance } from "../axios"; // Altere esta linha
+import { instance } from "../axios";
 import { AxiosError } from "axios";
 import type { User } from "@/@types/user.types";
 

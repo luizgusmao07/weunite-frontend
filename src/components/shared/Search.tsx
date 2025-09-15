@@ -56,7 +56,7 @@ export function Search({
   return (
     <>
       <div
-        className={`fixed top-0 bottom-0 z-10 bg-card border-r border-border shadow-lg ${
+        className={`fixed top-0 bottom-0 z-40 pointer-events-auto bg-card border-r border-border shadow-lg ${
           isAnimating
             ? "animate-out slide-out-to-left"
             : "animate-in slide-in-from-left"
@@ -76,7 +76,8 @@ export function Search({
             <h2 className="text-lg font-semibold">Pesquisar</h2>
             <button
               onClick={() => handleOpenChange(false)}
-              className="p-1 rounded-full hover:bg-muted transition-colors "
+              className="p-1 rounded-full hover:bg-muted transition-colors"
+              aria-label="Fechar pesquisa"
             >
               <X className="h-5 w-5 hover:cursor-pointer" />
             </button>

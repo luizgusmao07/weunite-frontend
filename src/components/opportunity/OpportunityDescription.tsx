@@ -16,55 +16,204 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { X as CloseIcon } from "lucide-react";
+import {
+  X as CloseIcon,
+  MapPin,
+  Calendar,
+  Users,
+  Clock,
+  Building2,
+} from "lucide-react";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
 import { useState, useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import type { OpportunityDisplay } from "@/@types/opportunity.types";
+import { getTimeAgo } from "@/hooks/useGetTimeAgo";
 
 interface OpportunityModalProps {
-  title: string;
-  address: string;
-  fullDescription?: string;
+  opportunity: OpportunityDisplay;
   buttonText?: string;
-  userPhoto?: string;
-  userName?: string;
-  date?: string;
+  variant?: string;
+  size?: string;
+  className?: string;
 }
 
 export function OpportunityModal({
-  title,
-  address,
-  fullDescription,
-  buttonText = "Ver Mais",
-  userPhoto,
-  userName,
-  date
+  opportunity,
+  buttonText = "Ver Detalhes",
+  variant,
+  size,
+  className,
 }: OpportunityModalProps) {
   const { isDesktop, isTablet } = useBreakpoints();
   const [open, setOpen] = useState(false);
 
-  
   useEffect(() => {
     if (open) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [open]);
 
+  const timeAgo = getTimeAgo(opportunity.createdAt);
+  const updatedTimeAgo = opportunity.updatedAt
+    ? getTimeAgo(opportunity.updatedAt)
+    : null;
+  const deadlineDate = new Date(opportunity.dateEnd).toLocaleDateString(
+    "pt-BR",
+    {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    },
+  );
+
   const renderContent = () => (
-    <div className="space-y-4">
-      {fullDescription && (
+    <div className="space-y-6">
+      <div className="bg-muted/30 rounded-lg p-4">
+        <div className="flex items-center gap-3 mb-3">
+          <Building2 className="h-5 w-5 text-muted-foreground" />
+          <h4 className="text-base font-semibold">Empresa</h4>
+        </div>
+        <div className="flex items-center gap-3">
+          {opportunity.companyLogo ? (
+            <img
+              src={opportunity.companyLogo}
+              alt={opportunity.companyName}
+              className="w-12 h-12 rounded-full object-cover border-2 border-border"
+            />
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-third/10 flex items-center justify-center border-2 border-border">
+              <span className="text-third font-semibold text-lg">
+                {opportunity.companyName.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
+          <div>
+            <p className="font-medium text-card-foreground">
+              {opportunity.companyName}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              ID: {opportunity.companyId}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-center gap-2 text-sm">
+            <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">Local:</span>
+            <span className="font-medium">{opportunity.location}</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm">
+            <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">Prazo:</span>
+            <span className="font-medium">{deadlineDate}</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-center gap-2 text-sm">
+            <Users className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">Candidaturas:</span>
+            <span className="font-medium">{opportunity.applicationsCount}</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm">
+            <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">Publicado:</span>
+            <span className="font-medium">{timeAgo}</span>
+          </div>
+        </div>
+
+        {updatedTimeAgo && (
+          <div className="flex items-center gap-2 text-sm">
+            <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">Atualizado:</span>
+            <span className="font-medium">{updatedTimeAgo}</span>
+          </div>
+        )}
+      </div>
+
+      {opportunity.skills && opportunity.skills.length > 0 && (
         <div>
-          <h4 className="text-base font-semibold mb-2">Descrição Oportunidade</h4>
-          <p className="text-sm font-medium text-muted-foreground leading-relaxed">
-            {fullDescription}
-          </p>
+          <h4 className="text-base font-semibold mb-3 flex items-center gap-2">
+            <span>Habilidades Requeridas</span>
+            <Badge variant="outline" className="text-xs">
+              {opportunity.skills.length}
+            </Badge>
+          </h4>
+          <div className="flex flex-wrap gap-2">
+            {opportunity.skills.map((skill) => (
+              <Badge
+                key={skill.id}
+                variant="secondary"
+                className="text-sm px-3 py-1 bg-third/10 text-third hover:bg-third/20"
+              >
+                {skill.name}
+              </Badge>
+            ))}
+          </div>
         </div>
       )}
+
+      <div className="bg-muted/30 rounded-lg p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium">
+              Status: {opportunity.isExpired ? "Expirada" : "Ativa"}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {opportunity.isExpired
+                ? "Esta oportunidade não aceita mais candidaturas"
+                : `${opportunity.daysUntilDeadline} dias restantes`}
+            </p>
+          </div>
+          <Badge variant={opportunity.isExpired ? "destructive" : "default"}>
+            {opportunity.isExpired ? "Expirada" : "Ativa"}
+          </Badge>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="text-base font-semibold mb-3">Descrição Completa</h4>
+        <div className="bg-muted/20 rounded-lg p-4">
+          <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+            {opportunity.description}
+          </p>
+        </div>
+      </div>
+
+      <div className="border-t pt-4">
+        <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
+          <div>
+            <span className="font-medium">ID da Oportunidade:</span>{" "}
+            {opportunity.id}
+          </div>
+          <div>
+            <span className="font-medium">Criado em:</span>{" "}
+            {new Date(opportunity.createdAt).toLocaleString("pt-BR")}
+          </div>
+          {opportunity.updatedAt && (
+            <>
+              <div>
+                <span className="font-medium">Última atualização:</span>{" "}
+                {new Date(opportunity.updatedAt).toLocaleString("pt-BR")}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 
@@ -73,9 +222,12 @@ export function OpportunityModal({
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
           <Button
-            variant="outline"
-            size="sm"
-            className="text-xs text-thrid bg-transparent hover:cursor-pointer"
+            variant={(variant as any) || "outline"}
+            size={(size as any) || "sm"}
+            className={cn(
+              "text-xs text-thrid bg-transparent hover:cursor-pointer",
+              className,
+            )}
           >
             {buttonText}
           </Button>
@@ -86,67 +238,30 @@ export function OpportunityModal({
               <DrawerClose className="absolute rounded-sm transition-opacity right-4">
                 <CloseIcon className="h-5 w-5 hover:cursor-pointer" />
               </DrawerClose>
-              <div className="flex items-center gap-3 mb-4">
-                {userPhoto ? (
-                  <img
-                    src={userPhoto}
-                    alt={userName || "Foto do usuário"}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
-                  />
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center border-2 border-gray-200">
-                    <span className="text-gray-600 font-semibold text-lg">
-                      {userName ? userName.charAt(0).toUpperCase() : "U"}
-                    </span>
-                  </div>
-                )}
-                {userName && (
-                  <div className="flex-1">
-                    <p className="text-left font-medium">
-                      {userName}
-                    </p>
-                  </div>
-                )}
-              </div>
-              <DrawerTitle className="text-left">{title}</DrawerTitle>
-              <DrawerDescription className="text-left">
-                {address}
+              <DrawerTitle className="text-left text-xl font-bold">
+                {opportunity.title}
+              </DrawerTitle>
+              <DrawerDescription className="text-left text-muted-foreground">
+                {opportunity.location}
               </DrawerDescription>
             </DrawerHeader>
-
-            <DrawerDescription className="px-6 mb-3 text-left">
-              {date}
-            </DrawerDescription>
-          
-            <div className="px-6 mb-4">
-              <Button
-                size="sm"
-                className="rounded-full w-[7em]"
-              >
-                Habilidades
-              </Button>
-            </div>
 
             <div className="px-6 mb-4 flex gap-2">
               <Button
                 size="sm"
                 variant="third"
-                className="rounded-full w-[9em]"
+                className="rounded-full px-4"
+                disabled={opportunity.isExpired}
               >
-                Inscrever-se
+                {opportunity.isExpired ? "Expirada" : "Candidatar-se"}
               </Button>
 
-              <Button
-                size="sm"
-                className="rounded-full w-[7em]"
-              >
+              <Button size="sm" variant="outline" className="rounded-full px-4">
                 Salvar
               </Button>
             </div>
 
-            <div className="px-6 pb-6">
-              {renderContent()}
-            </div>
+            <div className="px-6 pb-6">{renderContent()}</div>
           </div>
         </DrawerContent>
       </Drawer>
@@ -157,9 +272,12 @@ export function OpportunityModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="outline"
-          size="sm"
-          className="text-xs text-thrid bg-transparent hover:cursor-pointer"
+          variant={(variant as any) || "outline"}
+          size={(size as any) || "sm"}
+          className={cn(
+            "text-xs text-thrid bg-transparent hover:cursor-pointer",
+            className,
+          )}
         >
           {buttonText}
         </Button>
@@ -167,62 +285,27 @@ export function OpportunityModal({
       <DialogContent className="w-[95vw] max-w-[600px] max-h-[85vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="space-y-4">
           <DialogHeader>
-            <div className="flex items-center gap-3 mb-4">
-              {userPhoto ? (
-                <img
-                  src={userPhoto}
-                  alt={userName || "Foto do usuário"}
-                  className="w-14 h-14 rounded-full object-cover border-2 border-gray-200"
-                />
-              ) : (
-                <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center border-2 border-gray-200">
-                  <span className="text-gray-600 font-semibold text-base">
-                    {userName ? userName.charAt(0).toUpperCase() : "U"}
-                  </span>
-                </div>
-              )}
-              {userName && (
-                <div className="flex-1">
-                  <p className="text-base font-medium">
-                    {userName}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <DialogTitle className="text-lg">{title}</DialogTitle>
-            <DialogDescription className="text-sm">
-              {address}
+            <DialogTitle className="text-xl font-bold">
+              {opportunity.title}
+            </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
+              {opportunity.location}
             </DialogDescription>
-
-            <DrawerDescription className=" mb-3 text-left">
-              {date}
-            </DrawerDescription>
-
           </DialogHeader>
 
-          <div className="mb-4">
-            <Button
-              size="sm"
-              className="rounded-full px-4"
-            >
-              Habilidades
-            </Button>
-          </div>
-
-          <div className="mb-4 flex gap-2">
+          <div className="mb-6 flex gap-2">
             <Button
               size="sm"
               variant="third"
-              className="rounded-full px-4"
+              className="rounded-full px-6"
+              disabled={opportunity.isExpired}
             >
-              Inscrever-se
+              {opportunity.isExpired
+                ? "Oportunidade Expirada"
+                : "Candidatar-se"}
             </Button>
 
-            <Button
-              size="sm"
-              className="rounded-full px-4"
-            >
+            <Button size="sm" variant="outline" className="rounded-full px-4">
               Salvar
             </Button>
           </div>
