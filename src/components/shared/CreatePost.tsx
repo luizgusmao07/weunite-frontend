@@ -33,7 +33,7 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
 
   const { user } = useAuthStore();
 
-  const createPostMutation  = useCreatePost();
+  const createPostMutation = useCreatePost();
 
   async function onSubmit(values: z.infer<typeof createPostSchema>) {
     if (!user?.id) return;
@@ -99,11 +99,13 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
           </div>
           <DialogFooter className="mt-4">
             <DialogClose asChild>
-              <Button variant="outline" className="hover:cursor-pointer">Cancelar</Button>
+              <Button variant="outline" className="hover:cursor-pointer">
+                Cancelar
+              </Button>
             </DialogClose>
             <Button
               type="submit"
-              className="variant-third"
+              className="variant-third bg-third hover:bg-third-hover"
               disabled={isSubmitting}
               aria-busy={isSubmitting}
             >

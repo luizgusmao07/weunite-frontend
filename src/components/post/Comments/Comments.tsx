@@ -108,7 +108,7 @@ export default function Comments({
                   <Button
                     size="sm"
                     variant="third"
-                    className="rounded-full w-[7em]"
+                    className="bg-third hover:bg-third-hover text-foreground rounded-full w-[7em]"
                     onClick={handleCreateComment}
                     disabled={
                       !commentText.trim() || commentText.length > max_chars
@@ -198,7 +198,7 @@ export default function Comments({
                     <Button
                       size="sm"
                       variant="third"
-                      className="rounded-full w-[7em]"
+                      className="bg-third hover:bg-third-hover rounded-full w-[7em] text-background"
                       onClick={handleCreateComment}
                       disabled={
                         !commentText.trim() || commentText.length > max_chars

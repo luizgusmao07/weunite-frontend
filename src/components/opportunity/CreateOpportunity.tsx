@@ -117,8 +117,11 @@ export function CreateOpportunity({
   };
 
   const CreateForm = () => (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-      <div className="space-y-2">
+    <form
+      onSubmit={handleSubmit(handleFormSubmit)}
+      className="space-y-6 max-w-[38em]"
+    >
+      <div className="space-y-2 bg-">
         <Label
           htmlFor="title"
           className="text-sm font-medium flex items-center gap-2"
@@ -146,7 +149,7 @@ export function CreateOpportunity({
           placeholder="Descreva a oportunidade, responsabilidades e requisitos..."
           rows={4}
           {...register("description")}
-          className={cn(errors.description && "border-red-500")}
+          className={`bg-transparent border-none resize-none focus-visible:ring-2 p-2 text-base overflow-h-auto ${cn(errors.description && "border-red-500")}`}
         />
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description.message}</p>
@@ -316,7 +319,7 @@ export function CreateOpportunity({
             </Button>
           )}
         </DialogTrigger>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-third" />

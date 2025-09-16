@@ -201,7 +201,7 @@ export function LeftSidebar() {
                           navigate(item.url);
                         }
                       }}
-                      className={`flex ${
+                      className={`flex cursor-pointer ${
                         state === "collapsed"
                           ? "justify-center w-full py-2"
                           : "items-center gap-2"

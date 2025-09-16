@@ -20,7 +20,7 @@ export function OpportunitySidebar({
     <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:right-8 lg:top-32 z-30 pointer-events-auto space-y-4">
       {isAuthenticated && (
         <CreateOpportunity onSubmit={onCreateOpportunity}>
-          <Button className="group relative w-full justify-center gap-2 h-12 bg-gradient-to-r from-third to-green-500 hover:from-green-500 hover:to-emerald-500 text-white shadow-md hover:shadow-lg transition-all duration-300">
+          <Button className="group relative w-full justify-center gap-2 h-12 bg-gradient-to-r from-third to-green-500 hover:from-green-500 hover:to-emerald-500 text-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer">
             <Plus className="h-4 w-4" />
             Criar Oportunidade
           </Button>
@@ -29,7 +29,7 @@ export function OpportunitySidebar({
       <Button
         variant="outline"
         onClick={() => navigate("/opportunity/my")}
-        className="group relative w-full justify-start gap-3 h-12 bg-gradient-to-r from-card to-card/90 hover:from-green-50 hover:to-green-100 dark:hover:from-green-950/20 dark:hover:to-green-900/30 border-border hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/10 overflow-hidden"
+        className="group relative w-full justify-start gap-3 h-12 bg-gradient-to-r from-card to-card/90 hover:from-green-50 hover:to-green-100 dark:hover:from-green-950/20 dark:hover:to-green-900/30 border-border hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/10 overflow-hidden cursor-pointer"
       >
         <div className="relative z-10 flex items-center gap-3">
           <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30 group-hover:bg-green-200 dark:group-hover:bg-green-800/40 transition-colors duration-300">
@@ -46,7 +46,7 @@ export function OpportunitySidebar({
       <Button
         variant="outline"
         onClick={() => navigate("/opportunity/saved")}
-        className="group relative w-full justify-start gap-3 h-12 bg-gradient-to-r from-card to-card/90 hover:from-green-50 hover:to-green-100 dark:hover:from-green-950/20 dark:hover:to-green-900/30 border-border hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/10 overflow-hidden"
+        className="group relative w-full justify-start gap-3 h-12 bg-gradient-to-r from-card to-card/90 hover:from-green-50 hover:to-green-100 dark:hover:from-green-950/20 dark:hover:to-green-900/30 border-border hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/10 overflow-hidden cursor-pointer"
       >
         <div className="relative z-10 flex items-center gap-3">
           <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30 group-hover:bg-green-200 dark:group-hover:bg-green-800/40 transition-colors duration-300">
