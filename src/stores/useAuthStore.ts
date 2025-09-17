@@ -3,6 +3,7 @@ import {
   resetPasswordRequest,
   sendResetPasswordRequest,
   signUpRequest,
+  signUpCompanyRequest,
   verifyEmailRequest,
   verifyResetTokenRequest,
 } from "@/api/services/authService";
@@ -12,6 +13,7 @@ import type {
   ResetPassword,
   SendResetPassword,
   SignUp,
+  SignUpCompany,
   VerifyCode,
 } from "@/@types/auth.types";
 import { create } from "zustand";
@@ -36,13 +38,18 @@ export const useAuthStore = create<AuthState>()(
           user: null,
           jwt: null,
           isAuthenticated: false,
-          message: "Logout realizado com sucesso"
+          message: "Logout realizado com sucesso",
         });
       },
 
-      signup: async (request: SignUp) => {
+      signup: async (request: SignUp | SignUpCompany) => {
         set({ loading: true, error: null, message: null });
-        const result = await signUpRequest(request);
+
+        // Determina qual função usar baseado na presença do campo 'cnpj'
+        const isCompany = "cnpj" in request;
+        const result = isCompany
+          ? await signUpCompanyRequest(request as SignUpCompany)
+          : await signUpRequest(request as SignUp);
 
         if (result.success) {
           set({
@@ -116,7 +123,7 @@ export const useAuthStore = create<AuthState>()(
 
       resetPassword: async (
         request: ResetPassword,
-        verificationToken: string
+        verificationToken: string,
       ) => {
         set({
           loading: true,
@@ -161,6 +168,6 @@ export const useAuthStore = create<AuthState>()(
         jwt: state.jwt,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );

@@ -9,7 +9,7 @@ export interface AuthState {
   message: string | null;
   clearMessages: () => Promise<void>;
   setUser: (user: User) => void;
-  signup: (data: SignUp) => Promise<Result>;
+  signup: (data: SignUp | SignUpCompany) => Promise<Result>;
   verifyEmail: (data: VerifyCode, email: string) => Promise<void>;
   sendResetPassword: (data: SendResetPassword) => Promise<Result>;
   verifyResetToken: (data: VerifyCode, email: string) => Promise<Result>;

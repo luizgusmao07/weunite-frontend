@@ -12,10 +12,20 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { User, AtSign, UserCircle, Building2, KeyRound } from "lucide-react";
+import {
+  User,
+  AtSign,
+  UserCircle,
+  Building2,
+  KeyRound,
+  Loader2,
+} from "lucide-react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Checkbox } from "../ui/checkbox";
 import { signUpCompanySchema } from "@/schemas/auth/signUp.schema";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useAuthMessages } from "@/hooks/useAuthMessages";
 
 export function SignUpCompany({
   setCurrentTab,
@@ -34,9 +44,17 @@ export function SignUpCompany({
     },
   });
 
-  function onSubmit(values: z.infer<typeof signUpCompanySchema>) {
-    console.log(values);
+  const { signup, loading } = useAuthStore();
+  const navigate = useNavigate();
+
+  async function onSubmit(values: z.infer<typeof signUpCompanySchema>) {
+    const result = await signup(values);
+    if (result.success) {
+      navigate(`/auth/verify-email/${values.email}`);
+    }
   }
+
+  useAuthMessages();
 
   return (
     <div className="flex flex-col space-y-2">
@@ -186,7 +204,13 @@ export function SignUpCompany({
                     </label>
                   </div>
 
-                  <Button type="submit">Cadastrar</Button>
+                  <Button type="submit" disabled={loading}>
+                    {loading ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      "Cadastrar"
+                    )}
+                  </Button>
                   <span className="text-xs">
                     Já se cadastrou? {""}
                     <a
