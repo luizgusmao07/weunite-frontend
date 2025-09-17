@@ -16,5 +16,5 @@ export const createOpportunitySchema = z.object({
     .max(5000, "Descrição muito longa"),
   location: z.string().min(1, "Localização é obrigatória"),
   dateEnd: z.date({ required_error: "Data de término é obrigatória" }),
-  skills: z.array(skillSchema).min(1, "Selecione ao menos uma habilidade"),
+  skills: z.string().min(1, "Digite pelo menos uma habilidade"),
 });

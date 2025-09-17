@@ -19,6 +19,8 @@ import {
   Building2,
   KeyRound,
   Loader2,
+  EyeOff,
+  Eye,
 } from "lucide-react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Checkbox } from "../ui/checkbox";
@@ -26,6 +28,7 @@ import { signUpCompanySchema } from "@/schemas/auth/signUp.schema";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useAuthMessages } from "@/hooks/useAuthMessages";
+import { useState } from "react";
 
 export function SignUpCompany({
   setCurrentTab,
@@ -53,6 +56,8 @@ export function SignUpCompany({
       navigate(`/auth/verify-email/${values.email}`);
     }
   }
+
+  const [showPassword, setShowPassword] = useState(false);
 
   useAuthMessages();
 
@@ -154,11 +159,22 @@ export function SignUpCompany({
                         <div className="relative">
                           <KeyRound className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
-                            type="senha"
-                            placeholder="xxxxxxxxx"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="**********"
                             className="pl-8"
                             {...field}
                           />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-2.5 transition-transform duration-300 ease-in-out"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4 text-muted-foreground animate-pulse" />
+                            ) : (
+                              <Eye className="h-4 w-4 text-muted-foreground animate-pulse" />
+                            )}
+                          </button>
                         </div>
                       </FormControl>
                       <FormMessage className="text-xs" />

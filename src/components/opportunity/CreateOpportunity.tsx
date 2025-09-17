@@ -22,24 +22,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import {
   CalendarIcon,
   Plus,
-  X,
   MapPin,
   Building2,
   Users,
   Loader2,
 } from "lucide-react";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
-import type { Skill } from "@/@types/opportunity.types";
 import { skillOptions, locationOptions } from "@/constants/opportunityOptions";
 import { createOpportunitySchema } from "@/schemas/opportunity/createOpportunity.schema";
 
@@ -58,7 +50,6 @@ export function CreateOpportunity({
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
   const [dateEnd, setDateEnd] = useState<Date>();
 
   const {
@@ -73,7 +64,7 @@ export function CreateOpportunity({
       title: "",
       description: "",
       location: "",
-      skills: [],
+      skills: "",
     },
   });
 
@@ -82,8 +73,7 @@ export function CreateOpportunity({
 
     const submitData = {
       ...data,
-      location: selectedLocation,
-      skills: selectedSkills,
+      location: selectedLocation || data.location,
       dateEnd: dateEnd!,
     };
 
@@ -92,7 +82,6 @@ export function CreateOpportunity({
       await onSubmit(submitData);
       reset();
       setSelectedLocation("");
-      setSelectedSkills([]);
       setDateEnd(undefined);
       setOpen(false);
     } catch (error) {
@@ -100,20 +89,6 @@ export function CreateOpportunity({
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const addSkill = (skill: Skill) => {
-    if (!selectedSkills.find((s) => s.id === skill.id)) {
-      const newSkills = [...selectedSkills, skill];
-      setSelectedSkills(newSkills);
-      setValue("skills", newSkills);
-    }
-  };
-
-  const removeSkill = (skillId: number) => {
-    const newSkills = selectedSkills.filter((s) => s.id !== skillId);
-    setSelectedSkills(newSkills);
-    setValue("skills", newSkills);
   };
 
   const CreateForm = () => (
@@ -161,37 +136,19 @@ export function CreateOpportunity({
           <MapPin className="h-4 w-4" />
           Localização
         </Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !selectedLocation && "text-muted-foreground",
-                errors.location && "border-red-500",
-              )}
-            >
-              {selectedLocation || "Selecione a localização"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80 p-0">
-            <div className="max-h-60 overflow-auto">
-              {locationOptions.map((location) => (
-                <Button
-                  key={location}
-                  variant="ghost"
-                  className="w-full justify-start"
-                  onClick={() => {
-                    setSelectedLocation(location);
-                    setValue("location", location);
-                  }}
-                >
-                  {location}
-                </Button>
-              ))}
-            </div>
-          </PopoverContent>
-        </Popover>
+        <div className="relative">
+          <Input
+            {...register("location")}
+            placeholder="Digite ou selecione a localização"
+            list="location-options"
+            className={cn("w-full", errors.location && "border-red-500")}
+          />
+          <datalist id="location-options">
+            {locationOptions.map((location) => (
+              <option key={location} value={location} />
+            ))}
+          </datalist>
+        </div>
         {errors.location && (
           <p className="text-sm text-red-500">{errors.location.message}</p>
         )}
@@ -205,10 +162,16 @@ export function CreateOpportunity({
         <Input
           type="date"
           min={new Date().toISOString().split("T")[0]}
+          value={dateEnd ? dateEnd.toISOString().split("T")[0] : ""}
           onChange={(e) => {
-            const date = new Date(e.target.value);
-            setDateEnd(date);
-            setValue("dateEnd", date);
+            if (e.target.value) {
+              const date = new Date(e.target.value);
+              setDateEnd(date);
+              setValue("dateEnd", date);
+            } else {
+              setDateEnd(undefined);
+              setValue("dateEnd", undefined as any);
+            }
           }}
           className={cn(errors.dateEnd && "border-red-500")}
         />
@@ -222,57 +185,19 @@ export function CreateOpportunity({
           <Users className="h-4 w-4" />
           Habilidades Necessárias
         </Label>
-
-        {selectedSkills.length > 0 && (
-          <div className="flex flex-wrap gap-2 p-3 bg-muted/30 rounded-lg">
-            {selectedSkills.map((skill) => (
-              <Badge
-                key={skill.id}
-                variant="secondary"
-                className="flex items-center gap-1"
-              >
-                {skill.name}
-                <X
-                  className="h-3 w-3 cursor-pointer hover:text-red-500"
-                  onClick={() => removeSkill(skill.id)}
-                />
-              </Badge>
+        <div className="relative">
+          <Input
+            {...register("skills")}
+            placeholder="Digite as habilidades separadas por vírgula"
+            list="skills-options"
+            className={cn("w-full", errors.skills && "border-red-500")}
+          />
+          <datalist id="skills-options">
+            {skillOptions.map((skill) => (
+              <option key={skill.id} value={skill.name} />
             ))}
-          </div>
-        )}
-
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                errors.skills && "border-red-500",
-              )}
-            >
-              Adicionar habilidade
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80 p-0">
-            <div className="max-h-60 overflow-auto">
-              {skillOptions
-                .filter(
-                  (skill) => !selectedSkills.find((s) => s.id === skill.id),
-                )
-                .map((skill) => (
-                  <Button
-                    key={skill.id}
-                    variant="ghost"
-                    className="w-full justify-start"
-                    onClick={() => addSkill(skill)}
-                  >
-                    {skill.name}
-                  </Button>
-                ))}
-            </div>
-          </PopoverContent>
-        </Popover>
-
+          </datalist>
+        </div>
         {errors.skills && (
           <p className="text-sm text-red-500">{errors.skills.message}</p>
         )}
