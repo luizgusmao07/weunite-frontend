@@ -46,18 +46,24 @@ export function CreateOpportunity({
   children,
   onSubmit,
 }: CreateOpportunityProps) {
+  console.log("📝 CreateOpportunity - onSubmit recebida:", !!onSubmit);
+
   const { isDesktop } = useBreakpoints();
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState("");
-  const [dateEnd, setDateEnd] = useState<Date>();
+
+  console.log("📝 CreateOpportunity - estado atual:", {
+    open,
+    isSubmitting,
+    selectedLocation,
+  });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
   } = useForm<CreateOpportunityFormData>({
     resolver: zodResolver(createOpportunitySchema),
     defaultValues: {
@@ -69,12 +75,21 @@ export function CreateOpportunity({
   });
 
   const handleFormSubmit = async (data: CreateOpportunityFormData) => {
-    if (!onSubmit) return;
+    console.log("📝 Criando oportunidade:", data);
+
+    if (!onSubmit) {
+      console.error("❌ Função onSubmit não foi passada!");
+      return;
+    }
+
+    if (!data.dateEnd) {
+      console.error("❌ Data de término não foi selecionada!");
+      return;
+    }
 
     const submitData = {
       ...data,
       location: selectedLocation || data.location,
-      dateEnd: dateEnd!,
     };
 
     setIsSubmitting(true);
@@ -82,10 +97,9 @@ export function CreateOpportunity({
       await onSubmit(submitData);
       reset();
       setSelectedLocation("");
-      setDateEnd(undefined);
       setOpen(false);
     } catch (error) {
-      // Handle error silently or show user-friendly error message
+      console.error("❌ Erro ao criar oportunidade:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -106,7 +120,7 @@ export function CreateOpportunity({
         </Label>
         <Input
           id="title"
-          placeholder="Ex: Desenvolvedor Frontend Júnior"
+          placeholder="Ex: Jogador de Futebol de Campo"
           {...register("title")}
           className={cn(errors.title && "border-red-500")}
         />
@@ -162,17 +176,9 @@ export function CreateOpportunity({
         <Input
           type="date"
           min={new Date().toISOString().split("T")[0]}
-          value={dateEnd ? dateEnd.toISOString().split("T")[0] : ""}
-          onChange={(e) => {
-            if (e.target.value) {
-              const date = new Date(e.target.value);
-              setDateEnd(date);
-              setValue("dateEnd", date);
-            } else {
-              setDateEnd(undefined);
-              setValue("dateEnd", undefined as any);
-            }
-          }}
+          {...register("dateEnd", {
+            setValueAs: (value) => (value ? new Date(value) : undefined),
+          })}
           className={cn(errors.dateEnd && "border-red-500")}
         />
         {errors.dateEnd && (

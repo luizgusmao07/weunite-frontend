@@ -7,11 +7,12 @@ import OpportunitySearch, {
   type OpportunityFilters,
 } from "@/components/opportunity/OpportunitySearch";
 import type { OpportunityDisplay } from "@/@types/opportunity.types";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useCreateOpportunity } from "@/state/useOpportunities";
 import { Button } from "@/components/ui/button";
 import { Building2, Bookmark } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 const mockOpportunities: OpportunityDisplay[] = [
   {
@@ -82,7 +83,8 @@ const mockOpportunities: OpportunityDisplay[] = [
 ];
 
 export function Opportunity() {
-  const [isLoading] = useState(false);
+  console.log("🔵 Componente Opportunity renderizando...");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<OpportunityFilters>({
     location: "",
@@ -91,31 +93,192 @@ export function Opportunity() {
     dateRange: "all",
     companyType: "all",
   });
+  const [createdOpportunities, setCreatedOpportunities] = useState<
+    OpportunityDisplay[]
+  >(() => {
+    // Carregar oportunidades criadas do localStorage na inicialização
+    try {
+      const saved = localStorage.getItem("weunite_created_opportunities");
+      const parsed = saved ? JSON.parse(saved) : [];
+      console.log(
+        "💾 Oportunidades carregadas do localStorage:",
+        parsed.length,
+      );
+      return parsed;
+    } catch (error) {
+      console.error(
+        "❌ Erro ao carregar oportunidades do localStorage:",
+        error,
+      );
+      return [];
+    }
+  });
+  const [isCreating, setIsCreating] = useState(false);
 
   const { mutate: createOpportunity } = useCreateOpportunity();
   const navigate = useNavigate();
+  const { user } = useAuthStore();
 
-  const handleCreateOpportunity = async (data: any) => {
+  console.log("👤 Usuário atual:", user);
+  console.log("📊 createdOpportunities state:", createdOpportunities);
+
+  // Salvar no localStorage sempre que createdOpportunities mudar
+  useEffect(() => {
     try {
-      await createOpportunity(data);
+      localStorage.setItem(
+        "weunite_created_opportunities",
+        JSON.stringify(createdOpportunities),
+      );
+      console.log(
+        "💾 Oportunidades salvas no localStorage:",
+        createdOpportunities.length,
+      );
     } catch (error) {
-      console.error("Error creating opportunity:", error);
+      console.error("❌ Erro ao salvar no localStorage:", error);
     }
-  };
+  }, [createdOpportunities]);
+
+  // Monitor de mudanças no estado
+  useEffect(() => {
+    console.log("🔄 createdOpportunities mudou:", createdOpportunities);
+  }, [createdOpportunities]);
+
+  // Monitor do usuário
+  useEffect(() => {
+    console.log("👤 user mudou:", user);
+  }, [user]);
+
+  const handleCreateOpportunity = useCallback(
+    async (data: any) => {
+      console.log(
+        "🚀🚀🚀 handleCreateOpportunity CHAMADA! Dados recebidos:",
+        data,
+      );
+      console.log("👤 Usuário no handleCreateOpportunity:", user);
+
+      try {
+        if (!user) {
+          console.error("❌ Usuário não está definido!");
+          return;
+        }
+
+        if (!user.id) {
+          console.error("❌ ID do usuário não está definido!");
+          return;
+        }
+
+        console.log("✅ Usuário válido, iniciando criação...");
+        setIsCreating(true);
+
+        // Converter skills de string para array de objetos Skill
+        const skillsArray = data.skills
+          .split(",")
+          .map((skill: string, index: number) => ({
+            id: index + 1, // ID temporário
+            name: skill.trim(),
+          }))
+          .filter((skill: any) => skill.name.length > 0);
+
+        console.log("🎯 Skills processadas:", skillsArray);
+
+        // Criar a nova oportunidade para exibir na tela IMEDIATAMENTE
+        const newOpportunity: OpportunityDisplay = {
+          id: Date.now(), // ID temporário baseado no timestamp
+          title: data.title,
+          description: data.description,
+          location: data.location,
+          dateEnd: data.dateEnd,
+          skills: skillsArray,
+          company: {
+            id: parseInt(user.id),
+            name: user.name,
+            logo: user.profileImg || "",
+          },
+          subscribers: [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          companyId: parseInt(user.id),
+          companyName: user.name,
+          companyLogo: user.profileImg || "",
+          applicationsCount: 0,
+          skillNames: skillsArray.map((skill: any) => skill.name),
+          isExpired: false,
+          daysUntilDeadline: Math.ceil(
+            (data.dateEnd.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+          ),
+        };
+
+        console.log("📝 Nova oportunidade criada:", newOpportunity);
+        console.log("📦 Estado ANTES da atualização:", createdOpportunities);
+
+        // PRIMEIRO: Adicionar ao estado local para mostrar imediatamente
+        setCreatedOpportunities((prev) => {
+          console.log("📦 Atualizando estado - anterior:", prev);
+          const newState = [newOpportunity, ...prev];
+          console.log("📦 Atualizando estado - novo:", newState);
+          return newState;
+        });
+
+        console.log("✅ setCreatedOpportunities foi chamado!");
+
+        // SEGUNDO: Tentar salvar no banco (em background)
+        try {
+          const opportunityData = {
+            title: data.title,
+            description: data.description,
+            location: data.location,
+            dateEnd: data.dateEnd,
+            skills: skillsArray,
+          };
+
+          console.log("🌐 Dados que serão enviados para API:", opportunityData);
+          console.log("🌐 CompanyId:", parseInt(user.id));
+          console.log(
+            "🌐 URL será: /api/opportunities/create/" + parseInt(user.id),
+          );
+
+          await createOpportunity({
+            data: opportunityData,
+            companyId: parseInt(user.id),
+          });
+
+          console.log("✅ Oportunidade salva no banco com sucesso!");
+        } catch (apiError) {
+          console.error("❌ Erro ao salvar no banco:", apiError);
+          console.error(
+            "❌ Detalhes do erro:",
+            JSON.stringify(apiError, null, 2),
+          );
+          // Opcional: remover do estado local se falhar na API
+          // setCreatedOpportunities(prev => prev.filter(op => op.id !== newOpportunity.id));
+        }
+      } catch (error) {
+        console.error("❌ Erro geral ao criar oportunidade:", error);
+      } finally {
+        setIsCreating(false);
+        console.log("🔄 setIsCreating(false) chamado");
+      }
+    },
+    [user, createOpportunity, setCreatedOpportunities, setIsCreating],
+  );
+
+  console.log("🔗 handleCreateOpportunity function:", handleCreateOpportunity);
 
   const filteredOpportunities = useMemo(() => {
-    let filtered = mockOpportunities;
+    // Combinar dados mockados com oportunidades criadas localmente
+    const allOpportunities = [...createdOpportunities, ...mockOpportunities];
+    let filtered = allOpportunities;
 
     // Filter by search term
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(
-        (opportunity) =>
+        (opportunity: any) =>
           opportunity.title.toLowerCase().includes(term) ||
           opportunity.description.toLowerCase().includes(term) ||
           opportunity.companyName.toLowerCase().includes(term) ||
           opportunity.location.toLowerCase().includes(term) ||
-          opportunity.skillNames.some((skill) =>
+          opportunity.skillNames.some((skill: any) =>
             skill.toLowerCase().includes(term),
           ),
       );
@@ -123,7 +286,7 @@ export function Opportunity() {
 
     // Filter by location
     if (filters.location) {
-      filtered = filtered.filter((opportunity) =>
+      filtered = filtered.filter((opportunity: any) =>
         opportunity.location
           .toLowerCase()
           .includes(filters.location.toLowerCase()),
@@ -132,9 +295,9 @@ export function Opportunity() {
 
     // Filter by skills
     if (filters.skills.length > 0) {
-      filtered = filtered.filter((opportunity) =>
+      filtered = filtered.filter((opportunity: any) =>
         filters.skills.some((filterSkill) =>
-          opportunity.skillNames.some((opportunitySkill) =>
+          opportunity.skillNames.some((opportunitySkill: any) =>
             opportunitySkill.toLowerCase().includes(filterSkill.toLowerCase()),
           ),
         ),
@@ -143,16 +306,16 @@ export function Opportunity() {
 
     // Filter by status
     if (filters.status === "active") {
-      filtered = filtered.filter((opportunity) => !opportunity.isExpired);
+      filtered = filtered.filter((opportunity: any) => !opportunity.isExpired);
     } else if (filters.status === "closing_soon") {
       const daysLimit = 7; // Consider "closing soon" as within 7 days
-      filtered = filtered.filter((opportunity) => {
+      filtered = filtered.filter((opportunity: any) => {
         return opportunity.daysUntilDeadline <= daysLimit;
       });
     }
 
     return filtered;
-  }, [searchTerm, filters]);
+  }, [searchTerm, filters, createdOpportunities]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -167,6 +330,7 @@ export function Opportunity() {
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-4 text-center">
                   Oportunidades
                 </h1>
+
                 <OpportunitySearch
                   searchTerm={searchTerm}
                   onSearchChange={setSearchTerm}
@@ -180,7 +344,7 @@ export function Opportunity() {
             <div className="px-6 py-6">
               <FeedOpportunity
                 opportunities={filteredOpportunities}
-                isLoading={isLoading}
+                isLoading={isCreating}
                 emptyState={
                   <div className="flex flex-col items-center justify-center py-16 text-center">
                     <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mb-6">
@@ -234,7 +398,7 @@ export function Opportunity() {
           <div className="px-6 py-6">
             <FeedOpportunity
               opportunities={filteredOpportunities}
-              isLoading={isLoading}
+              isLoading={isCreating}
               emptyState={
                 <div className="flex flex-col items-center justify-center py-16 text-center">
                   <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mb-6">
@@ -316,7 +480,7 @@ export function Opportunity() {
           </div>
           <FeedOpportunity
             opportunities={filteredOpportunities}
-            isLoading={isLoading}
+            isLoading={isCreating}
             emptyState={
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">

@@ -14,6 +14,12 @@ export function OpportunitySidebar({
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
 
+  console.log(
+    "📋 OpportunitySidebar - onCreateOpportunity recebida:",
+    !!onCreateOpportunity,
+  );
+  console.log("📋 OpportunitySidebar - isAuthenticated:", isAuthenticated);
+
   if (!isAuthenticated) return null;
 
   return (
