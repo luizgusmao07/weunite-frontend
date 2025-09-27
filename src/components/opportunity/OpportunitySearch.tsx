@@ -24,55 +24,7 @@ export interface OpportunityFilters {
   companyType: "all" | "specific";
 }
 
-const skillOptions = [
-  "Futebol de Campo",
-  "Futsal",
-  "Beach Soccer",
-  "Futebol Society",
-  "Goleiro",
-  "Defesa",
-  "Meio-campo",
-  "Ataque",
-  "Capitania",
-  "Liderança",
-  "Trabalho em Equipe",
-  "Disciplina",
-  "Resistência Física",
-  "Velocidade",
-  "Técnica Individual",
-  "Visão de Jogo",
-  "Finalização",
-  "Cruzamentos",
-  "Passes",
-  "Marcação",
-  "Cobrança de Falta",
-  "Penalti",
-  "Arbitragem",
-  "Treinamento",
-  "Preparação Física",
-  "Nutrição Esportiva",
-  "Fisioterapia",
-  "Análise Tática",
-  "Scouting",
-  "Gestão Esportiva",
-  "Marketing Esportivo",
-  "Mídia Esportiva",
-  "Transmissão Esportiva",
-  "Fotografia Esportiva",
-];
-
-const locationOptions = [
-  "São Paulo - SP",
-  "Rio de Janeiro - RJ",
-  "Belo Horizonte - MG",
-  "Santos - SP",
-  "Remoto",
-  "Porto Alegre - RS",
-  "Brasília - DF",
-  "Curitiba - PR",
-  "Salvador - BA",
-  "Recife - PE",
-];
+import { skillOptions, locationOptions } from "@/constants/opportunityOptions";
 
 export default function OpportunitySearch({
   searchTerm,
@@ -238,15 +190,17 @@ export default function OpportunitySearch({
                   <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
                     {skillOptions.map((skill) => (
                       <Button
-                        key={skill}
+                        key={skill.id}
                         variant={
-                          filters.skills.includes(skill) ? "third" : "outline"
+                          filters.skills.includes(skill.name)
+                            ? "third"
+                            : "outline"
                         }
                         size="sm"
-                        onClick={() => toggleSkill(skill)}
+                        onClick={() => toggleSkill(skill.name)}
                         className="h-6 px-2 text-xs"
                       >
-                        {skill}
+                        {skill.name}
                       </Button>
                     ))}
                   </div>

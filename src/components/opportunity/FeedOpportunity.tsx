@@ -1,12 +1,7 @@
 import type { OpportunityDisplay } from "@/@types/opportunity.types";
-import OpportunityCard from "./OpportunityCard";
+import OpportunityCard from "./OpportunityCard-new";
 import { Skeleton } from "@/components/ui/skeleton";
-
-interface FeedOpportunityProps {
-  opportunities?: OpportunityDisplay[];
-  isLoading?: boolean;
-  emptyState?: React.ReactNode;
-}
+import { useGetOpportunities } from "@/state/useOpportunities";
 
 function OpportunitySkeleton() {
   return (
@@ -47,11 +42,10 @@ function OpportunitySkeleton() {
   );
 }
 
-export default function FeedOpportunity({
-  opportunities,
-  isLoading = false,
-  emptyState,
-}: FeedOpportunityProps) {
+export default function FeedOpportunity() {
+  const { data, isLoading } = useGetOpportunities();
+  const opportunities = data?.data;
+
   if (isLoading) {
     return (
       <div className="flex justify-center w-full">
@@ -65,12 +59,8 @@ export default function FeedOpportunity({
   }
 
   if (!opportunities || opportunities.length === 0) {
-    if (emptyState) {
-      return <div>{emptyState}</div>;
-    }
-
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
+      <div className="flex justify-center items-center min-h-[80vh]">
         <div className="text-center space-y-3">
           <div className="text-4xl mb-4">🏢</div>
           <p className="text-muted-foreground text-lg font-medium">

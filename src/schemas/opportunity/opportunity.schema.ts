@@ -1,23 +1,20 @@
 import { z } from "zod";
 
+export const skillSchema = z.object({
+  id: z.number(),
+  name: z.string().min(1, "Nome da habilidade é obrigatório"),
+});
+
 export const createOpportunitySchema = z.object({
   title: z
     .string()
-    .min(1, { message: "O título é obrigatório" })
-    .max(100, { message: "O título deve ter no máximo 100 caracteres" }),
+    .min(3, "Título deve ter pelo menos 3 caracteres")
+    .max(120, "Título muito longo"),
   description: z
     .string()
-    .min(1, { message: "A descrição é obrigatória" })
-    .max(1000, { message: "A descrição deve ter no máximo 1000 caracteres" }),
-  location: z
-    .string()
-    .min(1, { message: "O local é obrigatório" })
-    .max(200, { message: "O local deve ter no máximo 200 caracteres" }),
-  date: z.date({
-    required_error: "A data é obrigatória.",
-  }),
-  skills: z
-    .string()
-    .min(1, { message: "As habilidades são obrigatórias" })
-    .max(300, { message: "As habilidades devem ter no máximo 300 caracteres" }),
+    .min(10, "Descrição deve ter pelo menos 10 caracteres")
+    .max(5000, "Descrição muito longa"),
+  location: z.string().min(1, "Localização é obrigatória"),
+  dateEnd: z.date({ required_error: "Data de término é obrigatória" }),
+  skills: z.array(skillSchema).min(1, "Selecione pelo menos uma habilidade"),
 });

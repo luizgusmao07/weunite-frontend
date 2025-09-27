@@ -28,6 +28,29 @@ export const skillOptions: Skill[] = [
   { id: 25, name: "Preparação Física" },
   { id: 26, name: "Nutrição Esportiva" },
   { id: 27, name: "Fisioterapia" },
+];
+
+// Work Style Options
+export const workStyleOptions = [
+  { value: "remote", label: "Remoto" },
+  { value: "hybrid", label: "Híbrido" },
+  { value: "onsite", label: "Presencial" },
+];
+
+// Seniority Options
+export const seniorityOptions = [
+  { value: "junior", label: "Júnior" },
+  { value: "pleno", label: "Pleno" },
+  { value: "senior", label: "Sênior" },
+  { value: "lead", label: "Lead" },
+];
+
+// Contract Type Options
+export const contractTypeOptions = [
+  { value: "clt", label: "CLT" },
+  { value: "pj", label: "PJ" },
+  { value: "freelance", label: "Freelance" },
+  { value: "internship", label: "Estágio" },
   { id: 28, name: "Análise Tática" },
   { id: 29, name: "Scouting" },
   { id: 30, name: "Gestão Esportiva" },

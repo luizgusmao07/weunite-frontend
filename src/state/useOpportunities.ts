@@ -41,13 +41,16 @@ export const useCreateOpportunity = () => {
     }) => createOpportunityRequest(data, companyId),
     onSuccess: (result) => {
       console.log("🎉 useCreateOpportunity - onSuccess chamado com:", result);
-      if (result.success) {
-        toast.success(result.message || "Oportunidade criada com sucesso!");
-        queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() });
-      } else {
-        console.log("⚠️ Resultado marcado como não-sucesso:", result);
-        toast.error(result.error || "Erro ao criar oportunidade");
-      }
+      toast.success("Oportunidade criada com sucesso!");
+      // Força invalidação e refetch
+      queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() });
+      queryClient.refetchQueries({ queryKey: opportunityKeys.lists() });
+    },
+    onSettled: () => {
+      // Garantir que sempre invalide as queries, independente do resultado
+      console.log("🔄 Invalidando queries no onSettled");
+      queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() });
+      queryClient.refetchQueries({ queryKey: opportunityKeys.lists() });
     },
     onError: (error) => {
       console.error("❌ useCreateOpportunity - onError chamado com:", error);
