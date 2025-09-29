@@ -13,34 +13,36 @@ export function OpportunitySidebar() {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:right-8 lg:top-32 z-30 pointer-events-auto space-y-4">
-      <Button
-        onClick={() => setIsCreateOpen(true)}
-        className="w-full justify-center gap-2 h-12 bg-gradient-to-r from-third to-green-500 hover:from-green-500 hover:to-emerald-500 text-white shadow-md hover:shadow-lg transition-all duration-300"
-      >
-        <Plus className="h-4 w-4" />
-        Criar Oportunidade
-      </Button>
+    <>
+      <div className="flex flex-row w-full fixed top-20 z-30 gap-5 pointer-events-auto space-y-4 ml-3 overflow-x-visible overflow-x-aut">
+        <Button
+          onClick={() => setIsCreateOpen(true)}
+          className="w-[12em] justify-center text-xs h-[2em] bg-gradient-to-r from-third to-green-500 hover:from-green-500 hover:to-emerald-500 text-white shadow-md hover:shadow-lg transition-all duration-300"
+        >
+          <Plus className="h-3 w-3" />
+          Criar Oportunidade
+        </Button>
+
+        <Button
+          variant="outline"
+          onClick={() => navigate("/opportunity/my")}
+          className="w-[14em] justify-center text-xs h-[2em] bg-gradient-to-r from-third to-green-500 hover:from-green-500 hover:to-emerald-500 text-white shadow-md hover:shadow-lg transition-all duration-300"
+        >
+          <Building2 className="h-4 w-4 text-white" />
+          <span className="font-medium">Minhas Oportunidades</span>
+        </Button>
+
+        <Button
+          variant="outline"
+          onClick={() => navigate("/opportunity/saved")}
+          className="w-[14em] justify-center text-xs h-[2em] bg-gradient-to-r from-third to-green-500 hover:from-green-500 hover:to-emerald-500 text-white shadow-md hover:shadow-lg transition-all duration-300"
+        >
+          <Bookmark className="h-4 w-4 text-white" />
+          <span className="font-medium">Oportunidades Salvas</span>
+        </Button>
+      </div>
 
       <CreateOpportunity open={isCreateOpen} onOpenChange={setIsCreateOpen} />
-
-      <Button
-        variant="outline"
-        onClick={() => navigate("/opportunity/my")}
-        className="w-full justify-start gap-3 h-12 bg-card hover:bg-accent border-border hover:border-third/40 transition-all duration-300"
-      >
-        <Building2 className="h-4 w-4 text-third" />
-        <span className="font-medium">Minhas Oportunidades</span>
-      </Button>
-
-      <Button
-        variant="outline"
-        onClick={() => navigate("/opportunity/saved")}
-        className="w-full justify-start gap-3 h-12 bg-card hover:bg-accent border-border hover:border-third/40 transition-all duration-300"
-      >
-        <Bookmark className="h-4 w-4 text-third" />
-        <span className="font-medium">Oportunidades Salvas</span>
-      </Button>
-    </div>
+    </>
   );
 }

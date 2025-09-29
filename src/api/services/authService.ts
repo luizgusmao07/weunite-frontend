@@ -11,7 +11,6 @@ import { AxiosError } from "axios";
 
 export const signUpRequest = async (data: SignUp) => {
   try {
-    console.log(data);
     const response = await axios.post("/auth/signup", data);
     return {
       success: true,

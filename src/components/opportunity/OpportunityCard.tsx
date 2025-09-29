@@ -1,0 +1,289 @@
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+  CardAction,
+} from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Heart,
+  Bookmark,
+  Share,
+  EllipsisVertical,
+  MapPin,
+  Calendar,
+  Users,
+  Building2,
+  Clock,
+  Flag,
+} from "lucide-react";
+
+import type { OpportunityDisplay } from "@/@types/opportunity.types";
+import { getTimeAgo } from "@/hooks/useGetTimeAgo";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useState } from "react";
+import { getInitials } from "@/utils/getInitials";
+import { useNavigate } from "react-router-dom";
+
+interface OpportunityCardProps {
+  opportunity: OpportunityDisplay;
+}
+
+export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
+  const initials = getInitials(opportunity.companyName);
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
+
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+
+  const timeAgo = getTimeAgo(opportunity.createdAt);
+
+  const deadlineDate = new Date(opportunity.dateEnd).toLocaleDateString(
+    "pt-BR",
+    {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    },
+  );
+
+  const isOwner = opportunity.companyId === Number(user?.id);
+
+  const handleCompanyClick = () => {
+    if (isOwner) {
+      navigate("/profile");
+    } else {
+      navigate(`/profile/${opportunity.companyId}`);
+    }
+  };
+
+  const handleApply = () => {
+    // TODO: Implementar lógica de candidatura
+    console.log("Candidatar-se à oportunidade:", opportunity.id);
+  };
+
+  const handleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
+    // TODO: Implementar lógica de salvar oportunidade
+  };
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    // TODO: Implementar lógica de curtir oportunidade
+  };
+
+  const handleShare = () => {
+    // TODO: Implementar lógica de compartilhamento
+    console.log("Compartilhar oportunidade:", opportunity.id);
+  };
+
+  return (
+    <Card className="w-full max-w-[45em] bg-card shadow-none border-0 border-b rounded-none border-foreground/50">
+      <CardHeader className="flex flex-row items-center gap-2 mb-[0.5em]">
+        <Avatar
+          className="hover:cursor-pointer h-[2.8em] w-[2.8em]"
+          onClick={handleCompanyClick}
+        >
+          <AvatarImage src={opportunity.companyLogo} alt="company logo" />
+          <AvatarFallback className="bg-third/10 text-third font-semibold">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+
+        <div className="flex flex-col">
+          <CardTitle
+            className="text-base font-medium hover:cursor-pointer"
+            onClick={handleCompanyClick}
+          >
+            {opportunity.companyName}
+          </CardTitle>
+
+          <CardDescription className="text-xs">
+            Publicado há {timeAgo}
+          </CardDescription>
+        </div>
+
+        <div className="ml-auto flex items-center gap-2">
+          <Badge
+            variant={opportunity.isExpired ? "destructive" : "default"}
+            className="text-xs"
+          >
+            {opportunity.isExpired ? "Expirada" : "Ativa"}
+          </Badge>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <EllipsisVertical className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-primary transition-colors" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {isOwner ? (
+                <>
+                  <DropdownMenuItem className="hover:cursor-pointer">
+                    <Building2 className="mr-2 h-4 w-4" />
+                    Editar
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="hover:cursor-pointer">
+                    <Users className="mr-2 h-4 w-4" />
+                    Ver Candidatos
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="hover:cursor-pointer">
+                    <Share className="mr-2 h-4 w-4" />
+                    Compartilhar
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <>
+                  <DropdownMenuItem
+                    className="hover:cursor-pointer"
+                    onClick={handleShare}
+                  >
+                    <Share className="mr-2 h-4 w-4" />
+                    Compartilhar
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-red-600 hover:cursor-pointer">
+                    <Flag className="mr-2 h-4 w-4" />
+                    Denunciar
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </CardHeader>
+
+      <CardContent className="w-full mt-[-18px]">
+        <div className="space-y-3">
+          {/* Título da Oportunidade */}
+          <h3 className="text-lg font-bold text-foreground">
+            {opportunity.title}
+          </h3>
+
+          {/* Informações básicas */}
+          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <MapPin className="h-4 w-4" />
+              <span>{opportunity.location}</span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Calendar className="h-4 w-4" />
+              <span>Até {deadlineDate}</span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Users className="h-4 w-4" />
+              <span>{opportunity.applicationsCount} candidatos</span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Clock className="h-4 w-4" />
+              <span>{opportunity.daysUntilDeadline} dias restantes</span>
+            </div>
+          </div>
+
+          {/* Descrição */}
+          <p className="text-sm text-foreground line-clamp-3">
+            {opportunity.description}
+          </p>
+
+          {/* Skills */}
+          {opportunity.skills && opportunity.skills.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {opportunity.skills.slice(0, 4).map((skill) => (
+                <Badge
+                  key={skill.id}
+                  variant="secondary"
+                  className="text-xs bg-third/10 text-third hover:bg-third/20"
+                >
+                  {skill.name}
+                </Badge>
+              ))}
+              {opportunity.skills.length > 4 && (
+                <Badge variant="outline" className="text-xs">
+                  +{opportunity.skills.length - 4} mais
+                </Badge>
+              )}
+            </div>
+          )}
+        </div>
+      </CardContent>
+
+      <CardFooter className="flex flex-col mt-[-20px]">
+        <div className="flex justify-between w-full mb-3">
+          <span className="text-sm text-muted-foreground">
+            {opportunity.applicationsCount} candidaturas • ID: {opportunity.id}
+          </span>
+        </div>
+
+        <div className="flex w-full justify-between items-center">
+          <CardAction className="flex items-center gap-3">
+            {!isOwner && !opportunity.isExpired && (
+              <Button
+                size="sm"
+                variant="default"
+                className="bg-third hover:bg-third/90 text-white rounded-full px-4"
+                onClick={handleApply}
+              >
+                Candidatar-se
+              </Button>
+            )}
+
+            {opportunity.isExpired && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="rounded-full px-4"
+                disabled
+              >
+                Oportunidade Expirada
+              </Button>
+            )}
+
+            <div className="flex items-center gap-3">
+              <div onClick={handleLike} className="hover:cursor-pointer">
+                <Heart
+                  className={`h-5 w-5 transition-colors ${
+                    isLiked
+                      ? "text-red-500 fill-red-500"
+                      : "text-muted-foreground hover:text-red-500"
+                  }`}
+                />
+              </div>
+
+              <div onClick={handleShare} className="hover:cursor-pointer">
+                <Share className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
+              </div>
+            </div>
+          </CardAction>
+
+          <CardAction className="flex items-center gap-2">
+            <div onClick={handleBookmark} className="hover:cursor-pointer">
+              <Bookmark
+                className={`h-5 w-5 transition-colors ${
+                  isBookmarked
+                    ? "text-third fill-third"
+                    : "text-muted-foreground hover:text-third"
+                }`}
+              />
+            </div>
+          </CardAction>
+        </div>
+      </CardFooter>
+    </Card>
+  );
+}
