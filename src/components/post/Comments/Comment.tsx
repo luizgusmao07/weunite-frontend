@@ -41,7 +41,7 @@ import { getTimeAgo } from "@/hooks/useGetTimeAgo";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { AlertDialogFooter, AlertDialogHeader } from "../../ui/alert-dialog";
 import type { Comment } from "@/@types/comment.types";
-import { EditComment } from "@/components/shared/EditComment";
+import { EditComment } from "@/components/post/Comments/EditComment";
 import { useState } from "react";
 import { useDeleteComment } from "@/state/useComments";
 import { getInitials } from "@/utils/getInitials";
@@ -58,7 +58,9 @@ export default function Comment({ comment }: { comment: Comment }) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   type LikeUser = { user: { id: string | number } };
   const { data: likesData } = useCommentLikes(Number(comment.id));
-  const serverLikes: LikeUser[] = likesData?.success ? (likesData.data as LikeUser[]) : [];
+  const serverLikes: LikeUser[] = likesData?.success
+    ? (likesData.data as LikeUser[])
+    : [];
 
   const [likesCount, setLikesCount] = useState(comment.likes?.length || 0);
   const [isLikedState, setIsLikedState] = useState(

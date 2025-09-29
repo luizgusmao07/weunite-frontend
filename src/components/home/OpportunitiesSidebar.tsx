@@ -9,7 +9,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Lightbulb } from "lucide-react";
-import CardSuggestionOpportunity from "../opportunity/CardSuggestionOpportunity";
 
 const cardSuggestion = Array.from({ length: 4 }, (_, i) => i);
 
@@ -64,9 +63,9 @@ export const OpportunitiesSidebar: React.FC = () => {
       )}
 
       <div className="space-y-4 justify-end">
-        {displayedOpportunities.map((cardSuggestion) => (
+        {/* {displayedOpportunities.map((cardSuggestion) => (
           <CardSuggestionOpportunity key={cardSuggestion} />
-        ))}
+        ))} */}
       </div>
 
       {!showAll && (

@@ -3,18 +3,15 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useState } from "react";
 import { Home, Link, DiamondPlus, User, MessageCircleMore } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { CreatePost } from "./CreatePost";
+import { CreatePost } from "../post/CreatePost";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-
 } from "@/components/ui/dropdown-menu";
 
-
 export function BottomSideBar() {
-
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
 
   const { logout, user } = useAuthStore();
@@ -48,7 +45,6 @@ export function BottomSideBar() {
 
       <div className="fixed bottom-0 w-screen border-t bg-sidebar z-50 ">
         <div className="flex justify-around items-center h-14">
-
           {items.map((item) => (
             <button
               key={item.title}
@@ -66,9 +62,12 @@ export function BottomSideBar() {
             >
               <item.icon
                 size={24}
-                color={item.url !== "#" && pathname === item.url ? "#22C55E" : "currentColor"}
+                color={
+                  item.url !== "#" && pathname === item.url
+                    ? "#22C55E"
+                    : "currentColor"
+                }
                 className="hover:cursor-pointer"
-
               />
               {item.url !== "#" && pathname === item.url && (
                 <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-[#22C55E] rounded-full" />
@@ -107,7 +106,6 @@ export function BottomSideBar() {
           </DropdownMenu>
         </div>
       </div>
-
     </>
   );
 }

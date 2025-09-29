@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { Building2, Bookmark, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { CreateOpportunity } from "@/components/shared/CreateOpportunity";
+import { CreateOpportunity } from "@/components/opportunity/CreateOpportunity";
 import { useState } from "react";
 
 export function OpportunitySidebar() {

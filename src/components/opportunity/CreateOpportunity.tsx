@@ -1,297 +1,229 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
-  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import {
-  CalendarIcon,
-  Plus,
-  MapPin,
-  Building2,
-  Users,
-  Loader2,
-} from "lucide-react";
-import { useBreakpoints } from "@/hooks/useBreakpoints";
-import { skillOptions, locationOptions } from "@/constants/opportunityOptions";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
 import { createOpportunitySchema } from "@/schemas/opportunity/createOpportunity.schema";
-
-type CreateOpportunityFormData = z.infer<typeof createOpportunitySchema>;
+import { useCreateOpportunity } from "@/state/useOpportunities";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { CalendarIcon, ChevronDownIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface CreateOpportunityProps {
-  children?: React.ReactNode;
-  onSubmit?: (data: CreateOpportunityFormData) => Promise<void>;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function CreateOpportunity({
-  children,
-  onSubmit,
+  open,
+  onOpenChange,
 }: CreateOpportunityProps) {
-  console.log("📝 CreateOpportunity - onSubmit recebida:", !!onSubmit);
-
-  const { isDesktop } = useBreakpoints();
-  const [open, setOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState("");
-
-  console.log("📝 CreateOpportunity - estado atual:", {
-    open,
-    isSubmitting,
-    selectedLocation,
-  });
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<CreateOpportunityFormData>({
+  const form = useForm<z.infer<typeof createOpportunitySchema>>({
     resolver: zodResolver(createOpportunitySchema),
     defaultValues: {
       title: "",
       description: "",
       location: "",
-      skills: "",
+      dateEnd: new Date(),
+      skills: [],
     },
   });
 
-  const handleFormSubmit = async (data: CreateOpportunityFormData) => {
-    console.log("📝 Criando oportunidade:", data);
+  const { user } = useAuthStore();
 
-    if (!onSubmit) {
-      console.error("❌ Função onSubmit não foi passada!");
-      return;
+  const createOpportunityMutation = useCreateOpportunity();
+
+  async function onSubmit(values: z.infer<typeof createOpportunitySchema>) {
+    if (!user?.id) return;
+
+    const result = await createOpportunityMutation.mutateAsync({
+      data: {
+        ...values,
+        skills: values.skills.map((skillName, index) => ({
+          id: index + 1,
+          name: skillName,
+        })),
+      },
+      companyId: Number(user.id),
+    });
+    if (result.success) {
+      form.reset({
+        title: "",
+        description: "",
+        location: "",
+        dateEnd: new Date(),
+        skills: [],
+      });
+      onOpenChange?.(false);
     }
-
-    if (!data.dateEnd) {
-      console.error("❌ Data de término não foi selecionada!");
-      return;
-    }
-
-    const submitData = {
-      ...data,
-      location: selectedLocation || data.location,
-    };
-
-    setIsSubmitting(true);
-    try {
-      await onSubmit(submitData);
-      reset();
-      setSelectedLocation("");
-      setOpen(false);
-    } catch (error) {
-      console.error("❌ Erro ao criar oportunidade:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const CreateForm = () => (
-    <form
-      onSubmit={handleSubmit(handleFormSubmit)}
-      className="space-y-6 max-w-[38em]"
-    >
-      <div className="space-y-2 bg-">
-        <Label
-          htmlFor="title"
-          className="text-sm font-medium flex items-center gap-2"
-        >
-          <Building2 className="h-4 w-4" />
-          Título da Oportunidade
-        </Label>
-        <Input
-          id="title"
-          placeholder="Ex: Jogador de Futebol de Campo"
-          {...register("title")}
-          className={cn(errors.title && "border-red-500")}
-        />
-        {errors.title && (
-          <p className="text-sm text-red-500">{errors.title.message}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="description" className="text-sm font-medium">
-          Descrição
-        </Label>
-        <Textarea
-          id="description"
-          placeholder="Descreva a oportunidade, responsabilidades e requisitos..."
-          rows={4}
-          {...register("description")}
-          className={`bg-transparent border-none resize-none focus-visible:ring-2 p-2 text-base overflow-h-auto ${cn(errors.description && "border-red-500")}`}
-        />
-        {errors.description && (
-          <p className="text-sm text-red-500">{errors.description.message}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label className="text-sm font-medium flex items-center gap-2">
-          <MapPin className="h-4 w-4" />
-          Localização
-        </Label>
-        <div className="relative">
-          <Input
-            {...register("location")}
-            placeholder="Digite ou selecione a localização"
-            list="location-options"
-            className={cn("w-full", errors.location && "border-red-500")}
-          />
-          <datalist id="location-options">
-            {locationOptions.map((location) => (
-              <option key={location} value={location} />
-            ))}
-          </datalist>
-        </div>
-        {errors.location && (
-          <p className="text-sm text-red-500">{errors.location.message}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label className="text-sm font-medium flex items-center gap-2">
-          <CalendarIcon className="h-4 w-4" />
-          Data de Término
-        </Label>
-        <Input
-          type="date"
-          min={new Date().toISOString().split("T")[0]}
-          {...register("dateEnd", {
-            setValueAs: (value) => (value ? new Date(value) : undefined),
-          })}
-          className={cn(errors.dateEnd && "border-red-500")}
-        />
-        {errors.dateEnd && (
-          <p className="text-sm text-red-500">{errors.dateEnd.message}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label className="text-sm font-medium flex items-center gap-2">
-          <Users className="h-4 w-4" />
-          Habilidades Necessárias
-        </Label>
-        <div className="relative">
-          <Input
-            {...register("skills")}
-            placeholder="Digite as habilidades separadas por vírgula"
-            list="skills-options"
-            className={cn("w-full", errors.skills && "border-red-500")}
-          />
-          <datalist id="skills-options">
-            {skillOptions.map((skill) => (
-              <option key={skill.id} value={skill.name} />
-            ))}
-          </datalist>
-        </div>
-        {errors.skills && (
-          <p className="text-sm text-red-500">{errors.skills.message}</p>
-        )}
-      </div>
-
-      <div className="flex gap-3 pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => setOpen(false)}
-          className="flex-1"
-        >
-          Cancelar
-        </Button>
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="flex-1 bg-gradient-to-r from-third to-green-500 hover:from-green-500 hover:to-emerald-500"
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Criando...
-            </>
-          ) : (
-            <>
-              <Plus className="mr-2 h-4 w-4" />
-              Criar Oportunidade
-            </>
-          )}
-        </Button>
-      </div>
-    </form>
-  );
-
-  if (isDesktop) {
-    return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          {children || (
-            <Button className="bg-gradient-to-r from-third to-green-500 hover:from-green-500 hover:to-emerald-500">
-              <Plus className="mr-2 h-4 w-4" />
-              Nova Oportunidade
-            </Button>
-          )}
-        </DialogTrigger>
-        <DialogContent className="max-w-2xl max-h-[90vh]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-third" />
-              Criar Nova Oportunidade
-            </DialogTitle>
-            <DialogDescription>
-              Crie uma nova oportunidade para atrair os melhores talentos para
-              sua empresa.
-            </DialogDescription>
-          </DialogHeader>
-          <CreateForm />
-        </DialogContent>
-      </Dialog>
-    );
   }
 
+  const isSubmitting = createOpportunityMutation.isPending;
+
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
-        {children || (
-          <Button className="bg-gradient-to-r from-third to-green-500 hover:from-green-500 hover:to-emerald-500">
-            <Plus className="mr-2 h-4 w-4" />
-            Nova Oportunidade
-          </Button>
-        )}
-      </DrawerTrigger>
-      <DrawerContent className="max-h-[95vh]">
-        <DrawerHeader>
-          <DrawerTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-third" />
-            Criar Nova Oportunidade
-          </DrawerTitle>
-          <DrawerDescription>
-            Crie uma nova oportunidade para atrair os melhores talentos para sua
-            empresa.
-          </DrawerDescription>
-        </DrawerHeader>
-        <div className="px-4 pb-4 overflow-y-auto">
-          <CreateForm />
-        </div>
-      </DrawerContent>
-    </Drawer>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="sm:max-w-[450px] max-h-[80vh] overflow-y-auto"
+        aria-describedby={undefined}
+      >
+        <DialogHeader>
+          <DialogTitle>Criar nova oportunidade</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-3">
+          <div className="grid gap-2">
+            <Label htmlFor="opportunity-title">Título da oportunidade</Label>
+            <Controller
+              name="title"
+              control={form.control}
+              render={({ field }) => (
+                <Textarea
+                  id="opportunity-title"
+                  placeholder="Ex: Oportunidade para lateral esquerdo"
+                  className="min-h-[60px] resize-none"
+                  {...field}
+                />
+              )}
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="opportunity-description">
+              Descrição da oportunidade
+            </Label>
+            <Controller
+              name="description"
+              control={form.control}
+              render={({ field }) => (
+                <Textarea
+                  id="opportunity-description"
+                  placeholder="Descreva a oportunidade, requisitos, benefícios..."
+                  className="min-h-[80px] resize-none"
+                  {...field}
+                />
+              )}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-2">
+              <Label htmlFor="opportunity-location">Localização</Label>
+              <Controller
+                name="location"
+                control={form.control}
+                render={({ field }) => (
+                  <Input
+                    id="opportunity-location"
+                    placeholder="Ex: São Paulo, SP"
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="opportunity-dateEnd">Data limite</Label>
+              <Controller
+                name="dateEnd"
+                control={form.control}
+                render={({ field }) => (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-between text-left font-normal",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        <div className="flex items-center">
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value ? (
+                            format(field.value, "dd/MM/yyyy", { locale: ptBR })
+                          ) : (
+                            <span>Selecione uma data</span>
+                          )}
+                        </div>
+                        <ChevronDownIcon className="h-4 w-4 opacity-50" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date < new Date(new Date().setHours(0, 0, 0, 0))
+                        }
+                        fixedWeeks={true}
+                        initialFocus
+                        locale={ptBR}
+                      />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="opportunity-skills">
+              Habilidades (separadas por vírgula)
+            </Label>
+            <Controller
+              name="skills"
+              control={form.control}
+              render={({ field }) => (
+                <Input
+                  id="opportunity-skills"
+                  placeholder="Ex: Lateral esquerdo, perna direita"
+                  value={field.value.join(", ")}
+                  onChange={(e) => {
+                    const skillsArray = e.target.value
+                      .split(",")
+                      .map((skill) => skill.trim())
+                      .filter((skill) => skill.length > 0);
+                    field.onChange(skillsArray);
+                  }}
+                />
+              )}
+            />
+          </div>
+
+          <DialogFooter className="mt-3">
+            <DialogClose asChild>
+              <Button variant="outline" className="hover:cursor-pointer">
+                Cancelar
+              </Button>
+            </DialogClose>
+            <Button
+              type="submit"
+              className="variant-third bg-third hover:bg-third-hover"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+            >
+              {isSubmitting ? "Criando oportunidade..." : "Criar Oportunidade"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

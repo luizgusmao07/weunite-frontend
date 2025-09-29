@@ -32,7 +32,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Search } from "@/components/shared/Search";
-import { CreatePost } from "./CreatePost";
+import { CreatePost } from "../post/CreatePost";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLocation } from "react-router-dom";
 import { useAuthStore } from "@/stores/useAuthStore";

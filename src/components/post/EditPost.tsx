@@ -39,12 +39,12 @@ export function EditPost({ open, onOpenChange, post }: EditPostProps) {
 
   useEffect(() => {
     if (post && open) {
-        form.reset ({
-            text: post.text || "",
-            media: null,
-        })
+      form.reset({
+        text: post.text || "",
+        media: null,
+      });
     }
-  }, [post, open, form])
+  }, [post, open, form]);
 
   async function onSubmit(values: z.infer<typeof createPostSchema>) {
     if (!user?.id) return;
@@ -114,9 +114,16 @@ export function EditPost({ open, onOpenChange, post }: EditPostProps) {
           </div>
           <DialogFooter className="mt-4">
             <DialogClose asChild>
-              <Button variant="outline" className="hover:cursor-pointer">Cancelar</Button>
+              <Button variant="outline" className="hover:cursor-pointer">
+                Cancelar
+              </Button>
             </DialogClose>
-            <Button type="submit" variant="third" disabled={isSubmitting} aria-busy={isSubmitting}>
+            <Button
+              type="submit"
+              variant="third"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+            >
               {isSubmitting ? "Salvando..." : "Editar"}
             </Button>
           </DialogFooter>

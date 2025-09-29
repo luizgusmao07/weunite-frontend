@@ -42,7 +42,7 @@ import { getTimeAgo } from "@/hooks/useGetTimeAgo";
 import { useToggleLike } from "@/state/useLikes";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useState } from "react";
-import { EditPost } from "../shared/EditPost";
+import { EditPost } from "./EditPost";
 import { useDeletePost } from "@/state/usePosts";
 import { AlertDialogFooter, AlertDialogHeader } from "../ui/alert-dialog";
 import Comments from "./Comments/Comments";

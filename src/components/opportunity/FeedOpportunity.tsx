@@ -1,5 +1,3 @@
-import type { OpportunityDisplay } from "@/@types/opportunity.types";
-import OpportunityCard from "./OpportunityCard-new";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetOpportunities } from "@/state/useOpportunities";
 
@@ -76,11 +74,7 @@ export default function FeedOpportunity() {
 
   return (
     <div className="flex justify-center w-full">
-      <div className="max-w-[600px] w-full flex flex-col items-center">
-        {opportunities.map((opportunity: OpportunityDisplay) => (
-          <OpportunityCard key={opportunity.id} opportunity={opportunity} />
-        ))}
-      </div>
+      <div className="max-w-[600px] w-full flex flex-col items-center"></div>
     </div>
   );
 }
