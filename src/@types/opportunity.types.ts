@@ -1,3 +1,5 @@
+import type { User } from "./user.types";
+
 export interface Skill {
   id: number;
   name: string;
@@ -39,7 +41,7 @@ export interface Opportunity {
   location: string;
   dateEnd: Date;
   skills: Skill[];
-  company: Company;
+  company: User;
   subscribers: Subscriber[];
   createdAt: Date;
   updatedAt?: Date;
@@ -53,4 +55,15 @@ export interface OpportunityDisplay extends Opportunity {
   skillNames: string[];
   isExpired: boolean;
   daysUntilDeadline: number;
+}
+
+export interface OpportunityDescription {
+  title: string;
+  description: string;
+  location: string;
+  dateEnd: Date;
+  skills: Skill[];
+  company: User;
+  subscribers: Subscriber[];
+  createdAt: Date;
 }
