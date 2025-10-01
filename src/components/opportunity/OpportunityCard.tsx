@@ -8,7 +8,6 @@ import {
   CardAction,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,7 +17,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Heart,
   Bookmark,
   Share,
   EllipsisVertical,
@@ -26,13 +24,12 @@ import {
   Calendar,
   Users,
   Building2,
-  Clock,
   Flag,
 } from "lucide-react";
 
 import type { OpportunityDescription } from "@/@types/opportunity.types";
 import { getTimeAgo } from "@/hooks/useGetTimeAgo";
-import { useAuthStore } from "@/stores/useAuthStore";
+
 import { useState } from "react";
 import { getInitials } from "@/utils/getInitials";
 import { useNavigate } from "react-router-dom";
@@ -44,7 +41,6 @@ interface OpportunityCardProps {
 
 export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
   const initials = getInitials(opportunity.company?.name || "");
-  const { user } = useAuthStore();
   const navigate = useNavigate();
 
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -89,12 +85,6 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
     // TODO: Implementar lógica de salvar oportunidade
   };
 
-  const handleLike = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que a descrição abra
-    setIsLiked(!isLiked);
-    // TODO: Implementar lógica de curtir oportunidade
-  };
-
   const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation(); // Evita que a descrição abra
     // TODO: Implementar lógica de compartilhamento
@@ -108,7 +98,7 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
   return (
     <>
       <Card
-        className="w-full max-w-[45em] bg-card shadow-none border-0 border-b rounded-none border-foreground/50 hover:bg-muted/30 transition-colors cursor-pointer"
+        className="w-full max-w-[45em] bg-card shadow-none border-0 rounded-none border-foreground/50 hover:bg-muted/30 transition-colors cursor-pointer"
         onClick={handleCardClick}
       >
         <CardHeader className="flex flex-row items-center gap-2 mb-[0.5em]">
@@ -133,9 +123,7 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
               Nome do usuário
             </CardTitle>
 
-            <CardDescription className="text-xs">
-              Publicado há {timeAgo}
-            </CardDescription>
+            <CardDescription className="text-xs">há {timeAgo}</CardDescription>
           </div>
 
           <div className="ml-auto flex items-center gap-2">
@@ -187,13 +175,15 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
         </CardHeader>
 
         <CardContent className="w-full mt-[-18px]">
-          <div className="space-y-3">
-            {/* Título da Oportunidade */}
+          <div className="space-y-2">
             <h3 className="text-lg font-bold text-foreground">
               {opportunity.title}
             </h3>
 
-            {/* Informações básicas */}
+            <p className="text-xs text-foreground line-clamp-3">
+              {opportunity.description}
+            </p>
+
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <MapPin className="h-4 w-4" />
@@ -210,15 +200,10 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
                 <span>{opportunity.subscribers?.length || 0} candidatos</span>
               </div>
             </div>
-
-            {/* Descrição */}
-            <p className="text-sm text-foreground line-clamp-3">
-              {opportunity.description}
-            </p>
           </div>
         </CardContent>
 
-        <CardFooter className="flex flex-col mt-[-20px]">
+        <CardFooter className="flex flex-col mt-[-15px]">
           <div className="flex w-full justify-between items-center">
             <CardAction className="flex items-center gap-3">
               {!isOwner && (
@@ -248,7 +233,6 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
         </CardFooter>
       </Card>
 
-      {/* Modal de Descrição */}
       <OpportunityDescriptionComponent
         isOpen={isDescriptionOpen}
         onOpenChange={setIsDescriptionOpen}

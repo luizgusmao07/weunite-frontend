@@ -3,6 +3,8 @@ import { useGetOpportunities } from "@/state/useOpportunities";
 import OpportunityCard from "./OpportunityCard";
 import type { OpportunityDisplay } from "@/@types/opportunity.types";
 import { OpportunitySidebar } from "./OpportunitySidebar";
+import OpportunitySearch from "./OpportunitySearch";
+import { useState } from "react";
 
 function OpportunitySkeleton() {
   return (
@@ -46,6 +48,7 @@ function OpportunitySkeleton() {
 export default function FeedOpportunity() {
   const { data, isLoading } = useGetOpportunities();
   const opportunities = data?.data;
+  const [searchTerm, setSearchTerm] = useState("");
 
   if (isLoading) {
     return (
@@ -79,7 +82,15 @@ export default function FeedOpportunity() {
   return (
     <div className="flex justify-center w-full pt-4">
       <div className="max-w-[600px] w-full flex flex-col items-center gap-2">
-        <OpportunitySidebar />
+        <div className="w-full flex flex-col justify-between items-start gap-4">
+          <OpportunitySearch
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
+
+          <OpportunitySidebar />
+        </div>
+
         {opportunities.map((opportunity: OpportunityDisplay) => (
           <OpportunityCard key={opportunity.id} opportunity={opportunity} />
         ))}
