@@ -9,7 +9,6 @@ export function OpportunitySidebar() {
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-
   if (!isAuthenticated) return null;
 
   return (
@@ -37,14 +36,6 @@ export function OpportunitySidebar() {
           <Building2 className="h-4 w-4 text-white" />
           <span className="font-medium">Minhas Oportunidades</span>
         </Button>
-        <Button
-          variant="outline"
-          onClick={() => navigate("/opportunity/my")}
-          className="w-[14em] justify-center text-xs h-[2em] bg-gradient-to-r from-third to-green-500 hover:from-green-500 hover:to-emerald-500 text-white shadow-md hover:shadow-lg transition-all duration-300"
-        >
-          <Building2 className="h-4 w-4 text-white" />
-          <span className="font-medium">Minhas Oportunidades</span>
-        </Button>
 
         <Button
           variant="outline"
@@ -55,17 +46,6 @@ export function OpportunitySidebar() {
           <span className="font-medium">Oportunidades Salvas</span>
         </Button>
       </div>
-
-      <CreateOpportunity open={isCreateOpen} onOpenChange={setIsCreateOpen} />
-
-      <Button
-        variant="outline"
-        onClick={() => navigate("/opportunity/saved")}
-        className="w-[14em] justify-center text-xs h-[2em] bg-gradient-to-r from-third to-green-500 hover:from-green-500 hover:to-emerald-500 text-white shadow-md hover:shadow-lg transition-all duration-300"
-      >
-        <Bookmark className="h-4 w-4 text-white" />
-        <span className="font-medium">Oportunidades Salvas</span>
-      </Button>
 
       <CreateOpportunity open={isCreateOpen} onOpenChange={setIsCreateOpen} />
     </>

@@ -63,7 +63,7 @@ export function OpportunityDescription({
             <div className="w-full max-w-[45em] mb-6">
               <div className="flex items-center gap-3 mb-4">
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src={opportunity.company?.logo} />
+                  <AvatarImage src={opportunity.company?.profileImg} />
                   <AvatarFallback>{companyInitials}</AvatarFallback>
                 </Avatar>
                 <div>
@@ -127,7 +127,7 @@ export function OpportunityDescription({
             {/* Cabeçalho */}
             <div className="p-6 border-b flex gap-3 bg-card">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={opportunity.company?.logo} />
+                <AvatarImage src={opportunity.company?.profileImg} />
                 <AvatarFallback>{companyInitials}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
