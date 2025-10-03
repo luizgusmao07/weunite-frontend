@@ -1,10 +1,10 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetOpportunities } from "@/state/useOpportunities";
 import OpportunityCard from "./OpportunityCard";
-import type { OpportunityDisplay } from "@/@types/opportunity.types";
 import { OpportunitySidebar } from "./OpportunitySidebar";
 import OpportunitySearch from "./OpportunitySearch";
 import { useState } from "react";
+import type { Opportunity } from "@/@types/opportunity.types";
 
 function OpportunitySkeleton() {
   return (
@@ -65,15 +65,27 @@ export default function FeedOpportunity() {
 
   if (!opportunities || opportunities.length === 0) {
     return (
-      <div className="flex justify-center items-center min-h-[80vh]">
-        <div className="text-center space-y-3">
-          <div className="text-4xl mb-4">🏢</div>
-          <p className="text-muted-foreground text-lg font-medium">
-            Nenhuma oportunidade disponível
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Novas oportunidades aparecerão aqui em breve
-          </p>
+      <div className="flex justify-center w-full pt-4">
+        <div className="max-w-[600px] w-full flex flex-col items-center gap-2">
+          <div className="w-full flex flex-col justify-between items-start gap-4">
+            <OpportunitySearch
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+            />
+            <OpportunitySidebar />
+          </div>
+
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <div className="text-center space-y-3">
+              <div className="text-4xl mb-4">🏢</div>
+              <p className="text-muted-foreground text-lg font-medium">
+                Nenhuma oportunidade disponível
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Seja o primeiro a criar uma oportunidade!
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -91,7 +103,7 @@ export default function FeedOpportunity() {
           <OpportunitySidebar />
         </div>
 
-        {opportunities.map((opportunity: OpportunityDisplay) => (
+        {opportunities.map((opportunity: Opportunity) => (
           <OpportunityCard key={opportunity.id} opportunity={opportunity} />
         ))}
       </div>

@@ -27,16 +27,16 @@ import {
   Flag,
 } from "lucide-react";
 
-import type { OpportunityDescription } from "@/@types/opportunity.types";
 import { getTimeAgo } from "@/hooks/useGetTimeAgo";
 
 import { useState } from "react";
 import { getInitials } from "@/utils/getInitials";
 import { useNavigate } from "react-router-dom";
 import { OpportunityDescription as OpportunityDescriptionComponent } from "./DescriptionOpportunity";
+import type { Opportunity } from "@/@types/opportunity.types";
 
 interface OpportunityCardProps {
-  opportunity: OpportunityDescription;
+  opportunity: Opportunity;
 }
 
 export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
@@ -120,7 +120,7 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
               className="text-base font-medium hover:cursor-pointer"
               onClick={handleCompanyClick}
             >
-              Nome do usuário
+              {opportunity.company?.username}
             </CardTitle>
 
             <CardDescription className="text-xs">há {timeAgo}</CardDescription>
