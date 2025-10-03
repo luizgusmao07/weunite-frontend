@@ -30,6 +30,23 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useAuthMessages } from "@/hooks/useAuthMessages";
 import { useState } from "react";
 
+const formatCNPJ = (value: string) => {
+  const numbers = value.replace(/\D/g, "");
+
+  // mask XX.XXX.XXX/XXXX-XX
+  if (numbers.length <= 2) return numbers;
+  if (numbers.length <= 5) return numbers.replace(/(\d{2})(\d+)/, "$1.$2");
+  if (numbers.length <= 8)
+    return numbers.replace(/(\d{2})(\d{3})(\d+)/, "$1.$2.$3");
+  if (numbers.length <= 12)
+    return numbers.replace(/(\d{2})(\d{3})(\d{3})(\d+)/, "$1.$2.$3/$4");
+  return numbers.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d+)/, "$1.$2.$3/$4-$5");
+};
+
+const extractCNPJNumbers = (formattedCNPJ: string) => {
+  return formattedCNPJ.replace(/\D/g, "");
+};
+
 export function SignUpCompany({
   setCurrentTab,
 }: {
@@ -194,10 +211,18 @@ export function SignUpCompany({
                             type="text"
                             placeholder="XX.XXX.XXX/0000-XX"
                             className="pl-8"
-                            {...field}
+                            value={formatCNPJ(field.value)}
+                            onChange={(e) => {
+                              const formattedValue = formatCNPJ(e.target.value);
+                              const numbersOnly =
+                                extractCNPJNumbers(formattedValue);
+                              field.onChange(numbersOnly);
+                            }}
+                            maxLength={18}
                           />
                           <p className="text-xs text-muted-foreground mt-1">
-                            Digite apenas números, sem símbolos ou pontuação.
+                            Digite apenas números, a formatação será aplicada
+                            automaticamente.
                           </p>
                         </div>
                       </FormControl>
