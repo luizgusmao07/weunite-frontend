@@ -32,7 +32,7 @@ import { getTimeAgo } from "@/hooks/useGetTimeAgo";
 import { useState } from "react";
 import { getInitials } from "@/utils/getInitials";
 import { useNavigate } from "react-router-dom";
-import { OpportunityDescription as OpportunityDescriptionComponent } from "./DescriptionOpportunity";
+import { OpportunityDescription } from "./DescriptionOpportunity";
 import type { Opportunity } from "@/@types/opportunity.types";
 
 interface OpportunityCardProps {
@@ -44,7 +44,6 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
   const navigate = useNavigate();
 
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
 
   const timeAgo = getTimeAgo(opportunity.createdAt);
@@ -120,6 +119,7 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
               className="text-base font-medium hover:cursor-pointer"
               onClick={handleCompanyClick}
             >
+              {opportunity.company?.username}
               {opportunity.company?.username}
             </CardTitle>
 
@@ -233,7 +233,7 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
         </CardFooter>
       </Card>
 
-      <OpportunityDescriptionComponent
+      <OpportunityDescription
         isOpen={isDescriptionOpen}
         onOpenChange={setIsDescriptionOpen}
         opportunity={opportunity}

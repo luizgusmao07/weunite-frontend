@@ -28,6 +28,9 @@ export const useCreateOpportunity = () => {
     onSuccess: (result) => {
       if (result.success) {
         toast.success(result.message || "Oportunidade criada com sucesso!");
+        console.log("CRIAÇÃO DE OPORTUNIDADE");
+        console.log(result.data);
+        console.log(result.data.company);
 
         queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() });
       } else {

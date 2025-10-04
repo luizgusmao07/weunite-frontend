@@ -1,9 +1,11 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetOpportunities } from "@/state/useOpportunities";
 import OpportunityCard from "./OpportunityCard";
-import { OpportunitySidebar } from "./OpportunitySidebar";
+import { HorizontalMenuOpportunity } from "./HorizontalMenuOpportunity";
 import OpportunitySearch from "./OpportunitySearch";
 import { useState } from "react";
+import { useBreakpoints } from "@/hooks/useBreakpoints";
+import { OpportunitySidebar } from "./OpportunitySidebar";
 import type { Opportunity } from "@/@types/opportunity.types";
 
 function OpportunitySkeleton() {
@@ -49,11 +51,12 @@ export default function FeedOpportunity() {
   const { data, isLoading } = useGetOpportunities();
   const opportunities = data?.data;
   const [searchTerm, setSearchTerm] = useState("");
+  const { isMobile, isTablet, isDesktop } = useBreakpoints();
 
   if (isLoading) {
     return (
       <div className="flex justify-center w-full">
-        <OpportunitySidebar />
+        {!isMobile && !isTablet && <OpportunitySidebar />}
         <div className="max-w-[600px] w-full flex flex-col items-center">
           {Array.from({ length: 3 }).map((_, index) => (
             <OpportunitySkeleton key={index} />
@@ -93,14 +96,14 @@ export default function FeedOpportunity() {
 
   return (
     <div className="flex justify-center w-full pt-4">
-      <div className="max-w-[600px] w-full flex flex-col items-center gap-2">
-        <div className="w-full flex flex-col justify-between items-start gap-4">
+      <div className="max-w-[45em] w-full flex flex-col items-center gap-2">
+        <div className="w-full flex flex-col  gap-4">
           <OpportunitySearch
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
           />
 
-          <OpportunitySidebar />
+          {isDesktop ? <OpportunitySidebar /> : <HorizontalMenuOpportunity />}
         </div>
 
         {opportunities.map((opportunity: Opportunity) => (

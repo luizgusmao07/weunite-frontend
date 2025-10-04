@@ -18,7 +18,7 @@ export default function OpportunitySearch({
           placeholder="Buscar oportunidades..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10 h-8 w-full bg-card border-border focus:border-third focus:ring-1 focus:ring-third/20 ml-1"
+          className="pl-10 h-[2em] w-full bg-card border-border focus:border-third focus:ring-1 focus:ring-third/20 ml-1"
         />
       </div>
     </div>

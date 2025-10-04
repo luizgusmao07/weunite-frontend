@@ -8,9 +8,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { OpportunityDescription } from "@/@types/opportunity.types";
+import type { Opportunity } from "@/@types/opportunity.types";
 import { X as CloseIcon, MapPin, Calendar, Users } from "lucide-react";
-// import { useAuthStore } from "@/stores/useAuthStore";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { getInitials } from "@/utils/getInitials";
@@ -19,7 +18,7 @@ import { getTimeAgo } from "@/hooks/useGetTimeAgo";
 interface OpportunityDescriptionProps {
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
-  opportunity: OpportunityDescription;
+  opportunity: Opportunity;
 }
 
 export function OpportunityDescription({
@@ -43,7 +42,6 @@ export function OpportunityDescription({
   );
 
   const handleApply = () => {
-    // TODO: Implementar candidatura
     console.log("Aplicando para a oportunidade:", opportunity.title);
   };
 

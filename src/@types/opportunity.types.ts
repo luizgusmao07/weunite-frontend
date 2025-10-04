@@ -5,12 +5,6 @@ export interface Skill {
   name: string;
 }
 
-export interface Company {
-  id: number;
-  name: string;
-  logo?: string;
-}
-
 export interface Subscriber {
   id: number;
   athleteId: number;
@@ -31,9 +25,9 @@ export interface Opportunity {
   description: string;
   location: string;
   dateEnd: Date;
-  skills: Skill[];
-  company: User;
-  subscribers: Subscriber[];
+  skills?: Skill[];
+  subscribers?: Subscriber[];
   createdAt: Date;
   updatedAt?: Date;
+  company: User;
 }
