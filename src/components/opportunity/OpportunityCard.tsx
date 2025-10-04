@@ -60,7 +60,7 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
   const isOwner = opportunity.company?.id;
 
   const handleCompanyClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que a descrição abra quando clicar na empresa
+    e.stopPropagation();
     if (isOwner) {
       navigate("/profile");
     } else {

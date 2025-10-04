@@ -13,21 +13,7 @@ export function HorizontalMenuOpportunity() {
 
   return (
     <>
-      <div
-        className="flex flex-row w-full h-full z-30 gap-4 pointer-events-auto justify-center pl-15 pr-3 overflow-x-auto"
-        style={{
-          scrollbarWidth: "thin",
-          scrollbarColor: "transparent transparent",
-        }}
-      >
-        <Button
-          onClick={() => setIsCreateOpen(true)}
-          className="w-[12em] justify-center text-xs h-[2em] bg-gradient-to-r from-third to-green-500 hover:from-green-500 hover:to-emerald-500 text-white shadow-md hover:shadow-lg transition-all duration-300"
-        >
-          <Plus className="h-3 w-3" />
-          Criar Oportunidade
-        </Button>
-
+      <div className="flex flex-row w-full h-full z-30 gap-2 pointer-events-auto justify-end pr-1 overflow-x-auto">
         <Button
           variant="outline"
           onClick={() => navigate("/opportunity/my")}

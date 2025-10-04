@@ -75,7 +75,7 @@ export default function Comments({
             <DrawerTitle>Comentários</DrawerTitle>
           </DrawerHeader>
 
-          <div className="flex flex-col w-full items-center overflow-y-auto">
+          <div className="flex flex-col w-full items-center overflow-y-auto scrollbar-thumb">
             <Post post={post} />
 
             <div className="w-full max-w-[45em] border-y border-foreground/30 px-4 py-3 flex gap-4">
@@ -93,7 +93,7 @@ export default function Comments({
                 </p>
                 <Textarea
                   placeholder="Poste sua resposta"
-                  className="bg-transparent border-none resize-none focus-visible:ring-2 p-2 text-base"
+                  className="bg-transparent border-none resize-none w-full min-h-[8vh] max-h-[11vh] overflow-y-auto custom-scrollbar focus-visible:ring-2 p-2 text-base break-all"
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                 />
@@ -138,6 +138,10 @@ export default function Comments({
           post.imageUrl ? "max-w-6xl" : "max-w-3xl"
         } w-[90vw] h-[90vh] p-0 rounded-xl overflow-hidden`}
       >
+        <DrawerClose className="absolute rounded-sm transition-opacity right-4 top-4 z-10">
+          <CloseIcon className="h-5 w-5 hover:cursor-pointer" />
+        </DrawerClose>
+
         <div className="flex w-full h-full">
           {post.imageUrl && (
             <div className="w-1/2 h-full flex items-center justify-center bg-black">

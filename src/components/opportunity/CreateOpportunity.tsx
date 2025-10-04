@@ -26,7 +26,8 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon, ChevronDownIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import CreateSkill from "../skill/CreateSkill";
+import CreateSkill from "./skill/CreateSkill";
+import { SelectedSkills } from "./skill/SelectedSkills";
 
 interface CreateOpportunityProps {
   open?: boolean;
@@ -76,7 +77,7 @@ export function CreateOpportunity({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="w-[95vw] max-w-[400px] max-h-[90vh] overflow-y-auto p-4"
+        className="w-[90vw] max-w-[40em] max-h-[90vh] overflow-y-auto p-4"
         aria-describedby={undefined}
       >
         <DialogHeader className="pb-2">
@@ -196,28 +197,33 @@ export function CreateOpportunity({
             />
           </div>
 
-          <div className="grid gap-1">
+          <div className="grid gap-2">
             <Label htmlFor="opportunity-skills" className="text-xs font-medium">
               Habilidades
             </Label>
-            <CreateSkill />
             <Controller
               name="skills"
               control={form.control}
               render={({ field }) => (
-                <Input
-                  id="opportunity-skills"
-                  placeholder="Ex: Lateral esquerdo, perna direita"
-                  className="h-8 text-sm"
-                  value={field.value.join(", ")}
-                  onChange={(e) => {
-                    const skillsArray = e.target.value
-                      .split(",")
-                      .map((skill) => skill.trim())
-                      .filter((skill) => skill.length > 0);
-                    field.onChange(skillsArray);
-                  }}
-                />
+                <>
+                  <CreateSkill
+                    selectedSkills={field.value}
+                    onSkillsChange={field.onChange}
+                  />
+                  {field.value.length > 0 && (
+                    <SelectedSkills
+                      skills={field.value}
+                      showRemove={true}
+                      onRemoveSkill={(skill) => {
+                        const newSkills = field.value.filter(
+                          (s) => s !== skill,
+                        );
+                        field.onChange(newSkills);
+                      }}
+                      className="mt-2"
+                    />
+                  )}
+                </>
               )}
             />
           </div>
