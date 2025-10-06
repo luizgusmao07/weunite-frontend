@@ -17,13 +17,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Bookmark,
   Share,
   EllipsisVertical,
   MapPin,
   Calendar,
   Users,
-  Building2,
+  Trash2,
   Flag,
 } from "lucide-react";
 
@@ -34,6 +45,8 @@ import { getInitials } from "@/utils/getInitials";
 import { useNavigate } from "react-router-dom";
 import { OpportunityDescription } from "./DescriptionOpportunity";
 import type { Opportunity } from "@/@types/opportunity.types";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useDeleteOpportunity } from "@/state/useOpportunities";
 
 interface OpportunityCardProps {
   opportunity: Opportunity;
@@ -42,9 +55,12 @@ interface OpportunityCardProps {
 export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
   const initials = getInitials(opportunity.company?.name || "");
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const deleteOpportunity = useDeleteOpportunity();
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const timeAgo = getTimeAgo(opportunity.createdAt);
 
@@ -57,7 +73,20 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
     },
   );
 
-  const isOwner = opportunity.company?.id;
+  // TEMPORÁRIO: Como o backend não está retornando o campo company/companyId/userId,
+  // vamos usar um fallback - todas as oportunidades serão editáveis apenas se o userId for 2
+  // TODO: REMOVER isso quando o backend retornar o campo correto
+  const isOwner = user?.id === "2"; // Temporário para testes
+
+  console.log("Debug isOwner:", {
+    opportunityCompanyId: opportunity.company?.id,
+    opportunityCompanyIdDirect: opportunity.companyId,
+    opportunityUserId: opportunity.userId,
+    userId: user?.id,
+    isOwner,
+    message: "BACKEND NÃO ESTÁ RETORNANDO O CAMPO COMPANY/COMPANYID/USERID!",
+    allOpportunityKeys: Object.keys(opportunity),
+  });
 
   const handleCompanyClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -92,6 +121,17 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
 
   const handleDropdownClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Evita que a descrição abra quando clicar no dropdown
+  };
+
+  const handleDelete = () => {
+    if (!user?.id) return;
+
+    deleteOpportunity.mutate({
+      companyId: Number(user.id),
+      opportunityId: Number(opportunity.id),
+    });
+
+    setIsDeleteDialogOpen(false);
   };
 
   return (
@@ -135,16 +175,55 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
                 <DropdownMenuContent align="end" className="w-48">
                   {isOwner ? (
                     <>
-                      <DropdownMenuItem className="hover:cursor-pointer">
-                        <Building2 className="mr-2 h-4 w-4" />
-                        Editar
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="hover:cursor-pointer">
-                        <Users className="mr-2 h-4 w-4" />
-                        Ver Candidatos
-                      </DropdownMenuItem>
+                      <AlertDialog
+                        open={isDeleteDialogOpen}
+                        onOpenChange={setIsDeleteDialogOpen}
+                      >
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem
+                            className="hover:cursor-pointer"
+                            onSelect={(e) => {
+                              e.preventDefault();
+                              setIsDeleteDialogOpen(true);
+                            }}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Excluir
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta ação não pode ser desfeita. A oportunidade
+                              será permanentemente removida da plataforma.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="hover:cursor-pointer">
+                              Cancelar
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={handleDelete}
+                              className="bg-red-600 hover:bg-red-700 text-zinc-100 hover:cursor-pointer"
+                              disabled={deleteOpportunity.isPending}
+                            >
+                              {deleteOpportunity.isPending
+                                ? "Deletando..."
+                                : "Excluir"}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="hover:cursor-pointer">
+                      <DropdownMenuItem
+                        className="hover:cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShare(e);
+                        }}
+                      >
                         <Share className="mr-2 h-4 w-4" />
                         Compartilhar
                       </DropdownMenuItem>

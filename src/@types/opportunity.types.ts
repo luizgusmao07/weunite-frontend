@@ -19,6 +19,15 @@ export interface CreateOpportunity {
   skills: Skill[];
 }
 
+export interface UpdateOpportunity {
+  opportunityId: number;
+  title?: string;
+  description?: string;
+  location?: string;
+  dateEnd?: Date;
+  skills?: Skill[];
+}
+
 export interface Opportunity {
   id: number;
   title: string;
@@ -29,5 +38,7 @@ export interface Opportunity {
   subscribers?: Subscriber[];
   createdAt: Date;
   updatedAt?: Date;
-  company: User;
+  company?: User;
+  companyId?: number; // ID da empresa (pode vir direto do backend)
+  userId?: number; // Alternativa se vier como userId
 }
