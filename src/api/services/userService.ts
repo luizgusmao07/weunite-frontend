@@ -79,6 +79,30 @@ export const getUserByUsername = async (username: string) => {
   }
 };
 
+export const getUserById = async (userId: number) => {
+  try {
+    const response = await axios.get(`/user/id/${userId}`);
+
+    const userData = response.data.data || response.data;
+
+    return {
+      success: true,
+      data: userData as User,
+      message: response.data.message || null,
+      error: null,
+    };
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+
+    return {
+      success: false,
+      data: null,
+      message: null,
+      error: error.response?.data?.message || "Usuário não encontrado",
+    };
+  }
+};
+
 export const deleteBannerUser = async (username: string) => {
   try {
     const response = await axios.delete(`/user/banner/delete/${username}`);

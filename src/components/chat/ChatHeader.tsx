@@ -30,11 +30,19 @@ export const ChatHeader = ({
             <ArrowLeft size={20} />
           </Button>
         )}
-        <div
-          className={`w-10 h-10 rounded-full ${conversation.avatarColor} flex items-center justify-center mr-3`}
-        >
-          <span className="font-medium">{conversation.avatar}</span>
-        </div>
+        {conversation.avatar.startsWith("http") ? (
+          <img
+            src={conversation.avatar}
+            alt={conversation.name}
+            className="w-10 h-10 rounded-full object-cover mr-3"
+          />
+        ) : (
+          <div
+            className={`w-10 h-10 rounded-full ${conversation.avatarColor} flex items-center justify-center mr-3`}
+          >
+            <span className="font-medium">{conversation.avatar}</span>
+          </div>
+        )}
         <div>
           <h2 className="font-medium">{conversation.name}</h2>
           <p className="text-xs text-muted-foreground">

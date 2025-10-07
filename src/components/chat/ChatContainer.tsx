@@ -4,14 +4,12 @@ import { MessageList } from "@/components/chat/MessageList";
 import { MessageInput } from "@/components/chat/MessageInput";
 import { TypingIndicator } from "@/components/chat/TypingIndicator";
 import { triggerHapticFeedback } from "@/utils/hapticFeedback";
-
-interface Message {
-  id: number;
-  text: string;
-  sender: "me" | "other";
-  time: string;
-  read: boolean;
-}
+import { useWebSocket } from "@/hooks/useWebSocket";
+import {
+  useGetConversationMessages,
+  useMarkMessagesAsRead,
+} from "@/state/useChat";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 interface Conversation {
   id: number;
@@ -32,185 +30,7 @@ export const ChatContainer = ({
   onBack,
   isMobile = false,
 }: ChatContainerProps) => {
-  const conversationMessages: Record<number, Message[]> = {
-    1: [
-      {
-        id: 1,
-        text: "Vai pra peneira hoje?",
-        sender: "other",
-        time: "09:30",
-        read: true,
-      },
-      {
-        id: 2,
-        text: "Vou sim mano, e você?",
-        sender: "me",
-        time: "09:31",
-        read: true,
-      },
-      {
-        id: 3,
-        text: "Tambem vou, passa aqui em casa para gente ir junto",
-        sender: "other",
-        time: "09:32",
-        read: true,
-      },
-      {
-        id: 4,
-        text: "Blz, até mais tarde",
-        sender: "me",
-        time: "09:33",
-        read: true,
-      },
-      {
-        id: 5,
-        text: "Flw mano",
-        sender: "other",
-        time: "09:35",
-        read: true,
-      },
-      {
-        id: 6,
-        text: "Ta vindo?",
-        sender: "other",
-        time: "12:30",
-        read: true,
-      },
-    ],
-    2: [
-      {
-        id: 1,
-        text: "Viu o roubo do jogo ontem?",
-        sender: "other",
-        time: "14:22",
-        read: true,
-      },
-      {
-        id: 2,
-        text: "KKKKKKKKKKKKKKKKK, to nem ai meu corinthias ganhou",
-        sender: "me",
-        time: "14:25",
-        read: true,
-      },
-      {
-        id: 3,
-        text: "PO, AQUILO NAO SER FALTA MANO, NA FRENTE DO JUIZ",
-        sender: "other",
-        time: "14:26",
-        read: true,
-      },
-      {
-        id: 4,
-        text: "KKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
-        sender: "me",
-        time: "14:30",
-        read: true,
-      },
-    ],
-    3: [
-      {
-        id: 1,
-        text: "Viu as luta do UFC?",
-        sender: "me",
-        time: "09:15",
-        read: true,
-      },
-      {
-        id: 2,
-        text: "Vi nada mano, tava morto aqui em casa",
-        sender: "other",
-        time: "10:42",
-        read: true,
-      },
-      {
-        id: 3,
-        text: "Slk, perdeu luizao, luta do poatan foi muito boa",
-        sender: "me",
-        time: "11:30",
-        read: true,
-      },
-      {
-        id: 4,
-        text: "Vou ver depois mano",
-        sender: "other",
-        time: "11:45",
-        read: false,
-      },
-    ],
-    4: [
-      {
-        id: 1,
-        text: "Vai pra academia hoje?",
-        sender: "me",
-        time: "09:15",
-        read: true,
-      },
-      {
-        id: 2,
-        text: "Vo nada, trabalhar ne",
-        sender: "other",
-        time: "10:42",
-        read: true,
-      },
-      {
-        id: 3,
-        text: "Presencial hoje",
-        sender: "me",
-        time: "11:30",
-        read: true,
-      },
-      {
-        id: 4,
-        text: "Sim to aqui ja",
-        sender: "other",
-        time: "11:45",
-        read: false,
-      },
-    ],
-    5: [
-      {
-        id: 1,
-        text: "Manoel",
-        sender: "other",
-        time: "11:30",
-        read: true,
-      },
-      {
-        id: 2,
-        text: "Manoel",
-        sender: "other",
-        time: "11:30",
-        read: true,
-      },
-      {
-        id: 3,
-        text: "Manoel",
-        sender: "other",
-        time: "11:31",
-        read: true,
-      },
-      {
-        id: 4,
-        text: "Oi, tava trabalhando",
-        sender: "me",
-        time: "14:00",
-        read: false,
-      },
-      {
-        id: 5,
-        text: "Esqueci oque ia falar rs",
-        sender: "other",
-        time: "14:02",
-        read: false,
-      },
-    ],
-  };
-
-  const [messages, setMessages] = useState<Message[]>(
-    conversationMessages[activeConversation?.id || 1] || [],
-  );
-
-  // Typing indicator state
+  const userId = useAuthStore((state) => state.user?.id);
   const [isOtherTyping, setIsOtherTyping] = useState(false);
 
   // Pull-to-refresh state
@@ -224,11 +44,38 @@ export const ChatContainer = ({
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
 
+  const { data: messagesData } = useGetConversationMessages(
+    activeConversation?.id || 0,
+    Number(userId) || 0,
+  );
+
+  const { mutate: markAsRead } = useMarkMessagesAsRead();
+
+  const { isConnected, subscribeToConversation, sendMessage } = useWebSocket();
+
+  const messages = messagesData?.success ? messagesData.data || [] : [];
+
   useEffect(() => {
-    if (activeConversation) {
-      setMessages(conversationMessages[activeConversation.id] || []);
+    if (!activeConversation?.id || !userId) return;
+
+    const unsubscribe = subscribeToConversation(
+      activeConversation.id,
+      Number(userId),
+    );
+
+    markAsRead({
+      conversationId: activeConversation.id,
+      userId: Number(userId),
+    });
+
+    return unsubscribe;
+  }, [activeConversation?.id, userId, subscribeToConversation, markAsRead]);
+
+  useEffect(() => {
+    if (messageAreaRef.current) {
+      messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight;
     }
-  }, [activeConversation?.id]);
+  }, [messages]);
 
   // Handle touch events for swipe and pull-to-refresh
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -284,47 +131,27 @@ export const ChatContainer = ({
   };
 
   const handleSendMessage = (text: string) => {
-    if (!text.trim()) return;
+    if (!activeConversation?.id || !userId || !isConnected) return;
 
-    // Trigger haptic feedback on message send
     triggerHapticFeedback("light");
 
-    const newMessage: Message = {
-      id: messages.length + 1,
-      text,
-      sender: "me",
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      read: false,
-    };
-
-    setMessages([...messages, newMessage]);
-
-    // Simulate other person typing
-    setTimeout(() => {
-      setIsOtherTyping(true);
-    }, 500);
-
-    setTimeout(() => {
-      setIsOtherTyping(false);
-      // Trigger haptic feedback on message received
-      triggerHapticFeedback("medium");
-
-      const responseMessage: Message = {
-        id: messages.length + 2,
-        text: "Obrigado pela mensagem! Alguma outra dúvida?",
-        sender: "other",
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        read: false,
-      };
-      setMessages((prev) => [...prev, responseMessage]);
-    }, 2000);
+    sendMessage({
+      conversationId: activeConversation.id,
+      senderId: Number(userId),
+      content: text,
+      type: "TEXT",
+    });
   };
+
+  if (!activeConversation) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-gray-500 dark:text-gray-400">
+          Selecione uma conversa para começar
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -376,7 +203,18 @@ export const ChatContainer = ({
             </div>
           </div>
         )}
-        <MessageList messages={messages} />
+        <MessageList
+          messages={messages.map((msg) => ({
+            id: msg.id,
+            text: msg.content,
+            sender: msg.senderId === Number(userId) ? "me" : "other",
+            time: new Date(msg.createdAt).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            read: msg.isRead,
+          }))}
+        />
         <TypingIndicator
           isTyping={isOtherTyping}
           userName={activeConversation?.name}
