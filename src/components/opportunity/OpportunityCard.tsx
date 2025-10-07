@@ -17,35 +17,53 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Bookmark,
   Share,
   EllipsisVertical,
   MapPin,
   Calendar,
   Users,
-  Building2,
+  Trash2,
   Flag,
+  Edit,
 } from "lucide-react";
 
-import type { OpportunityDescription } from "@/@types/opportunity.types";
 import { getTimeAgo } from "@/hooks/useGetTimeAgo";
 
 import { useState } from "react";
 import { getInitials } from "@/utils/getInitials";
 import { useNavigate } from "react-router-dom";
-import { OpportunityDescription as OpportunityDescriptionComponent } from "./DescriptionOpportunity";
+import { OpportunityDescription } from "./DescriptionOpportunity";
+import { EditOpportunity } from "./EditOpportunity";
+import type { Opportunity } from "@/@types/opportunity.types";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useDeleteOpportunity } from "@/state/useOpportunities";
 
 interface OpportunityCardProps {
-  opportunity: OpportunityDescription;
+  opportunity: Opportunity;
 }
 
 export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
-  const initials = getInitials(opportunity.company?.name || "");
+  const initials = getInitials(opportunity.company?.username || "");
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const deleteOpportunity = useDeleteOpportunity();
 
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditOpportunityOpen, setIsEditOpportunityOpen] = useState(false);
 
   const timeAgo = getTimeAgo(opportunity.createdAt);
 
@@ -58,10 +76,10 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
     },
   );
 
-  const isOwner = opportunity.company?.id;
+  const isOwner = opportunity.company?.id === user?.id;
 
   const handleCompanyClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que a descrição abra quando clicar na empresa
+    e.stopPropagation();
     if (isOwner) {
       navigate("/profile");
     } else {
@@ -69,30 +87,36 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
     }
   };
 
+  const handleDelete = () => {
+    if (!user?.id) return;
+
+    deleteOpportunity.mutate({
+      companyId: Number(user.id),
+      opportunityId: Number(opportunity.id),
+    });
+
+    setIsDeleteDialogOpen(false);
+  };
+
+  const handleEditOpportunityOpen = () => {
+    setIsEditOpportunityOpen(true);
+  };
+
   const handleCardClick = () => {
     setIsDescriptionOpen(true);
   };
 
   const handleApply = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que a descrição abra
-    // TODO: Implementar lógica de candidatura
-    console.log("Candidatar-se à oportunidade:", opportunity.title);
+    e.stopPropagation();
   };
 
   const handleBookmark = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que a descrição abra
+    e.stopPropagation();
     setIsBookmarked(!isBookmarked);
-    // TODO: Implementar lógica de salvar oportunidade
-  };
-
-  const handleShare = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que a descrição abra
-    // TODO: Implementar lógica de compartilhamento
-    console.log("Compartilhar oportunidade:", opportunity.title);
   };
 
   const handleDropdownClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que a descrição abra quando clicar no dropdown
+    e.stopPropagation();
   };
 
   return (
@@ -120,7 +144,7 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
               className="text-base font-medium hover:cursor-pointer"
               onClick={handleCompanyClick}
             >
-              Nome do usuário
+              {opportunity.company?.username}
             </CardTitle>
 
             <CardDescription className="text-xs">há {timeAgo}</CardDescription>
@@ -135,14 +159,55 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
                 <DropdownMenuContent align="end" className="w-48">
                   {isOwner ? (
                     <>
-                      <DropdownMenuItem className="hover:cursor-pointer">
-                        <Building2 className="mr-2 h-4 w-4" />
+                      <DropdownMenuItem
+                        onClick={handleEditOpportunityOpen}
+                        className="hover:cursor-pointer"
+                      >
+                        <Edit className="mr-2 h-4 w-4" />
                         Editar
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="hover:cursor-pointer">
-                        <Users className="mr-2 h-4 w-4" />
-                        Ver Candidatos
-                      </DropdownMenuItem>
+
+                      <AlertDialog
+                        open={isDeleteDialogOpen}
+                        onOpenChange={setIsDeleteDialogOpen}
+                      >
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem
+                            className="hover:cursor-pointer"
+                            onSelect={(e) => {
+                              e.preventDefault();
+                              setIsDeleteDialogOpen(true);
+                            }}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Excluir
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta ação não pode ser desfeita. A oportunidade
+                              será permanentemente removida da plataforma.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="hover:cursor-pointer">
+                              Cancelar
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={handleDelete}
+                              className="bg-red-600 hover:bg-red-700 text-zinc-100 hover:cursor-pointer"
+                              disabled={deleteOpportunity.isPending}
+                            >
+                              {deleteOpportunity.isPending
+                                ? "Deletando..."
+                                : "Excluir"}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+
                       <DropdownMenuSeparator />
                       <DropdownMenuItem className="hover:cursor-pointer">
                         <Share className="mr-2 h-4 w-4" />
@@ -155,7 +220,6 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
                         className="hover:cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleShare(e);
                         }}
                       >
                         <Share className="mr-2 h-4 w-4" />
@@ -233,9 +297,15 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
         </CardFooter>
       </Card>
 
-      <OpportunityDescriptionComponent
+      <OpportunityDescription
         isOpen={isDescriptionOpen}
         onOpenChange={setIsDescriptionOpen}
+        opportunity={opportunity}
+      />
+
+      <EditOpportunity
+        open={isEditOpportunityOpen}
+        onOpenChange={setIsEditOpportunityOpen}
         opportunity={opportunity}
       />
     </>

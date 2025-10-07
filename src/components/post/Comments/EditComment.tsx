@@ -93,26 +93,6 @@ export function EditComment({ open, onOpenChange, comment }: EditCommentProps) {
                 )}
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="comment-image">Adicionar imagem (opcional)</Label>
-              <Controller
-                name="media"
-                control={form.control}
-                render={({ field: { onChange, name } }) => (
-                  <Input
-                    id="comment-image"
-                    name={name}
-                    type="file"
-                    accept="image/*, video/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      onChange(file);
-                    }}
-                    className="file:cursor-pointer hover:cursor-pointer"
-                  />
-                )}
-              />
-            </div>
           </div>
           <DialogFooter className="mt-4">
             <DialogClose asChild>

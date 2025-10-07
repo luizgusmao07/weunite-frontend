@@ -10,69 +10,93 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuthStore } from "@/stores/useAuthStore";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
-import { createOpportunitySchema } from "@/schemas/opportunity/createOpportunity.schema";
-import { useCreateOpportunity } from "@/state/useOpportunities";
 import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useUpdateOpportunity } from "@/state/useOpportunities";
+import { updateOpportunitySchema } from "@/schemas/opportunity/updateOpportunity.schema";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import type { Opportunity } from "@/@types/opportunity.types";
+import { useEffect, useState } from "react";
+import { CalendarIcon, ChevronDownIcon } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon, ChevronDownIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CreateSkill from "./skill/CreateSkill";
 import { SelectedSkills } from "./skill/SelectedSkills";
 
-interface CreateOpportunityProps {
+interface EditOpportunityProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  opportunity?: Opportunity;
 }
 
-export function CreateOpportunity({
+export function EditOpportunity({
   open,
   onOpenChange,
-}: CreateOpportunityProps) {
-  const form = useForm<z.infer<typeof createOpportunitySchema>>({
-    resolver: zodResolver(createOpportunitySchema),
+  opportunity,
+}: EditOpportunityProps) {
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
+  const form = useForm<z.infer<typeof updateOpportunitySchema>>({
+    resolver: zodResolver(updateOpportunitySchema),
     defaultValues: {
       title: "",
       description: "",
       location: "",
-      dateEnd: new Date(),
+      dateEnd: undefined,
       skills: [],
     },
   });
 
   const { user } = useAuthStore();
+  const updateOpportunityMutation = useUpdateOpportunity();
 
-  const createOpportunityMutation = useCreateOpportunity();
+  useEffect(() => {
+    if (opportunity && open) {
+      form.reset({
+        title: opportunity.title || "",
+        description: opportunity.description || "",
+        location: opportunity.location || "",
+        dateEnd: opportunity.dateEnd
+          ? new Date(opportunity.dateEnd)
+          : undefined,
+        skills: opportunity.skills?.map((skill) => skill.name) || [],
+      });
+    }
+  }, [opportunity, open, form]);
 
-  async function onSubmit(values: z.infer<typeof createOpportunitySchema>) {
-    if (!user?.id) return;
+  async function onSubmit(values: z.infer<typeof updateOpportunitySchema>) {
+    if (!user?.id || !opportunity?.id) return;
 
-    const result = await createOpportunityMutation.mutateAsync({
+    const result = await updateOpportunityMutation.mutateAsync({
       data: {
-        ...values,
-        skills: values.skills.map((skillName, index) => ({
+        opportunityId: Number(opportunity.id),
+        title: values.title,
+        description: values.description,
+        location: values.location,
+        dateEnd: values.dateEnd,
+        skills: values.skills?.map((skillName, index) => ({
           id: index + 1,
           name: skillName,
         })),
       },
       companyId: Number(user.id),
     });
+
     if (result.success) {
       form.reset();
       onOpenChange?.(false);
     }
   }
 
-  const isSubmitting = createOpportunityMutation.isPending;
+  const isSubmitting = updateOpportunityMutation.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -81,9 +105,8 @@ export function CreateOpportunity({
         aria-describedby={undefined}
       >
         <DialogHeader className="pb-2">
-          <DialogTitle className="text-lg">Criar Oportunidade</DialogTitle>
+          <DialogTitle className="text-lg">Editar Oportunidade</DialogTitle>
         </DialogHeader>
-
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="grid gap-2 text-sm"
@@ -159,7 +182,10 @@ export function CreateOpportunity({
               name="dateEnd"
               control={form.control}
               render={({ field }) => (
-                <DropdownMenu>
+                <DropdownMenu
+                  open={isCalendarOpen}
+                  onOpenChange={setIsCalendarOpen}
+                >
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
@@ -173,21 +199,21 @@ export function CreateOpportunity({
                         {field.value ? (
                           format(field.value, "dd/MM/yyyy", { locale: ptBR })
                         ) : (
-                          <span>Selecionar data</span>
+                          <span>Selecione uma data</span>
                         )}
                       </div>
-                      <ChevronDownIcon className="h-3 w-3 opacity-50" />
+                      <ChevronDownIcon className="ml-2 h-3 w-3" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
                       selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) =>
-                        date < new Date(new Date().setHours(0, 0, 0, 0))
-                      }
-                      fixedWeeks={true}
+                      onSelect={(date) => {
+                        field.onChange(date);
+                        setIsCalendarOpen(false);
+                      }}
+                      disabled={(date) => date < new Date()}
                       initialFocus
                       locale={ptBR}
                     />
@@ -197,7 +223,7 @@ export function CreateOpportunity({
             />
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid gap-1">
             <Label htmlFor="opportunity-skills" className="text-xs font-medium">
               Habilidades
             </Label>
@@ -207,15 +233,15 @@ export function CreateOpportunity({
               render={({ field }) => (
                 <>
                   <CreateSkill
-                    selectedSkills={field.value}
+                    selectedSkills={field.value || []}
                     onSkillsChange={field.onChange}
                   />
-                  {field.value.length > 0 && (
+                  {(field.value?.length || 0) > 0 && (
                     <SelectedSkills
-                      skills={field.value}
+                      skills={field.value || []}
                       showRemove={true}
                       onRemoveSkill={(skill) => {
-                        const newSkills = field.value.filter(
+                        const newSkills = (field.value || []).filter(
                           (s) => s !== skill,
                         );
                         field.onChange(newSkills);
@@ -243,7 +269,7 @@ export function CreateOpportunity({
               disabled={isSubmitting}
               aria-busy={isSubmitting}
             >
-              {isSubmitting ? "Criando..." : "Criar"}
+              {isSubmitting ? "Salvando..." : "Salvar alterações"}
             </Button>
           </DialogFooter>
         </form>

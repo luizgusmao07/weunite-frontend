@@ -34,7 +34,12 @@ export function BottomSideBar() {
 
   const items = [
     { title: "Home", url: "/home", icon: Home, color: getIncoColor("/home") },
-    { title: "Oportunidade", url: "", icon: Link },
+    {
+      title: "Oportunidade",
+      url: "/opportunity",
+      icon: Link,
+      color: getIncoColor("/opportunity"),
+    },
     { title: "Criar Publicação", url: "#", icon: DiamondPlus },
     { title: "Chat", url: "", icon: MessageCircleMore },
   ];

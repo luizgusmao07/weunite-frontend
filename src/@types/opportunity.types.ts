@@ -5,12 +5,6 @@ export interface Skill {
   name: string;
 }
 
-export interface Company {
-  id: number;
-  name: string;
-  logo?: string;
-}
-
 export interface Subscriber {
   id: number;
   athleteId: number;
@@ -23,15 +17,15 @@ export interface CreateOpportunity {
   location: string;
   dateEnd: Date;
   skills: Skill[];
-  media?: File;
 }
 
-export interface OpportunityRequestDTO {
-  title: string;
-  description: string;
-  location: string;
-  dateEnd: Date;
-  skills: Skill[];
+export interface UpdateOpportunity {
+  opportunityId: number;
+  title?: string;
+  description?: string;
+  location?: string;
+  dateEnd?: Date;
+  skills?: Skill[];
 }
 
 export interface Opportunity {
@@ -40,30 +34,9 @@ export interface Opportunity {
   description: string;
   location: string;
   dateEnd: Date;
-  skills: Skill[];
-  company: User;
-  subscribers: Subscriber[];
+  skills?: Skill[];
+  subscribers?: Subscriber[];
   createdAt: Date;
   updatedAt?: Date;
-}
-
-export interface OpportunityDisplay extends Opportunity {
-  companyId: number;
-  companyName: string;
-  companyLogo?: string;
-  applicationsCount: number;
-  skillNames: string[];
-  isExpired: boolean;
-  daysUntilDeadline: number;
-}
-
-export interface OpportunityDescription {
-  title: string;
-  description: string;
-  location: string;
-  dateEnd: Date;
-  skills: Skill[];
-  company: User;
-  subscribers: Subscriber[];
-  createdAt: Date;
+  company?: User;
 }
