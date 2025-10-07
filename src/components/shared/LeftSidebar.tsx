@@ -94,7 +94,12 @@ export function LeftSidebar() {
       icon: Link,
       color: getIncoColor("/opportunity"),
     },
-    { title: "Chat", url: "#", icon: MessageCircleMore },
+    {
+      title: "Chat",
+      url: "/chat",
+      icon: MessageCircleMore,
+      color: getIncoColor("/chat"),
+    },
     { title: "Pesquisar", url: "#", icon: SearchIcon },
     { title: "Criar Publicação", url: "#", icon: DiamondPlus },
     themeItem,
