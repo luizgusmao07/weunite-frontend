@@ -41,9 +41,7 @@ export function OpportunityDescription({
     },
   );
 
-  const handleApply = () => {
-    console.log("Aplicando para a oportunidade:", opportunity.title);
-  };
+  const handleApply = () => {};
 
   if (!commentDesktop) {
     return (

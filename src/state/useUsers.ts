@@ -44,7 +44,6 @@ export const useUpdateProfile = () => {
           });
         }
 
-        // Invalidar queries do perfil
         queryClient.invalidateQueries({
           queryKey: ["user-profile", user?.username],
         });

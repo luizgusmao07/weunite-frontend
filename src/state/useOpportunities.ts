@@ -1,9 +1,13 @@
-import type { CreateOpportunity } from "@/@types/opportunity.types";
+import type {
+  CreateOpportunity,
+  UpdateOpportunity,
+} from "@/@types/opportunity.types";
 import {
   createOpportunityRequest,
   deleteOpportunityRequest,
   getOpportunitiesCompanyRequest,
   getOpportunitiesRequest,
+  updateOpportunityRequest,
 } from "@/api/services/opportunityService";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -50,9 +54,9 @@ export const useUpdateOpportunity = () => {
       data,
       companyId,
     }: {
-      data: CreateOpportunity;
+      data: UpdateOpportunity;
       companyId: number;
-    }) => createOpportunityRequest(data, companyId),
+    }) => updateOpportunityRequest(companyId, data),
     onSuccess: (result) => {
       if (result.success) {
         toast.success(result.message || "Oportunidade atualizada com sucesso!");

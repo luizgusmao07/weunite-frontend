@@ -45,7 +45,6 @@ export const useAuthStore = create<AuthState>()(
       signup: async (request: SignUp | SignUpCompany) => {
         set({ loading: true, error: null, message: null });
 
-        // Determina qual função usar baseado na presença do campo 'cnpj'
         const isCompany = "cnpj" in request;
         const result = isCompany
           ? await signUpCompanyRequest(request as SignUpCompany)

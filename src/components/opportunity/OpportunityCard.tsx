@@ -36,6 +36,7 @@ import {
   Users,
   Trash2,
   Flag,
+  Edit,
 } from "lucide-react";
 
 import { getTimeAgo } from "@/hooks/useGetTimeAgo";
@@ -44,6 +45,7 @@ import { useState } from "react";
 import { getInitials } from "@/utils/getInitials";
 import { useNavigate } from "react-router-dom";
 import { OpportunityDescription } from "./DescriptionOpportunity";
+import { EditOpportunity } from "./EditOpportunity";
 import type { Opportunity } from "@/@types/opportunity.types";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useDeleteOpportunity } from "@/state/useOpportunities";
@@ -53,7 +55,7 @@ interface OpportunityCardProps {
 }
 
 export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
-  const initials = getInitials(opportunity.company?.name || "");
+  const initials = getInitials(opportunity.company?.username || "");
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const deleteOpportunity = useDeleteOpportunity();
@@ -61,6 +63,7 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditOpportunityOpen, setIsEditOpportunityOpen] = useState(false);
 
   const timeAgo = getTimeAgo(opportunity.createdAt);
 
@@ -73,20 +76,7 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
     },
   );
 
-  // TEMPORÁRIO: Como o backend não está retornando o campo company/companyId/userId,
-  // vamos usar um fallback - todas as oportunidades serão editáveis apenas se o userId for 2
-  // TODO: REMOVER isso quando o backend retornar o campo correto
-  const isOwner = user?.id === "2"; // Temporário para testes
-
-  console.log("Debug isOwner:", {
-    opportunityCompanyId: opportunity.company?.id,
-    opportunityCompanyIdDirect: opportunity.companyId,
-    opportunityUserId: opportunity.userId,
-    userId: user?.id,
-    isOwner,
-    message: "BACKEND NÃO ESTÁ RETORNANDO O CAMPO COMPANY/COMPANYID/USERID!",
-    allOpportunityKeys: Object.keys(opportunity),
-  });
+  const isOwner = opportunity.company?.id === user?.id;
 
   const handleCompanyClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -95,32 +85,6 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
     } else {
       navigate(`/profile/${opportunity.company?.id}`);
     }
-  };
-
-  const handleCardClick = () => {
-    setIsDescriptionOpen(true);
-  };
-
-  const handleApply = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que a descrição abra
-    // TODO: Implementar lógica de candidatura
-    console.log("Candidatar-se à oportunidade:", opportunity.title);
-  };
-
-  const handleBookmark = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que a descrição abra
-    setIsBookmarked(!isBookmarked);
-    // TODO: Implementar lógica de salvar oportunidade
-  };
-
-  const handleShare = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que a descrição abra
-    // TODO: Implementar lógica de compartilhamento
-    console.log("Compartilhar oportunidade:", opportunity.title);
-  };
-
-  const handleDropdownClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que a descrição abra quando clicar no dropdown
   };
 
   const handleDelete = () => {
@@ -132,6 +96,27 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
     });
 
     setIsDeleteDialogOpen(false);
+  };
+
+  const handleEditOpportunityOpen = () => {
+    setIsEditOpportunityOpen(true);
+  };
+
+  const handleCardClick = () => {
+    setIsDescriptionOpen(true);
+  };
+
+  const handleApply = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  const handleBookmark = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsBookmarked(!isBookmarked);
+  };
+
+  const handleDropdownClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
   };
 
   return (
@@ -160,7 +145,6 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
               onClick={handleCompanyClick}
             >
               {opportunity.company?.username}
-              {opportunity.company?.username}
             </CardTitle>
 
             <CardDescription className="text-xs">há {timeAgo}</CardDescription>
@@ -175,6 +159,14 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
                 <DropdownMenuContent align="end" className="w-48">
                   {isOwner ? (
                     <>
+                      <DropdownMenuItem
+                        onClick={handleEditOpportunityOpen}
+                        className="hover:cursor-pointer"
+                      >
+                        <Edit className="mr-2 h-4 w-4" />
+                        Editar
+                      </DropdownMenuItem>
+
                       <AlertDialog
                         open={isDeleteDialogOpen}
                         onOpenChange={setIsDeleteDialogOpen}
@@ -217,13 +209,7 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
                       </AlertDialog>
 
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="hover:cursor-pointer"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleShare(e);
-                        }}
-                      >
+                      <DropdownMenuItem className="hover:cursor-pointer">
                         <Share className="mr-2 h-4 w-4" />
                         Compartilhar
                       </DropdownMenuItem>
@@ -234,7 +220,6 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
                         className="hover:cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleShare(e);
                         }}
                       >
                         <Share className="mr-2 h-4 w-4" />
@@ -315,6 +300,12 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
       <OpportunityDescription
         isOpen={isDescriptionOpen}
         onOpenChange={setIsDescriptionOpen}
+        opportunity={opportunity}
+      />
+
+      <EditOpportunity
+        open={isEditOpportunityOpen}
+        onOpenChange={setIsEditOpportunityOpen}
         opportunity={opportunity}
       />
     </>

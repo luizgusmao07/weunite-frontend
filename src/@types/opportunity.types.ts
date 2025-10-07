@@ -39,6 +39,4 @@ export interface Opportunity {
   createdAt: Date;
   updatedAt?: Date;
   company?: User;
-  companyId?: number; // ID da empresa (pode vir direto do backend)
-  userId?: number; // Alternativa se vier como userId
 }
