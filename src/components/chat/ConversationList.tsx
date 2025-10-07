@@ -77,7 +77,7 @@ export const ConversationList = ({
 
   return (
     <div
-      className={`${isMobile ? "w-full" : "w-80 md:w-96"} h-full ${!isMobile ? "border-r border-border" : ""} bg-card flex flex-col`}
+      className={`${isMobile ? "w-full h-full min-h-0" : "w-80 md:w-96 h-full"} ${!isMobile ? "border-r border-border" : ""} bg-card flex flex-col overflow-hidden`}
     >
       <div className="p-3 md:p-4 border-b border-border sticky top-0 z-10 bg-card shrink-0">
         <h1 className="text-lg md:text-xl font-semibold mb-3">Conversas</h1>
@@ -97,7 +97,7 @@ export const ConversationList = ({
       </div>
 
       {isSearching ? (
-        <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="flex-1 overflow-y-auto min-h-0 custom-scrollbar">
           <div className="p-3 bg-muted text-sm text-muted-foreground font-medium">
             Resultados da pesquisa
           </div>
@@ -131,7 +131,7 @@ export const ConversationList = ({
           )}
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="flex-1 overflow-y-auto min-h-0 custom-scrollbar">
           {conversations.map((conversation) => (
             <div
               key={conversation.id}

@@ -10,58 +10,78 @@ export const ChatLayout = () => {
   const [conversations, setConversations] = useState([
     {
       id: 1,
-      name: "Atendimento",
-      avatar: "AT",
+      name: "Leonardo",
+      avatar: "LD",
       avatarColor:
         "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300",
-      lastMessage:
-        "O preço base é R$199, mas temos pacotes especiais para clientes existentes.",
-      time: "09:35",
-      unread: 0,
+      lastMessage: "Ta vindo?",
+      time: "12:30",
+      unread: 1,
       online: true,
     },
     {
       id: 2,
-      name: "Maria Silva",
+      name: "Marcus",
       avatar: "MS",
       avatarColor:
         "bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-300",
-      lastMessage: "Obrigada pela ajuda!",
+      lastMessage: "KKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
       time: "Ontem",
       unread: 0,
       online: true,
     },
     {
       id: 3,
-      name: "João Pereira",
-      avatar: "JP",
+      name: "Luiz",
+      avatar: "LZ",
       avatarColor:
         "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300",
-      lastMessage: "Vamos agendar uma reunião para discutir os detalhes",
-      time: "Seg",
-      unread: 2,
+      lastMessage: "Vou ver depois mano",
+      time: "Ontem",
+      unread: 0,
       online: false,
     },
     {
       id: 4,
-      name: "Ana Oliveira",
-      avatar: "AO",
+      name: "Matheus Estevam",
+      avatar: "ME",
       avatarColor:
         "bg-pink-100 text-pink-600 dark:bg-pink-900 dark:text-pink-300",
-      lastMessage: "Você viu o novo relatório?",
+      lastMessage: "Sim to aqui ja",
       time: "23/05",
       unread: 0,
       online: true,
     },
     {
       id: 5,
-      name: "Carlos Mendes",
-      avatar: "CM",
+      name: "Caio Godas",
+      avatar: "CG",
       avatarColor:
         "bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-300",
-      lastMessage: "Precisamos revisar o orçamento",
+      lastMessage: "Esqueci oque ia falar rs",
       time: "20/05",
-      unread: 5,
+      unread: 1,
+      online: false,
+    },
+    {
+      id: 6,
+      name: "Beatriz Santos",
+      avatar: "BS",
+      avatarColor: "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-300",
+      lastMessage: "Feliz aniversário!",
+      time: "15/05",
+      unread: 0,
+      online: true,
+    },
+    {
+      id: 7,
+      name: "Rafael Costa",
+      avatar: "RC",
+      avatarColor:
+        "bg-teal-100 text-teal-600 dark:bg-teal-900 dark:text-teal-300",
+      lastMessage: "Podemos marcar para amanhã?",
+      time: "10/05",
+      unread: 0,
       online: false,
     },
   ]);
@@ -77,7 +97,7 @@ export const ChatLayout = () => {
         conv.id === id ? { ...conv, unread: 0 } : conv,
       ),
     );
-    // Em mobile/tablet, esconde a lista de conversas quando seleciona uma conversa
+
     if (maxLeftSideBar) {
       setShowConversations(false);
     }
@@ -88,7 +108,9 @@ export const ChatLayout = () => {
   };
 
   return (
-    <div className="flex w-full h-full bg-background overflow-hidden">
+    <div
+      className={`flex w-full h-full bg-background ${!maxLeftSideBar ? "rounded-lg shadow-sm border border-border" : ""} ${maxLeftSideBar ? "min-h-0" : ""}`}
+    >
       {/* Mobile/Tablet: Mostra apenas uma tela por vez */}
       {maxLeftSideBar ? (
         <>
@@ -109,7 +131,7 @@ export const ChatLayout = () => {
         </>
       ) : (
         /* Desktop: Mostra ambas as telas lado a lado */
-        <>
+        <div className="flex w-full h-full gap-0">
           <ConversationList
             conversations={conversations}
             activeConversationId={activeConversationId}
@@ -121,7 +143,7 @@ export const ChatLayout = () => {
             onBack={handleBackToConversations}
             isMobile={false}
           />
-        </>
+        </div>
       )}
     </div>
   );

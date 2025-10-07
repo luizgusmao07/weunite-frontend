@@ -16,11 +16,13 @@ export function PrivateRoutes() {
 
   return (
     <SidebarProvider>
-      <div className=" min-h-screen w-full">
+      <div className="min-h-screen w-full">
         {!maxLeftSideBar && <LeftSidebar />}
         {maxLeftSideBar && <HeaderMobile />}
 
-        <main className={`flex-1 ${maxLeftSideBar ? "pb-20" : ""}`}>
+        <main
+          className={`flex-1 ${maxLeftSideBar ? "h-[calc(100vh-116px)]" : ""}`}
+        >
           <Outlet />
         </main>
 
