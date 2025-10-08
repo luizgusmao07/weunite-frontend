@@ -1,4 +1,12 @@
-import { useEffect, useRef, useCallback, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useCallback,
+  useState,
+} from "react";
+import type { ReactNode } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import type { SendMessage } from "@/@types/chat.types";
@@ -6,15 +14,33 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { chatKeys } from "@/state/useChat";
 
-export const useWebSocket = () => {
+interface WebSocketContextType {
+  isConnected: boolean;
+  subscribeToConversation: (
+    conversationId: number,
+    userId: number,
+  ) => (() => void) | undefined;
+  sendMessage: (message: SendMessage) => void;
+}
+
+const WebSocketContext = createContext<WebSocketContextType | null>(null);
+
+export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   const clientRef = useRef<Client | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const jwt = useAuthStore((state) => state.jwt);
   const queryClient = useQueryClient();
 
+  // ✅ Cria a conexão WebSocket UMA ÚNICA VEZ quando o app carrega
   useEffect(() => {
     if (!jwt) {
       console.log("⚠️ WebSocket: JWT não encontrado");
+      return;
+    }
+
+    // ✅ Se já existe uma conexão ativa, não recria
+    if (clientRef.current?.connected) {
+      console.log("✅ WebSocket: Já conectado, reutilizando conexão");
       return;
     }
 
@@ -69,8 +95,9 @@ export const useWebSocket = () => {
     client.activate();
     clientRef.current = client;
 
+    // ✅ Cleanup apenas quando o app desmonta (praticamente nunca)
     return () => {
-      console.log("🔌 WebSocket: Desativando conexão");
+      console.log("🔌 WebSocket: Desativando conexão (app desmontado)");
       client.deactivate();
     };
   }, [jwt]);
@@ -78,8 +105,11 @@ export const useWebSocket = () => {
   const subscribeToConversation = useCallback(
     (conversationId: number, userId: number) => {
       if (!clientRef.current?.connected) {
+        console.warn("⚠️ WebSocket não conectado, aguardando...");
         return;
       }
+
+      console.log(`📡 Inscrevendo em /topic/conversation/${conversationId}`);
 
       const subscription = clientRef.current.subscribe(
         `/topic/conversation/${conversationId}`,
@@ -87,6 +117,7 @@ export const useWebSocket = () => {
           try {
             // Parseia a mensagem recebida
             const newMessage = JSON.parse(messageFrame.body);
+            console.log("📩 Nova mensagem recebida via WebSocket:", newMessage);
 
             // Atualiza o cache DIRETAMENTE sem refetch
             queryClient.setQueryData(
@@ -99,8 +130,12 @@ export const useWebSocket = () => {
                   (msg: any) => msg.id === newMessage.id,
                 );
 
-                if (messageExists) return oldData;
+                if (messageExists) {
+                  console.log("⚠️ Mensagem duplicada ignorada:", newMessage.id);
+                  return oldData;
+                }
 
+                console.log("✅ Adicionando mensagem ao cache");
                 // Adiciona nova mensagem ao final
                 return {
                   ...oldData,
@@ -114,64 +149,52 @@ export const useWebSocket = () => {
               queryKey: chatKeys.conversationsByUser(userId),
             });
           } catch (error) {
-            console.error("Erro ao processar mensagem WebSocket:", error);
+            console.error("❌ Erro ao processar mensagem WebSocket:", error);
           }
         },
       );
 
       return () => {
+        console.log(
+          `📴 Desinscrevendo de /topic/conversation/${conversationId}`,
+        );
         subscription.unsubscribe();
       };
     },
     [queryClient],
   );
 
-  const sendMessage = useCallback(
-    (message: SendMessage) => {
-      if (!clientRef.current?.connected) {
-        throw new Error("WebSocket não está conectado");
-      }
+  const sendMessage = useCallback((message: SendMessage) => {
+    if (!clientRef.current?.connected) {
+      console.error("❌ WebSocket não está conectado");
+      throw new Error("WebSocket não está conectado");
+    }
 
-      // Cria mensagem otimista para aparecer imediatamente
-      const optimisticMessage = {
-        id: Date.now(), // ID temporário
-        conversationId: message.conversationId,
-        senderId: message.senderId,
-        content: message.content,
-        isRead: false,
-        createdAt: new Date().toISOString(),
-        readAt: null,
-        type: message.type || "TEXT",
-      };
+    console.log("📤 Enviando mensagem via WebSocket:", message);
 
-      // Adiciona mensagem ao cache IMEDIATAMENTE
-      queryClient.setQueryData(
-        chatKeys.messagesByConversation(
-          message.conversationId,
-          message.senderId,
-        ),
-        (oldData: any) => {
-          if (!oldData?.success) return oldData;
+    // ✅ Envia via WebSocket - backend salva e notifica todos
+    // A mensagem vai chegar via subscribeToConversation para TODOS os usuários (incluindo o remetente)
+    clientRef.current.publish({
+      destination: "/app/chat.sendMessage",
+      body: JSON.stringify(message),
+    });
 
-          return {
-            ...oldData,
-            data: [...(oldData.data || []), optimisticMessage],
-          };
-        },
-      );
+    console.log("✅ Mensagem enviada, aguardando confirmação do servidor");
+  }, []);
 
-      // Envia via WebSocket - backend salva e notifica todos
-      clientRef.current.publish({
-        destination: "/app/chat.sendMessage",
-        body: JSON.stringify(message),
-      });
-    },
-    [queryClient],
+  return (
+    <WebSocketContext.Provider
+      value={{ isConnected, subscribeToConversation, sendMessage }}
+    >
+      {children}
+    </WebSocketContext.Provider>
   );
+};
 
-  return {
-    isConnected,
-    subscribeToConversation,
-    sendMessage,
-  };
+export const useWebSocket = () => {
+  const context = useContext(WebSocketContext);
+  if (!context) {
+    throw new Error("useWebSocket deve ser usado dentro de WebSocketProvider");
+  }
+  return context;
 };

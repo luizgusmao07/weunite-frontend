@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { ChatContainer } from "@/components/chat/ChatContainer";
 import { ConversationList } from "@/components/chat/ConversationList";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
@@ -30,12 +30,11 @@ export const ChatLayout = () => {
   const [conversationsWithUsers, setConversationsWithUsers] = useState<
     ConversationWithUser[]
   >([]);
-  const [loadingUsers, setLoadingUsers] = useState(false);
   const setIsConversationOpen = useChatStore(
     (state) => state.setIsConversationOpen,
   );
 
-  const { data: conversationsData, isLoading } = useGetUserConversations(
+  const { data: conversationsData } = useGetUserConversations(
     Number(userId) || 0,
   );
 
@@ -47,11 +46,8 @@ export const ChatLayout = () => {
         conversationsData.data.length === 0
       ) {
         setConversationsWithUsers([]);
-        setLoadingUsers(false);
         return;
       }
-
-      setLoadingUsers(true);
 
       try {
         const conversationsWithUserData = await Promise.all(
@@ -153,8 +149,6 @@ export const ChatLayout = () => {
         setConversationsWithUsers(conversationsWithUserData);
       } catch (error) {
         console.error("Erro ao carregar dados dos usuários:", error);
-      } finally {
-        setLoadingUsers(false);
       }
     };
 
@@ -184,36 +178,24 @@ export const ChatLayout = () => {
     );
   }, [conversationsWithUsers, activeConversationId]);
 
-  const handleSelectConversation = (id: number) => {
-    setActiveConversationId(id);
-    if (maxLeftSideBar) {
-      setShowConversations(false);
-      setIsConversationOpen(true); // Marca que uma conversa está aberta no mobile
-    }
-  };
+  const handleSelectConversation = useCallback(
+    (id: number) => {
+      setActiveConversationId(id);
+      if (maxLeftSideBar) {
+        setShowConversations(false);
+        setIsConversationOpen(true); // Marca que uma conversa está aberta no mobile
+      }
+    },
+    [maxLeftSideBar, setIsConversationOpen],
+  );
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setShowConversations(true);
     setIsConversationOpen(false); // Marca que voltou para a lista de conversas
-  };
+  }, [setIsConversationOpen]);
 
-  if (isLoading || loadingUsers) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
-      </div>
-    );
-  }
-
-  if (!conversationsWithUsers || conversationsWithUsers.length === 0) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <p className="text-gray-500 dark:text-gray-400">
-          Nenhuma conversa encontrada
-        </p>
-      </div>
-    );
-  }
+  // ✅ REMOVIDO: Loading global que causava tela laranja ao trocar de conversa
+  // Agora usa placeholderData para transição suave
 
   return (
     <div
@@ -229,12 +211,18 @@ export const ChatLayout = () => {
               onSelectConversation={handleSelectConversation}
               isMobile={true}
             />
-          ) : (
+          ) : activeConversation ? (
             <ChatContainer
               activeConversation={activeConversation}
               onBack={handleBack}
               isMobile={true}
             />
+          ) : (
+            <div className="flex h-full items-center justify-center p-4">
+              <p className="text-gray-500 dark:text-gray-400 text-center">
+                Selecione uma conversa ou pesquise um usuário para começar
+              </p>
+            </div>
           )}
         </>
       ) : (
@@ -246,11 +234,22 @@ export const ChatLayout = () => {
             onSelectConversation={handleSelectConversation}
             isMobile={false}
           />
-          <ChatContainer
-            activeConversation={activeConversation}
-            onBack={handleBack}
-            isMobile={false}
-          />
+          {activeConversation ? (
+            <ChatContainer
+              activeConversation={activeConversation}
+              onBack={handleBack}
+              isMobile={false}
+            />
+          ) : (
+            <div className="flex-1 flex items-center justify-center p-4">
+              <p className="text-gray-500 dark:text-gray-400 text-center">
+                Nenhuma conversa encontrada
+                <br />
+                Use a barra de pesquisa para encontrar usuários e iniciar uma
+                conversa
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>

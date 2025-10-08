@@ -49,8 +49,12 @@ export const useGetUserConversations = (userId: number) => {
   return useQuery({
     queryKey: chatKeys.conversationsByUser(userId),
     queryFn: () => getUserConversationsRequest(userId),
-    staleTime: 5000,
-    refetchOnWindowFocus: true,
+    staleTime: 30 * 1000, // 30 segundos - confiar em invalidações manuais
+    gcTime: 30 * 60 * 1000, // 30 minutos
+    refetchOnWindowFocus: false, // ✅ Não refetch ao focar janela
+    refetchOnMount: false, // ✅ Usa cache
+    notifyOnChangeProps: ["data", "error"], // ✅ Só notifica mudanças em data/error
+    placeholderData: (previousData) => previousData, // ✅ Mantém dados anteriores enquanto carrega
     retry: 2,
     enabled: !!userId,
   });
@@ -77,9 +81,12 @@ export const useGetConversationMessages = (
     queryKey: chatKeys.messagesByConversation(conversationId, userId),
     queryFn: () => getConversationMessagesRequest(conversationId, userId),
     staleTime: 5 * 60 * 1000, // 5 minutos - confiar no WebSocket
-    refetchOnWindowFocus: false, // Não refetch ao focar janela
-    refetchOnMount: false, // Não refetch ao montar
+    gcTime: 30 * 60 * 1000, // Mantém cache por 30 minutos
+    refetchOnWindowFocus: false, // ✅ Nunca refetch ao focar janela
+    refetchOnMount: false, // ✅ Nunca refetch ao montar (usa cache)
     refetchOnReconnect: true, // Apenas ao reconectar internet
+    notifyOnChangeProps: ["data", "error"], // ✅ Só notifica mudanças em data/error, não em status
+    placeholderData: (previousData) => previousData, // ✅ Mantém dados anteriores enquanto carrega novos (sem tela vazia)
     retry: 2,
     enabled: !!conversationId && !!userId,
   });
@@ -98,9 +105,8 @@ export const useMarkMessagesAsRead = () => {
     }) => markMessagesAsReadRequest(conversationId, userId),
     onSuccess: (result, { conversationId, userId }) => {
       if (result.success) {
-        queryClient.invalidateQueries({
-          queryKey: chatKeys.messagesByConversation(conversationId, userId),
-        });
+        // ✅ NÃO invalida mensagens - apenas atualiza lista de conversas
+        // As mensagens já estão corretas no cache
 
         queryClient.invalidateQueries({
           queryKey: chatKeys.conversationsByUser(userId),
