@@ -6,18 +6,21 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { ProfileRoutes } from "./routes/profile/ProfileRoutes";
 import { OpportunityRoutes } from "./routes/opportunity/OpportunityRoutes";
 import { ChatRoutes } from "./routes/chat/ChatRoutes";
+import { WebSocketProvider } from "./contexts/WebSocketContext";
 
 function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <Routes>
-        <Route path="/auth/*" element={<AuthRoutes />} />
-        <Route path="/home/*" element={<HomeRoutes />} />
-        <Route path="/profile/*" element={<ProfileRoutes />} />
-        <Route path="/opportunity/*" element={<OpportunityRoutes />} />
-        <Route path="/chat/*" element={<ChatRoutes />} />
-        <Route path="/*" element={<Navigate to="/home" replace />} />
-      </Routes>
+      <WebSocketProvider>
+        <Routes>
+          <Route path="/auth/*" element={<AuthRoutes />} />
+          <Route path="/home/*" element={<HomeRoutes />} />
+          <Route path="/profile/*" element={<ProfileRoutes />} />
+          <Route path="/opportunity/*" element={<OpportunityRoutes />} />
+          <Route path="/chat/*" element={<ChatRoutes />} />
+          <Route path="/*" element={<Navigate to="/home" replace />} />
+        </Routes>
+      </WebSocketProvider>
     </ThemeProvider>
   );
 }

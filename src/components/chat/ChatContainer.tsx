@@ -4,7 +4,7 @@ import { MessageList } from "@/components/chat/MessageList";
 import { MessageInput } from "@/components/chat/MessageInput";
 import { TypingIndicator } from "@/components/chat/TypingIndicator";
 import { triggerHapticFeedback } from "@/utils/hapticFeedback";
-import { useWebSocket } from "@/hooks/useWebSocket";
+import { useWebSocket } from "@/contexts/WebSocketContext";
 import {
   useGetConversationMessages,
   useMarkMessagesAsRead,
@@ -55,25 +55,43 @@ export const ChatContainer = ({
 
   const messages = messagesData?.success ? messagesData.data || [] : [];
 
+  // ✅ Inscreve no WebSocket para receber mensagens em tempo real
   useEffect(() => {
     if (!activeConversation?.id || !userId) return;
+
+    console.log("📡 Inscrito no chat em tempo real:", activeConversation.id);
 
     const unsubscribe = subscribeToConversation(
       activeConversation.id,
       Number(userId),
     );
 
-    markAsRead({
-      conversationId: activeConversation.id,
-      userId: Number(userId),
-    });
+    // ✅ Marca como lido apenas uma vez quando abre a conversa
+    // Usa setTimeout para garantir que as mensagens já foram carregadas
+    const timeoutId = setTimeout(() => {
+      markAsRead({
+        conversationId: activeConversation.id,
+        userId: Number(userId),
+      });
+    }, 500);
 
-    return unsubscribe;
-  }, [activeConversation?.id, userId, subscribeToConversation, markAsRead]);
+    return () => {
+      clearTimeout(timeoutId);
+      console.log("📴 Desinscrito do chat:", activeConversation.id);
+      if (unsubscribe) unsubscribe();
+    };
+    // ✅ APENAS quando conversa ativa ou userId mudam, não quando mensagens chegam
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeConversation?.id, userId]);
 
+  // ✅ Auto-scroll quando novas mensagens chegam
   useEffect(() => {
     if (messageAreaRef.current) {
       messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight;
+    }
+
+    if (messages.length > 0) {
+      console.log("📨 Total de mensagens:", messages.length);
     }
   }, [messages]);
 
