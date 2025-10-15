@@ -9,6 +9,7 @@ import {
   Settings,
   Moon,
   Sun,
+  Shield,
 } from "lucide-react";
 import {
   Sidebar,
@@ -50,6 +51,18 @@ export function LeftSidebar() {
   const { logout } = useAuthStore();
   const { user } = useAuthStore();
   const initials = getInitials(user?.name);
+
+  // Lista temporária de emails de administradores
+  const ADMIN_EMAILS = [
+    "admin@weunite.com",
+    "luiz@weunite.com",
+    "matheus@weunite.com",
+    "matheusoliveirale2007@gmail.com", // Substitua pelo seu email real
+  ];
+
+  // Verifica se o usuário é administrador
+  const isAdmin =
+    user?.isAdmin || (user?.email && ADMIN_EMAILS.includes(user.email));
 
   const { setTheme, theme } = useTheme();
   const themeIcon = theme === "dark" ? Sun : Moon;
@@ -293,6 +306,24 @@ export function LeftSidebar() {
                       <User className="h-4 w-4 text-gray-500" />
                       <p>Perfil</p>
                     </DropdownMenuItem>
+
+                    {isAdmin && (
+                      <DropdownMenuItem
+                        className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer hover:bg-blue-50 transition-colors text-blue-600"
+                        onClick={() => {
+                          console.log("Clicou no Painel Admin!", {
+                            isAdmin,
+                            userEmail: user?.email,
+                          });
+                          console.log("Navegando para /admin...");
+                          navigate("/admin");
+                          console.log("Navigate executado!");
+                        }}
+                      >
+                        <Shield className="h-4 w-4 text-blue-500" />
+                        <p>Painel Admin</p>
+                      </DropdownMenuItem>
+                    )}
 
                     <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                       <Settings className="h-4 w-4 text-gray-500" />

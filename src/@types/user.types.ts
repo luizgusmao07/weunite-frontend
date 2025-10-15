@@ -5,6 +5,7 @@ export interface User {
   email: string;
   password: string;
   role: "athlete" | "company";
+  isAdmin?: boolean; // Campo para identificar administradores
   cnpj?: string;
   profileImg?: string;
   bannerImg?: string;

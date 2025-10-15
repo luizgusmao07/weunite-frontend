@@ -6,6 +6,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { ProfileRoutes } from "./routes/profile/ProfileRoutes";
 import { OpportunityRoutes } from "./routes/opportunity/OpportunityRoutes";
 import { ChatRoutes } from "./routes/chat/ChatRoutes";
+import { AdminRoutes } from "./routes/admin/AdminRoutes";
 import { WebSocketProvider } from "./contexts/WebSocketContext";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Route path="/profile/*" element={<ProfileRoutes />} />
           <Route path="/opportunity/*" element={<OpportunityRoutes />} />
           <Route path="/chat/*" element={<ChatRoutes />} />
+          <Route path="/admin/*" element={<AdminRoutes />} />
           <Route path="/*" element={<Navigate to="/home" replace />} />
         </Routes>
       </WebSocketProvider>
