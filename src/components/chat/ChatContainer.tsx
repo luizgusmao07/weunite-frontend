@@ -239,11 +239,14 @@ export const ChatContainer = ({
         />
       </div>
 
-      {/* Input fixo na parte inferior */}
       <div
         className={`absolute bottom-0 left-0 right-0 z-10 ${!isMobile ? "rounded-br-lg" : ""}`}
       >
-        <MessageInput onSendMessage={handleSendMessage} />
+        <MessageInput
+          conversationId={activeConversation.id}
+          senderId={Number(userId)}
+          onSendMessage={handleSendMessage}
+        />
       </div>
     </div>
   );
