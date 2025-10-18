@@ -10,11 +10,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle, XCircle, AlertTriangle, User } from "lucide-react";
 import type { Report } from "@/@types/admin.types";
+import { toast } from "sonner";
+import {
+  markReportsAsReviewedRequest,
+  resolveReportsRequest,
+  dismissReportsRequest,
+} from "@/api/services/adminService";
+import { useState } from "react";
 
 interface ReportDetailsModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   report: Report | null;
+  onActionComplete?: () => void;
 }
 
 /**
@@ -24,7 +32,10 @@ export function ReportDetailsModal({
   isOpen,
   onOpenChange,
   report,
+  onActionComplete,
 }: ReportDetailsModalProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
   if (!report) return null;
 
   const getReasonText = (reason: string) => {
@@ -40,25 +51,62 @@ export function ReportDetailsModal({
     return reasonMap[reason] || reason;
   };
 
-  const handleResolve = () => {
-    // TODO: Integrar com toast notification system
-    // TODO: Chamar API para resolver denúncia
-    console.log("Denúncia resolvida:", report.id);
-    onOpenChange(false);
+  const handleResolve = async () => {
+    setIsLoading(true);
+
+    // Usar o entityId do report (ID do post/opportunity)
+    const entityId = report.entityId;
+    const type = report.entityType;
+
+    const response = await resolveReportsRequest(entityId, type);
+
+    setIsLoading(false);
+
+    if (response.success) {
+      toast.success(response.message || "Denúncia resolvida com sucesso!");
+      onOpenChange(false);
+      onActionComplete?.();
+    } else {
+      toast.error(response.error || "Erro ao resolver denúncia");
+    }
   };
 
-  const handleReject = () => {
-    // TODO: Integrar com toast notification system
-    // TODO: Chamar API para rejeitar denúncia
-    console.log("Denúncia rejeitada:", report.id);
-    onOpenChange(false);
+  const handleReject = async () => {
+    setIsLoading(true);
+
+    const entityId = report.entityId;
+    const type = report.entityType;
+
+    const response = await dismissReportsRequest(entityId, type);
+
+    setIsLoading(false);
+
+    if (response.success) {
+      toast.success(response.message || "Denúncia rejeitada com sucesso!");
+      onOpenChange(false);
+      onActionComplete?.();
+    } else {
+      toast.error(response.error || "Erro ao rejeitar denúncia");
+    }
   };
 
-  const handleAnalyze = () => {
-    // TODO: Integrar com toast notification system
-    // TODO: Chamar API para marcar como em análise
-    console.log("Denúncia em análise:", report.id);
-    onOpenChange(false);
+  const handleAnalyze = async () => {
+    setIsLoading(true);
+
+    const entityId = report.entityId;
+    const type = report.entityType;
+
+    const response = await markReportsAsReviewedRequest(entityId, type);
+
+    setIsLoading(false);
+
+    if (response.success) {
+      toast.success(response.message || "Denúncia marcada como em análise!");
+      onOpenChange(false);
+      onActionComplete?.();
+    } else {
+      toast.error(response.error || "Erro ao marcar denúncia como em análise");
+    }
   };
 
   return (
@@ -192,26 +240,29 @@ export function ReportDetailsModal({
                   variant="outline"
                   className="w-full justify-start gap-2 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-950/20"
                   onClick={handleAnalyze}
+                  disabled={isLoading}
                 >
                   <AlertTriangle className="h-4 w-4" />
-                  Marcar como Em Análise
+                  {isLoading ? "Processando..." : "Marcar como Em Análise"}
                 </Button>
               )}
               <Button
                 variant="outline"
                 className="w-full justify-start gap-2 hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-950/20"
                 onClick={handleResolve}
+                disabled={isLoading}
               >
                 <CheckCircle className="h-4 w-4" />
-                Resolver Denúncia
+                {isLoading ? "Processando..." : "Resolver Denúncia"}
               </Button>
               <Button
                 variant="outline"
                 className="w-full justify-start gap-2 hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-950/20"
                 onClick={handleReject}
+                disabled={isLoading}
               >
                 <XCircle className="h-4 w-4" />
-                Rejeitar Denúncia
+                {isLoading ? "Processando..." : "Rejeitar Denúncia"}
               </Button>
             </div>
           </div>
