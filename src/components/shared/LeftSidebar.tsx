@@ -57,7 +57,8 @@ export function LeftSidebar() {
     "admin@weunite.com",
     "luiz@weunite.com",
     "matheus@weunite.com",
-    "matheusoliveirale2007@gmail.com", // Substitua pelo seu email real
+    "matheusoliveirale2007@gmail.com",
+    "manoel_jonathan@hotmail.com",
   ];
 
   // Verifica se o usuário é administrador

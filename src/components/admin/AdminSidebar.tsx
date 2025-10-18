@@ -28,7 +28,7 @@ const adminMenuItems = [
   },
   {
     title: "Posts",
-    href: "/admin/posts",
+    href: "/admin/posts/reported",
     icon: FileText,
   },
   {

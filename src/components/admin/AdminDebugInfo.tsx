@@ -8,6 +8,7 @@ export function AdminDebugInfo() {
     "luiz@weunite.com",
     "matheus@weunite.com",
     "matheusoliveirale2007@gmail.com",
+    "manoel_jonathan@hotmail.com",
   ];
 
   const isAdmin =

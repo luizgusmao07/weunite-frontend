@@ -10,23 +10,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  MoreVertical,
-  Eye,
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
-} from "lucide-react";
 import { useState } from "react";
+import { ReportDetailsModal } from "@/components/admin/ReportDetailsModal";
+import type { Report } from "@/@types/admin.types";
 
-// Mock data - substituir por dados reais da API
-const mockReports = [
+/**
+ * Dados mockados de denúncias
+ * TODO: Substituir por dados reais da API
+ */
+const mockReports: Report[] = [
   {
     id: "1",
     reportedBy: { name: "João Silva", username: "joaosilva" },
@@ -59,8 +51,18 @@ const mockReports = [
   },
 ];
 
+/**
+ * Página de gerenciamento de denúncias
+ */
 export function AdminReportsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleViewReport = (report: Report) => {
+    setSelectedReport(report);
+    setIsModalOpen(true);
+  };
 
   const filteredReports = mockReports.filter((report) => {
     return statusFilter === "all" || report.status === statusFilter;
@@ -72,20 +74,26 @@ export function AdminReportsPage() {
         return (
           <Badge
             variant="destructive"
-            className="bg-yellow-100 text-yellow-800"
+            className="bg-red-600 text-white hover:bg-red-700"
           >
             Pendente
           </Badge>
         );
       case "under_review":
         return (
-          <Badge variant="default" className="bg-blue-100 text-blue-800">
+          <Badge
+            variant="outline"
+            className="border-blue-500 text-blue-600 bg-blue-50"
+          >
             Em Análise
           </Badge>
         );
       case "resolved":
         return (
-          <Badge variant="default" className="bg-green-100 text-green-800">
+          <Badge
+            variant="outline"
+            className="border-green-500 text-green-600 bg-green-50"
+          >
             Resolvido
           </Badge>
         );
@@ -199,7 +207,7 @@ export function AdminReportsPage() {
                   <TableHead>Motivo</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Data</TableHead>
-                  <TableHead className="w-[50px]">Ações</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -230,40 +238,14 @@ export function AdminReportsPage() {
                     <TableCell>
                       {new Date(report.createdAt).toLocaleDateString()}
                     </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            <Eye className="mr-2 h-4 w-4" />
-                            Ver Detalhes
-                          </DropdownMenuItem>
-                          {report.status === "pending" && (
-                            <>
-                              <DropdownMenuItem className="text-blue-600">
-                                <AlertTriangle className="mr-2 h-4 w-4" />
-                                Revisar
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                          {report.status === "under_review" && (
-                            <>
-                              <DropdownMenuItem className="text-green-600">
-                                <CheckCircle className="mr-2 h-4 w-4" />
-                                Resolver
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-600">
-                                <XCircle className="mr-2 h-4 w-4" />
-                                Rejeitar
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewReport(report)}
+                      >
+                        Revisar
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -271,6 +253,12 @@ export function AdminReportsPage() {
             </Table>
           </CardContent>
         </Card>
+
+        <ReportDetailsModal
+          isOpen={isModalOpen}
+          onOpenChange={setIsModalOpen}
+          report={selectedReport}
+        />
       </div>
     </AdminLayout>
   );

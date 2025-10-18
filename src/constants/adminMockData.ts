@@ -42,3 +42,25 @@ export const MOCK_USER_TYPE_DATA: UserTypeData[] = [
   { name: "Atletas", value: 8500 },
   { name: "Empresas", value: 3958 },
 ];
+
+/**
+ * Dados mock para denunciantes
+ * TODO: Substituir por dados reais da API
+ */
+export const MOCK_REPORTERS = [
+  { name: "Maria Santos", username: "maria.santos" },
+  { name: "João Silva", username: "joao.silva" },
+  { name: "Ana Costa", username: "ana.costa" },
+  { name: "Pedro Oliveira", username: "pedro.oliveira" },
+];
+
+/**
+ * Dados mock para motivos de denúncia
+ * TODO: Substituir por dados reais da API
+ */
+export const MOCK_REPORT_REASONS = [
+  { id: "inappropriate_content", label: "Conteúdo Inadequado" },
+  { id: "harassment", label: "Assédio" },
+  { id: "spam", label: "Spam" },
+  { id: "fake_profile", label: "Perfil Falso" },
+];
