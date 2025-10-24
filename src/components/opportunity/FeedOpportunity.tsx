@@ -10,6 +10,7 @@ import { useBreakpoints } from "@/hooks/useBreakpoints";
 import { OpportunitySidebar } from "./OpportunitySidebar";
 import type { Opportunity } from "@/@types/opportunity.types";
 import { Plus } from "lucide-react";
+import OpportunitySuggestionCarousel from "./OpportunitySuggestionCarousel";
 
 function OpportunitySkeleton() {
   return (
@@ -127,7 +128,9 @@ export default function FeedOpportunity() {
 
             {isDesktop ? <OpportunitySidebar /> : <HorizontalMenuOpportunity />}
           </div>
-
+          {opportunities && opportunities.length > 0 && (
+            <OpportunitySuggestionCarousel opportunities={opportunities} />
+          )}
           {opportunities.map((opportunity: Opportunity) => (
             <OpportunityCard key={opportunity.id} opportunity={opportunity} />
           ))}

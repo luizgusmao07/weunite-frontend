@@ -53,6 +53,10 @@ const adminMenuItems = [
   },
 ];
 
+/**
+ * Barra lateral de navegação do painel administrativo (desktop)
+ * Exibe menu de navegação e botão de logout
+ */
 export function AdminSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -108,6 +112,10 @@ export function AdminSidebar() {
   );
 }
 
+/**
+ * Barra lateral de navegação do painel administrativo (mobile)
+ * Menu hamburguer responsivo para dispositivos móveis
+ */
 export function AdminMobileSidebar() {
   const navigate = useNavigate();
   const location = useLocation();

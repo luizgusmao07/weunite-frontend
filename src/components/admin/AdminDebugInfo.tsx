@@ -1,5 +1,10 @@
 import { useAuthStore } from "@/stores/useAuthStore";
 
+/**
+ * Componente de debug para desenvolvimento
+ * Exibe informações de autenticação e permissões de admin
+ * @dev Deve ser removido em produção
+ */
 export function AdminDebugInfo() {
   const { user, isAuthenticated } = useAuthStore();
 

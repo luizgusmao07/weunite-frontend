@@ -4,6 +4,10 @@ import { useTheme } from "@/components/ThemeProvider";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
 
+/**
+ * Cabeçalho do painel administrativo
+ * Exibe informações do usuário admin, controle de tema e menu mobile
+ */
 export function AdminHeader() {
   const { user } = useAuthStore();
   const { theme, setTheme } = useTheme();

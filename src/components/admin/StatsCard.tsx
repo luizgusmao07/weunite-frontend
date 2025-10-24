@@ -1,6 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
+/**
+ * Cartão de estatísticas do dashboard administrativo
+ * Exibe métricas com indicador de tendência e comparação com período anterior
+ *
+ * @example
+ * <StatsCard
+ *   title="Total de Posts"
+ *   value={1234}
+ *   trend={12.5}
+ *   icon={<FileText className="h-4 w-4" />}
+ * />
+ */
 interface StatsCardProps {
   title: string;
   value: string | number;

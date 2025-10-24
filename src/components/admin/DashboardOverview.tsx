@@ -12,6 +12,10 @@ import { MonthlyActivityChart } from "./charts/MonthlyActivityChart";
 import { UserTypeDistributionChart } from "./charts/UserTypeDistributionChart";
 import { OpportunityCategoryChart } from "./charts/OpportunityCategoryChart";
 
+/**
+ * Visão geral do dashboard administrativo
+ * Exibe cards de estatísticas e gráficos de atividade da plataforma
+ */
 export function DashboardOverview() {
   const { theme } = useTheme();
   const isDark = theme === "dark";

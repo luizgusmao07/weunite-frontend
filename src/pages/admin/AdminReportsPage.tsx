@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { useState } from "react";
 import { ReportDetailsModal } from "@/components/admin/ReportDetailsModal";
-import type { Report } from "@/@types/admin.types";
+import type { Report } from "@/@types/report.types";
 
 /**
  * Dados mockados de denúncias

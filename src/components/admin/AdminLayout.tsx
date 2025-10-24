@@ -2,6 +2,10 @@ import { AdminSidebar } from "./AdminSidebar";
 import { AdminHeader } from "./AdminHeader";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
 
+/**
+ * Layout principal do painel administrativo
+ * Gerencia a estrutura de sidebar, header e conteúdo principal
+ */
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
