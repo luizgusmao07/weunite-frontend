@@ -9,8 +9,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Lightbulb } from "lucide-react";
-
-const cardSuggestion = Array.from({ length: 4 }, (_, i) => i);
+import CardSuggestionOpportunity from "@/components/opportunity/CardSuggestionOpportunity";
+import { useGetOpportunities } from "@/state/useOpportunities";
+import type { Opportunity } from "@/@types/opportunity.types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const useCustomBreakpoint = (breakpoint: number = 1500) => {
   const [isDesktop, setIsDesktop] = useState(false);
@@ -32,30 +34,76 @@ export const OpportunitiesSidebar: React.FC = () => {
   const [showAll, setShowAll] = useState(false);
   const [visibleOpportunities, setVisibleOpportunities] = useState(1);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [randomizedOpportunities, setRandomizedOpportunities] = useState<any[]>(
+    [],
+  );
+  const [displayCount, setDisplayCount] = useState(4);
 
   const isDesktop = useCustomBreakpoint(1500);
+
+  // Buscar todas as oportunidades
+  const { data: opportunitiesData, isLoading } = useGetOpportunities();
+
+  const allOpportunities = Array.isArray(opportunitiesData?.data)
+    ? opportunitiesData.data
+    : [];
+
+  // Randomizar apenas uma vez quando os dados carregam
+  useEffect(() => {
+    if (opportunitiesData?.success && opportunitiesData?.data) {
+      const opportunities = Array.isArray(opportunitiesData.data)
+        ? opportunitiesData.data
+        : [];
+
+      // Só randomiza se a lista ainda não foi criada ou se o tamanho mudou significativamente
+      if (
+        randomizedOpportunities.length === 0 ||
+        Math.abs(opportunities.length - randomizedOpportunities.length) > 2
+      ) {
+        // Criar cópia e embaralhar todas as oportunidades
+        const shuffled = [...opportunities].sort(() => Math.random() - 0.5);
+        setRandomizedOpportunities(shuffled);
+      }
+    }
+  }, [opportunitiesData]);
+
+  const randomOpportunities = randomizedOpportunities.slice(0, displayCount);
+  const hasMoreOpportunities = displayCount < randomizedOpportunities.length;
 
   const handleShowMore = () => {
     if (!showAll) {
       setShowAll(true);
-      setVisibleOpportunities(cardSuggestion.length);
+      setVisibleOpportunities(randomOpportunities.length);
+    } else {
+      // Carregar mais 4 oportunidades
+      setDisplayCount((prev) =>
+        Math.min(prev + 4, randomizedOpportunities.length),
+      );
     }
   };
 
   const handleClose = () => {
     setShowAll(false);
     setVisibleOpportunities(1);
+    setDisplayCount(4);
   };
 
-  const displayedOpportunities = cardSuggestion.slice(0, visibleOpportunities);
+  const displayedOpportunities = randomOpportunities.slice(
+    0,
+    visibleOpportunities,
+  );
 
   const OpportunitiesContent = () => (
     <>
       {showAll && (
-        <div className="flex justify-end mb-2">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-xs text-muted-foreground">
+            Mostrando {displayedOpportunities.length} de{" "}
+            {randomizedOpportunities.length}
+          </span>
           <button
             onClick={handleClose}
-            className="text-sm text-third font-medium mr-1 bg-transparent hover:cursor-pointer hover:bg-transparent"
+            className="text-sm text-third font-medium bg-transparent hover:cursor-pointer hover:bg-transparent"
           >
             Fechar
           </button>
@@ -63,21 +111,55 @@ export const OpportunitiesSidebar: React.FC = () => {
       )}
 
       <div className="space-y-4 justify-end">
-        {/* {displayedOpportunities.map((cardSuggestion) => (
-          <CardSuggestionOpportunity key={cardSuggestion} />
-        ))} */}
+        {isLoading ? (
+          // Loading state
+          Array.from({ length: visibleOpportunities }).map((_, i) => (
+            <div key={i} className="space-y-3">
+              <Skeleton className="h-32 w-full rounded-lg" />
+            </div>
+          ))
+        ) : displayedOpportunities.length > 0 ? (
+          displayedOpportunities.map((opportunity) => (
+            <CardSuggestionOpportunity
+              key={opportunity.id}
+              opportunity={opportunity}
+              isMobile={!isDesktop}
+            />
+          ))
+        ) : (
+          <div className="text-center py-8 text-muted-foreground text-sm">
+            Nenhuma oportunidade disponível no momento
+          </div>
+        )}
       </div>
 
-      {!showAll && (
-        <div className="mt-2.5 flex justify-end">
+      <div className="mt-4 flex flex-col gap-2">
+        {!showAll && randomOpportunities.length > 1 && (
+          <div className="flex justify-end">
+            <button
+              onClick={handleShowMore}
+              className="text-sm text-third font-medium duration-200 bg-transparent hover:cursor-pointer hover:bg-hover-button py-1 px-2 rounded"
+            >
+              Ver Outras
+            </button>
+          </div>
+        )}
+
+        {showAll && hasMoreOpportunities && (
           <button
             onClick={handleShowMore}
-            className="text-sm text-third font-medium duration-200 mr-0.6 bg-transparent hover:cursor-pointer hover:bg-hover-button"
+            className="w-full text-sm text-third font-medium duration-200 bg-transparent hover:cursor-pointer hover:bg-hover-button py-2 px-4 rounded border border-third/20"
           >
-            Ver Outras
+            Mostrar Mais Oportunidades
           </button>
-        </div>
-      )}
+        )}
+
+        {showAll && !hasMoreOpportunities && allOpportunities.length > 0 && (
+          <p className="text-xs text-center text-muted-foreground py-2">
+            Todas as oportunidades foram carregadas
+          </p>
+        )}
+      </div>
     </>
   );
 

@@ -10,6 +10,7 @@ import {
   useMarkMessagesAsRead,
 } from "@/state/useChat";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 interface Conversation {
   id: number;
@@ -17,6 +18,7 @@ interface Conversation {
   avatar: string;
   avatarColor: string;
   online: boolean;
+  otherUserId: number;
 }
 
 interface ChatContainerProps {
@@ -31,7 +33,10 @@ export const ChatContainer = ({
   isMobile = false,
 }: ChatContainerProps) => {
   const userId = useAuthStore((state) => state.user?.id);
-  const [isOtherTyping, setIsOtherTyping] = useState(false);
+  const [isOtherTyping] = useState(false);
+
+  // ✅ Hook para rastrear status online do outro usuário
+  const isOtherUserOnline = useOnlineStatus(activeConversation?.otherUserId);
 
   // Pull-to-refresh state
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -184,7 +189,15 @@ export const ChatContainer = ({
         className={`absolute top-0 left-0 right-0 z-10 ${!isMobile ? "rounded-tr-lg" : ""}`}
       >
         <ChatHeader
-          conversation={activeConversation}
+          conversation={
+            activeConversation
+              ? {
+                  ...activeConversation,
+                  online: isOtherUserOnline,
+                  otherUserId: activeConversation.otherUserId,
+                }
+              : undefined
+          }
           onBack={onBack}
           isMobile={isMobile}
         />

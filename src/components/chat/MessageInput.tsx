@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { Smile, Paperclip, Mic, Send, X, File as FileIcon } from "lucide-react";
+import { Smile, Paperclip, Send, X, File as FileIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import EmojiPicker, { type EmojiClickData, Theme } from "emoji-picker-react";
 import { useUploadMessageFile } from "@/state/useChat";
 import { toast } from "sonner";
+import { AudioRecorder } from "@/components/chat/AudioRecorder";
 
 interface MessageInputProps {
   conversationId: number;
@@ -141,6 +142,28 @@ export const MessageInput = ({
     });
   };
 
+  const handleSendAudio = async (audioBlob: Blob) => {
+    try {
+      const audioFile = new File([audioBlob], `audio-${Date.now()}.webm`, {
+        type: "audio/webm",
+      });
+
+      const result = await uploadMutation.mutateAsync({
+        conversationId,
+        senderId,
+        file: audioFile,
+        fileType: "audio",
+      });
+
+      if (result.success && result.data) {
+        onSendMessage(result.data.fileUrl, "AUDIO");
+      }
+    } catch (error) {
+      console.error("Erro ao enviar áudio:", error);
+      toast.error("Erro ao enviar áudio");
+    }
+  };
+
   const handleSend = async () => {
     if (selectedFiles.length > 0) {
       for (const filePreview of selectedFiles) {
@@ -220,8 +243,8 @@ export const MessageInput = ({
         </div>
       )}
 
-      <div className="flex items-center max-w-3xl mx-auto">
-        <div className="relative">
+      <div className="flex items-center gap-1 max-w-3xl mx-auto">
+        <div className="relative shrink-0">
           <Button
             ref={emojiButtonRef}
             type="button"
@@ -259,6 +282,7 @@ export const MessageInput = ({
           size="icon"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploadMutation.isPending}
+          className="shrink-0"
         >
           <Paperclip size={20} />
         </Button>
@@ -277,7 +301,7 @@ export const MessageInput = ({
           value={message}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          className="flex-1 min-h-[40px] max-h-[120px] resize-none border-0 bg-muted/50 focus-visible:ring-1 focus-visible:ring-ring"
+          className="flex-1 min-w-0 min-h-[40px] max-h-[120px] resize-none border-0 bg-muted/50 focus-visible:ring-1 focus-visible:ring-ring"
           placeholder="Digite sua mensagem..."
           rows={1}
         />
@@ -287,13 +311,12 @@ export const MessageInput = ({
             size="icon"
             onClick={handleSend}
             disabled={uploadMutation.isPending}
+            className="shrink-0"
           >
             <Send size={18} />
           </Button>
         ) : (
-          <Button type="button" variant="ghost" size="icon">
-            <Mic size={20} />
-          </Button>
+          <AudioRecorder onSendAudio={handleSendAudio} />
         )}
       </div>
 

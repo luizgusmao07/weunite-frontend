@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, FileText, Download } from "lucide-react";
+import { Check, FileText, Download, Play, Pause } from "lucide-react";
 import { ImageModal } from "@/components/chat/ImageModal";
 
 interface MessageType {
@@ -17,9 +17,15 @@ interface MessageProps {
 export const Message = ({ message }: MessageProps) => {
   const isSender = message.sender === "me";
   const [showImageModal, setShowImageModal] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioRef, setAudioRef] = useState<HTMLAudioElement | null>(null);
 
   const isImageUrl = (text: string) => {
     return text.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+  };
+
+  const isAudioUrl = (text: string) => {
+    return text.match(/\.(mp3|wav|ogg|m4a|webm)$/i);
   };
 
   const isFileUrl = (text: string) => {
@@ -30,32 +36,68 @@ export const Message = ({ message }: MessageProps) => {
     return url.split("/").pop() || "arquivo";
   };
 
+  const hasImage = isFileUrl(message.text) && isImageUrl(message.text);
+
+  const handleAudioPlayPause = () => {
+    if (audioRef) {
+      if (isPlaying) {
+        audioRef.pause();
+      } else {
+        audioRef.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   const renderContent = () => {
     if (isFileUrl(message.text)) {
+      const fullUrl = `http://localhost:8080${message.text}`;
+
       if (isImageUrl(message.text)) {
-        const fullImageUrl = `http://localhost:8080${message.text}`;
         return (
           <>
-            <div className="max-w-xs">
+            <div className="w-[240px] md:w-[280px] h-[240px] md:h-[280px]">
               <img
-                src={fullImageUrl}
+                src={fullUrl}
                 alt="Imagem enviada"
-                className="rounded-lg w-full h-auto cursor-pointer hover:opacity-90 transition-opacity hover:scale-[1.02] duration-200"
+                className="rounded-lg w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity hover:scale-[1.02] duration-200"
                 onClick={() => setShowImageModal(true)}
               />
             </div>
             {showImageModal && (
               <ImageModal
-                imageUrl={fullImageUrl}
+                imageUrl={fullUrl}
                 onClose={() => setShowImageModal(false)}
               />
             )}
           </>
         );
+      } else if (isAudioUrl(message.text)) {
+        return (
+          <div className="flex items-center gap-3 min-w-[200px]">
+            <button
+              onClick={handleAudioPlayPause}
+              className="p-2 rounded-full hover:bg-opacity-80 transition-colors"
+            >
+              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+            </button>
+            <div className="flex-1">
+              <audio
+                ref={setAudioRef}
+                src={fullUrl}
+                onEnded={() => setIsPlaying(false)}
+                onPause={() => setIsPlaying(false)}
+                onPlay={() => setIsPlaying(true)}
+                className="w-full"
+                controls
+              />
+            </div>
+          </div>
+        );
       } else {
         return (
           <a
-            href={`http://localhost:8080${message.text}`}
+            href={fullUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 hover:underline"
@@ -84,7 +126,7 @@ export const Message = ({ message }: MessageProps) => {
         className={`max-w-[85%] md:max-w-[80%] ${isSender ? "order-1" : "order-2"}`}
       >
         <div
-          className={`p-2 md:p-3 rounded-lg ${
+          className={`${hasImage ? "p-1" : "p-2 md:p-3"} rounded-lg ${
             isSender
               ? "bg-primary text-primary-foreground rounded-br-none"
               : "bg-card text-card-foreground rounded-bl-none border border-border"
