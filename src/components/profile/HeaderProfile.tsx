@@ -228,7 +228,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
         userId={Number(displayUser?.id)}
       />
 
-      <div className="w-[98vw] md:max-w-[77vw] mx-auto">
+      <div className="w-full md:max-w-[77vw] mx-auto">
         <div className="h-35 relative group">
           <img
             className="h-full w-full object-cover"

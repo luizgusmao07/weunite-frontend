@@ -129,3 +129,42 @@ export const markMessagesAsReadRequest = async (
     };
   }
 };
+
+export const uploadMessageFileRequest = async (
+  conversationId: number,
+  senderId: number,
+  file: File,
+) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("conversationId", conversationId.toString());
+    formData.append("senderId", senderId.toString());
+
+    const response = await axios.post<{ fileUrl: string; fileType: string }>(
+      "/messages/upload",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Arquivo enviado com sucesso!",
+      error: null,
+    };
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+
+    return {
+      success: false,
+      data: null,
+      message: null,
+      error: error.response?.data?.message || "Erro ao enviar arquivo",
+    };
+  }
+};

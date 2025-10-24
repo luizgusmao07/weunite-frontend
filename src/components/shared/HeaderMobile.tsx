@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { Skeleton } from "../ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { getInitials } from "@/utils/getInitials";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export function HeaderMobile() {
   const { setTheme, theme } = useTheme();
@@ -30,6 +31,7 @@ export function HeaderMobile() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const currentUserId = useAuthStore((state) => state.user?.id);
 
   const { data: users, isLoading } = useSearchUsers(searchQuery);
 
@@ -110,7 +112,8 @@ export function HeaderMobile() {
                   {searchQuery.length > 0 &&
                     !isLoading &&
                     users &&
-                    users.length === 0 && (
+                    users.filter((user) => user.id !== String(currentUserId))
+                      .length === 0 && (
                       <p className="text-sm text-muted-foreground text-center mt-8">
                         Nenhum usuário encontrado
                       </p>
@@ -119,32 +122,41 @@ export function HeaderMobile() {
                   {searchQuery.length > 0 &&
                     !isLoading &&
                     users &&
-                    users.length > 0 && (
+                    users.filter((user) => user.id !== String(currentUserId))
+                      .length > 0 && (
                       <div className="space-y-2">
-                        {users.map((user) => (
-                          <div
-                            key={user.id}
-                            className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted cursor-pointer"
-                            onClick={() => handleUserClick(user.username)}
-                          >
-                            <Avatar className="h-[2.8em] w-[2.8em]">
-                              <AvatarImage
-                                src={user.profileImg}
-                                alt={user.name}
-                                className="aspect-square h-full w-full rounded-full object-cover"
-                              />
-                              <AvatarFallback className="flex h-full w-full items-center justify-center rounded-full bg-muted">
-                                {getInitials(user.name)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">{user.name}</p>
-                              <p className="text-xs text-muted-foreground">
-                                @{user.username}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
+                        {users
+                          .filter((user) => user.id !== String(currentUserId))
+                          .map((user) => {
+                            const userName =
+                              user.name || "Usuário desconhecido";
+                            return (
+                              <div
+                                key={user.id}
+                                className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted cursor-pointer"
+                                onClick={() => handleUserClick(user.username)}
+                              >
+                                <Avatar className="h-[2.8em] w-[2.8em]">
+                                  <AvatarImage
+                                    src={user.profileImg}
+                                    alt={userName}
+                                    className="aspect-square h-full w-full rounded-full object-cover"
+                                  />
+                                  <AvatarFallback className="flex h-full w-full items-center justify-center rounded-full bg-muted">
+                                    {getInitials(userName)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium">
+                                    {userName}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    @{user.username}
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          })}
                       </div>
                     )}
                 </div>

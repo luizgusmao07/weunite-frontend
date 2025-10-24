@@ -6,6 +6,7 @@ import {
   getConversationMessagesRequest,
   getUserConversationsRequest,
   markMessagesAsReadRequest,
+  uploadMessageFileRequest,
 } from "@/api/services/chatService";
 import { toast } from "sonner";
 
@@ -105,9 +106,6 @@ export const useMarkMessagesAsRead = () => {
     }) => markMessagesAsReadRequest(conversationId, userId),
     onSuccess: (result, { conversationId, userId }) => {
       if (result.success) {
-        // ✅ NÃO invalida mensagens - apenas atualiza lista de conversas
-        // As mensagens já estão corretas no cache
-
         queryClient.invalidateQueries({
           queryKey: chatKeys.conversationsByUser(userId),
         });
@@ -116,6 +114,42 @@ export const useMarkMessagesAsRead = () => {
           queryKey: chatKeys.conversationDetail(conversationId, userId),
         });
       }
+    },
+  });
+};
+
+export const useUploadMessageFile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      conversationId,
+      senderId,
+      file,
+    }: {
+      conversationId: number;
+      senderId: number;
+      file: File;
+      fileType?: "audio" | "file";
+    }) => uploadMessageFileRequest(conversationId, senderId, file),
+    onSuccess: (result, { conversationId, senderId, fileType }) => {
+      if (result.success) {
+        const successMessage =
+          fileType === "audio"
+            ? "Áudio enviado com sucesso!"
+            : result.message || "Arquivo enviado com sucesso!";
+
+        toast.success(successMessage);
+
+        queryClient.invalidateQueries({
+          queryKey: chatKeys.messagesByConversation(conversationId, senderId),
+        });
+      } else {
+        toast.error(result.error || "Erro ao enviar arquivo");
+      }
+    },
+    onError: () => {
+      toast.error("Erro ao fazer upload do arquivo");
     },
   });
 };

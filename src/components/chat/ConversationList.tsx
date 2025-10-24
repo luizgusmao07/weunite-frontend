@@ -108,53 +108,56 @@ export const ConversationList = memo(
                 <Loader2 size={24} className="animate-spin text-primary" />
               </div>
             ) : searchResults && searchResults.length > 0 ? (
-              searchResults.map((user) => {
-                const initials =
-                  user.name
-                    ?.split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .toUpperCase()
-                    .slice(0, 2) || "??";
+              searchResults
+                .filter((user) => user.id !== String(userId))
+                .map((user) => {
+                  const userName = user.name || "Usuário desconhecido";
+                  const initials =
+                    userName
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()
+                      .slice(0, 2) || "??";
 
-                return (
-                  <div
-                    key={user.id}
-                    className="flex items-center p-3 hover:bg-muted cursor-pointer border-b border-border"
-                    onClick={() => user.id && startNewConversation(user.id)}
-                  >
-                    {user.profileImg ? (
-                      <img
-                        src={user.profileImg}
-                        alt={user.name}
-                        className="w-10 h-10 rounded-full object-cover mr-3"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300 flex items-center justify-center mr-3">
-                        <span className="font-medium">{initials}</span>
-                      </div>
-                    )}
-                    <div className="flex-1">
-                      <div className="font-medium">{user.name}</div>
-                      {user.username && (
-                        <div className="text-xs text-muted-foreground">
-                          @{user.username}
+                  return (
+                    <div
+                      key={user.id}
+                      className="flex items-center p-3 hover:bg-muted cursor-pointer border-b border-border"
+                      onClick={() => user.id && startNewConversation(user.id)}
+                    >
+                      {user.profileImg ? (
+                        <img
+                          src={user.profileImg}
+                          alt={userName}
+                          className="w-10 h-10 rounded-full object-cover mr-3"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300 flex items-center justify-center mr-3">
+                          <span className="font-medium">{initials}</span>
                         </div>
                       )}
+                      <div className="flex-1">
+                        <div className="font-medium">{userName}</div>
+                        {user.username && (
+                          <div className="text-xs text-muted-foreground">
+                            @{user.username}
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        className="p-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20"
+                        disabled={createConversation.isPending}
+                      >
+                        {createConversation.isPending ? (
+                          <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                          <Plus size={16} />
+                        )}
+                      </button>
                     </div>
-                    <button
-                      className="p-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20"
-                      disabled={createConversation.isPending}
-                    >
-                      {createConversation.isPending ? (
-                        <Loader2 size={16} className="animate-spin" />
-                      ) : (
-                        <Plus size={16} />
-                      )}
-                    </button>
-                  </div>
-                );
-              })
+                  );
+                })
             ) : (
               <div className="p-4 text-center text-muted-foreground">
                 Nenhum usuário encontrado

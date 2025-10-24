@@ -10,6 +10,7 @@ import { useBreakpoints } from "@/hooks/useBreakpoints";
 import { OpportunitySidebar } from "./OpportunitySidebar";
 import type { Opportunity } from "@/@types/opportunity.types";
 import { Plus } from "lucide-react";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 function OpportunitySkeleton() {
   return (
@@ -56,6 +57,7 @@ export default function FeedOpportunity() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateOpportunityOpen, setIsCreateOpportunityOpen] = useState(false);
   const { isMobile, isTablet, isDesktop } = useBreakpoints();
+  const { user } = useAuthStore();
 
   if (isLoading) {
     return (
@@ -97,7 +99,7 @@ export default function FeedOpportunity() {
           </div>
         </div>
 
-        {!isDesktop && (
+        {!isDesktop && user?.role === "COMPANY" && (
           <Button
             onClick={() => setIsCreateOpportunityOpen(true)}
             className="fixed bottom-20 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 z-[60]"

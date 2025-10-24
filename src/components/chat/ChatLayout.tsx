@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useChatStore } from "@/stores/useChatStore";
 import { getUserById } from "@/api/services/userService";
 import type { User } from "@/@types/user.types";
+import { formatMessagePreview } from "@/utils/formatMessagePreview";
 
 interface ConversationWithUser {
   id: number;
@@ -63,7 +64,9 @@ export const ChatLayout = () => {
                 avatar: "?",
                 avatarColor:
                   "bg-gray-100 text-gray-600 dark:bg-gray-900 dark:text-gray-300",
-                lastMessage: conv.lastMessage?.content || "Sem mensagens",
+                lastMessage: formatMessagePreview(
+                  conv.lastMessage?.content || "",
+                ),
                 time: conv.lastMessage
                   ? new Date(conv.lastMessage.createdAt).toLocaleTimeString(
                       [],
@@ -104,7 +107,9 @@ export const ChatLayout = () => {
                   avatar: hasValidImage ? user.profileImg! : initials,
                   avatarColor:
                     "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300",
-                  lastMessage: conv.lastMessage?.content || "Sem mensagens",
+                  lastMessage: formatMessagePreview(
+                    conv.lastMessage?.content || "",
+                  ),
                   time: conv.lastMessage
                     ? new Date(conv.lastMessage.createdAt).toLocaleTimeString(
                         [],
@@ -132,7 +137,9 @@ export const ChatLayout = () => {
               avatar: "U",
               avatarColor:
                 "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300",
-              lastMessage: conv.lastMessage?.content || "Sem mensagens",
+              lastMessage: formatMessagePreview(
+                conv.lastMessage?.content || "",
+              ),
               time: conv.lastMessage
                 ? new Date(conv.lastMessage.createdAt).toLocaleTimeString([], {
                     hour: "2-digit",
@@ -199,7 +206,7 @@ export const ChatLayout = () => {
 
   return (
     <div
-      className={`flex w-full h-full bg-background ${!maxLeftSideBar ? "rounded-lg shadow-sm border border-border" : ""} ${maxLeftSideBar ? "min-h-0" : ""}`}
+      className={`flex w-full h-[98vh] bg-red ${!maxLeftSideBar ? "rounded-lg shadow-sm border border-border -mt-[0.7em]" : ""} ${maxLeftSideBar ? "min-h-0" : ""}`}
     >
       {/* Mobile/Tablet: Mostra apenas uma tela por vez */}
       {maxLeftSideBar ? (

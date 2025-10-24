@@ -4,7 +4,7 @@ export interface User {
   username: string;
   email: string;
   password: string;
-  role: "athlete" | "company";
+  role: "AHTLETE" | "COMPANY";
   cnpj?: string;
   profileImg?: string;
   bannerImg?: string;

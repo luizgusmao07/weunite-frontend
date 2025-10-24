@@ -41,7 +41,7 @@ export function BottomSideBar() {
       color: getIncoColor("/opportunity"),
     },
     { title: "Criar Publicação", url: "#", icon: DiamondPlus },
-    { title: "Chat", url: "", icon: MessageCircleMore },
+    { title: "Chat", url: "/chat", icon: MessageCircleMore },
   ];
 
   return (

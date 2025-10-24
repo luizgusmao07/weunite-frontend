@@ -6,6 +6,7 @@ import { useSearchUsers } from "@/hooks/useSearchUsers";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Skeleton } from "../ui/skeleton";
 import { getInitials } from "@/utils/getInitials";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export function Search({
   isOpen = false,
@@ -20,6 +21,7 @@ export function Search({
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const { data: users, isLoading, error } = useSearchUsers(searchQuery);
+  const currentUserId = useAuthStore((state) => state.user?.id);
 
   const handleUserClick = (username: string) => {
     navigate(`/profile/${username}`);
@@ -120,7 +122,8 @@ export function Search({
               !isLoading &&
               users &&
               Array.isArray(users) &&
-              users.length === 0 && (
+              users.filter((user) => user.id !== String(currentUserId))
+                .length === 0 && (
                 <p className="text-sm text-muted-foreground">
                   Nenhum usuário encontrado para "{searchQuery}"
                 </p>
@@ -130,35 +133,41 @@ export function Search({
               !isLoading &&
               users &&
               Array.isArray(users) &&
-              users.length > 0 && (
+              users.filter((user) => user.id !== String(currentUserId)).length >
+                0 && (
                 <div className="space-y-2">
-                  {users.map((user) => (
-                    <div
-                      key={user.id}
-                      className="flex items-center justify-center space-x-3 p-2 rounded-lg hover:bg-muted cursor-pointer transition-colors"
-                      onClick={() => handleUserClick(user.username)}
-                    >
-                      <Avatar className="h-[2.8em] w-[2.8em]">
-                        <AvatarImage
-                          src={user.profileImg}
-                          alt={user.name}
-                          className="aspect-square h-full w-full rounded-full object-cover"
-                        />
-                        <AvatarFallback className="flex h-full w-full items-center justify-center rounded-full bg-muted">
-                          {getInitials(user.name)}
-                        </AvatarFallback>
-                      </Avatar>
+                  {users
+                    .filter((user) => user.id !== String(currentUserId))
+                    .map((user) => {
+                      const userName = user.name || "Usuário desconhecido";
+                      return (
+                        <div
+                          key={user.id}
+                          className="flex items-center justify-center space-x-3 p-2 rounded-lg hover:bg-muted cursor-pointer transition-colors"
+                          onClick={() => handleUserClick(user.username)}
+                        >
+                          <Avatar className="h-[2.8em] w-[2.8em]">
+                            <AvatarImage
+                              src={user.profileImg}
+                              alt={userName}
+                              className="aspect-square h-full w-full rounded-full object-cover"
+                            />
+                            <AvatarFallback className="flex h-full w-full items-center justify-center rounded-full bg-muted">
+                              {getInitials(userName)}
+                            </AvatarFallback>
+                          </Avatar>
 
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">
-                          {user.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          @{user.username}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">
+                              {userName}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              @{user.username}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
                 </div>
               )}
           </div>
