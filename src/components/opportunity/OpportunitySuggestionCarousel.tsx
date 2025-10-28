@@ -9,7 +9,7 @@ export default function OpportunitySuggestionCarousel({
   opportunities,
 }: OpportunitySuggestionCarouselProps) {
   return (
-    <div className="bg-ring p-4 pl-1 rounded-lg w-full">
+    <div className="bg-background pb-4  pt-4 pl-1 rounded-lg w-full">
       <h2>Oportunidades Sugestões</h2>
       <div
         className="flex flex-row gap-3 overflow-x-auto mt-4"
