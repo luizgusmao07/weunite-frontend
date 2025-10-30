@@ -8,13 +8,14 @@ export interface AuthState {
   error: string | null;
   message: string | null;
   clearMessages: () => Promise<void>;
-  signup: (data: SignUp) => Promise<Result>;
+  setUser: (user: User) => void;
+  signup: (data: SignUp | SignUpCompany) => Promise<Result>;
   verifyEmail: (data: VerifyCode, email: string) => Promise<void>;
   sendResetPassword: (data: SendResetPassword) => Promise<Result>;
   verifyResetToken: (data: VerifyCode, email: string) => Promise<Result>;
   resetPassword: (
     data: ResetPassword,
-    verificationToken: string
+    verificationToken: string,
   ) => Promise<void>;
   login: (data: Login) => Promise<void>;
   logout: () => void;
@@ -25,6 +26,7 @@ export interface SignUp {
   username: string;
   email: string;
   password: string;
+  role: "athlete";
 }
 
 export interface VerifyCode {
@@ -36,6 +38,7 @@ export interface SignUpCompany {
   username: string;
   email: string;
   cnpj: string;
+  role: "company";
 }
 
 export interface SendResetPassword {

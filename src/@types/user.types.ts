@@ -4,10 +4,20 @@ export interface User {
   username: string;
   email: string;
   password: string;
+  role: "athlete" | "company";
   cnpj?: string;
   profileImg?: string;
+  bannerImg?: string;
 }
 
 export interface GetUserByUsername {
   username: string;
+}
+
+export interface UpdateUser {
+  name?: string;
+  username?: string;
+  email?: string;
+  profileImg?: File;
+  bannerImg?: File;
 }

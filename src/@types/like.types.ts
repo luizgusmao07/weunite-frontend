@@ -3,7 +3,13 @@ import type { User } from "./user.types";
 
 export interface ToggleLike {
   userId: string;
-  postId: string;
+  postId: string | "";
+  commentId: string | "";
+}
+
+export interface ToggleLikeComment {
+  userId: string;
+  commentId: string;
 }
 
 export interface Like {

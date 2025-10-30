@@ -10,22 +10,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useUpdatePost } from "@/state/usePosts";
+import { useCreatePost } from "@/state/usePosts";
 import { createPostSchema } from "@/schemas/post/createPost.schema";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import type { Post } from "@/@types/post.types";
-import { useEffect } from "react";
 
-interface EditPostProps {
+interface CreatePostProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  post?: Post;
 }
 
-export function EditPost({ open, onOpenChange, post }: EditPostProps) {
+export function CreatePost({ open, onOpenChange }: CreatePostProps) {
   const form = useForm<z.infer<typeof createPostSchema>>({
     resolver: zodResolver(createPostSchema),
     defaultValues: {
@@ -35,27 +32,15 @@ export function EditPost({ open, onOpenChange, post }: EditPostProps) {
   });
 
   const { user } = useAuthStore();
-  const updatePostMutation = useUpdatePost();
 
-  useEffect(() => {
-    if (post && open) {
-        form.reset ({
-            text: post.text || "",
-            media: null,
-        })
-    }
-  }, [post, open, form])
+  const createPostMutation = useCreatePost();
 
   async function onSubmit(values: z.infer<typeof createPostSchema>) {
     if (!user?.id) return;
 
-    const result = await updatePostMutation.mutateAsync({
-      data: {
-        text: values.text,
-        media: values.media,
-      },
+    const result = await createPostMutation.mutateAsync({
+      data: values,
       userId: Number(user.id),
-      postId: Number(post?.id),
     });
 
     if (result.success) {
@@ -64,11 +49,13 @@ export function EditPost({ open, onOpenChange, post }: EditPostProps) {
     }
   }
 
+  const isSubmitting = createPostMutation.isPending;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]" aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>Editar publicação</DialogTitle>
+          <DialogTitle>Criar nova publicação</DialogTitle>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
           <div className="grid gap-4 py-2">
@@ -112,10 +99,24 @@ export function EditPost({ open, onOpenChange, post }: EditPostProps) {
           </div>
           <DialogFooter className="mt-4">
             <DialogClose asChild>
-              <Button variant="outline" className="hover:cursor-pointer">Cancelar</Button>
+              <Button variant="outline" className="hover:cursor-pointer">
+                Cancelar
+              </Button>
             </DialogClose>
-            <Button type="submit" className="bg-third hover:bg-third-hover hover:cursor-pointer">
-              Editar
+            <Button
+              type="submit"
+              className="bg-third hover:bg-third hover:cursor-pointer"
+              disabled={createPostMutation.isPending}
+            >
+              {createPostMutation.isPending ? "Publicando..." : "Publicar"}
+            </Button>
+            <Button
+              type="submit"
+              className="variant-third bg-third hover:bg-third-hover"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+            >
+              {isSubmitting ? "Publicando..." : "Publicar"}
             </Button>
           </DialogFooter>
         </form>

@@ -32,28 +32,37 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Search } from "@/components/shared/Search";
-import { CreatePost } from "./CreatePost";
-
+import { CreatePost } from "../post/CreatePost";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLocation } from "react-router-dom";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
+import { useBreakpoints } from "@/hooks/useBreakpoints";
+import { getInitials } from "@/utils/getInitials";
 
 export function LeftSidebar() {
   const { state, setOpen } = useSidebar();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
 
+  const { logout } = useAuthStore();
+  const { user } = useAuthStore();
+  const initials = getInitials(user?.username);
+
   const { setTheme, theme } = useTheme();
   const themeIcon = theme === "dark" ? Sun : Moon;
   const location = useLocation();
   const pathname = location.pathname;
-  const getIncoColor = (path: string): string => pathname === path ? "#22C55E" : "currentColor";
+  const getIncoColor = (path: string): string =>
+    pathname === path ? "#22C55E" : "currentColor";
 
-  const { logout } = useAuthStore();
   const navigate = useNavigate();
+
+  const { isMobile, isSmallDesktop } = useBreakpoints();
+
+  const previsDesktop = useRef(isSmallDesktop);
 
   const handleSearchOpen = () => {
     if (state === "expanded") {
@@ -79,23 +88,22 @@ export function LeftSidebar() {
 
   const items = [
     { title: "Home", url: "/home", icon: Home, color: getIncoColor("/home") },
-    { title: "Oportunidade", url: "#", icon: Link },
-    { title: "Chat", url: "#", icon: MessageCircleMore },
+    {
+      title: "Oportunidade",
+      url: "/opportunity",
+      icon: Link,
+      color: getIncoColor("/opportunity"),
+    },
+    {
+      title: "Chat",
+      url: "/chat",
+      icon: MessageCircleMore,
+      color: getIncoColor("/chat"),
+    },
     { title: "Pesquisar", url: "#", icon: SearchIcon },
     { title: "Criar Publicação", url: "#", icon: DiamondPlus },
     themeItem,
   ];
-
-  const getInitials = (name:String | undefined): string =>{
-    if (!name) return "U"
-
-    const words = name.trim().split(" ");
-    if (words.length === 1){
-      return words[0].charAt(0).toUpperCase();
-    }
-
-    return words[0].charAt(0) + words[words.length-1].charAt(0).toUpperCase();
-  }
 
   useEffect(() => {
     if (isSearchOpen && state === "expanded") {
@@ -103,11 +111,19 @@ export function LeftSidebar() {
     }
   }, [isSearchOpen, state, setOpen]);
 
+  useEffect(() => {
+    if (isSmallDesktop && !previsDesktop.current) {
+      setOpen(false);
+    }
+
+    previsDesktop.current = isSmallDesktop;
+  }, [isSmallDesktop, setOpen]);
+
   const CustomSidebarTrigger = (
-    props: React.ComponentProps<typeof SidebarTrigger>
+    props: React.ComponentProps<typeof SidebarTrigger>,
   ) => {
     const handleClick = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     ) => {
       if (isSearchOpen && state === "collapsed") {
         return;
@@ -117,8 +133,6 @@ export function LeftSidebar() {
     return <SidebarTrigger {...props} onClick={handleClick} />;
   };
 
-  const { user } = useAuthStore();
-
   return (
     <>
       <Search isOpen={isSearchOpen} onOpenChange={setIsSearchOpen} />
@@ -127,12 +141,11 @@ export function LeftSidebar() {
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <div
-            className={`${state === "collapsed"
-              ? "flex justify-center items-center"
-              : "pt-4 "
-              }`}
+            className={`
+              ${state === "collapsed" ? "flex justify-center items-center" : "pt-4"}
+              `}
           >
-            {state === "collapsed" ? (
+            {state === "collapsed" || isMobile ? (
               <div className="flex items-center justify-center w-full py-4">
                 <span className="font-bold text-xl text-primary">W</span>
                 <CustomSidebarTrigger className="p-0 m-0" />
@@ -141,14 +154,14 @@ export function LeftSidebar() {
               <div className="flex items-center justify-between">
                 <span
                   className={`
-                        font-bold transition-all duration-200 overflow-hidden whitespace-nowrap max-w-xs opacity-100 text-xl ml-2 
+                        font-bold transition-all duration-200  whitespace-nowrap max-w-xs opacity-100 text-xl ml-2 
                       `}
                   style={{
                     transition: "all 0.2s",
                   }}
                 >
                   <span className="text-primary ">We</span>
-                  <span className="text-green-500">Unite</span>
+                  <span className="text-third">Unite</span>
                 </span>
                 <CustomSidebarTrigger />
               </div>
@@ -160,12 +173,12 @@ export function LeftSidebar() {
             <SidebarGroupLabel
               className={state === "collapsed" ? "text-center" : ""}
             >
-              {state !== "collapsed" && "Navegação"}
+              {state !== "collapsed" && !isMobile && "Navegação"}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu
                 className={
-                  state === "collapsed"
+                  state === "collapsed" || isMobile
                     ? "flex flex-col items-center gap-6"
                     : "gap-4"
                 }
@@ -180,56 +193,52 @@ export function LeftSidebar() {
                     }
                   >
                     <SidebarMenuButton
-                      asChild
                       tooltip={state === "collapsed" ? item.title : undefined}
-                    >
-                      <a
-                        href={item.url}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (item.title === "Modo de cor") {
-                            setTheme(theme === "dark" ? "light" : "dark");
-                          } else if (item.title === "Pesquisar") {
-                            handleSearchOpen();
-                          } else if (item.title === "Criar Publicação") {
-                            handleCreatePostOpen();
-                          } else if (item.url !== "#") {
-                            navigate(item.url);
-                          }
-                        }}
-                        className={`flex ${state === "collapsed"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (item.title === "Modo de cor") {
+                          setTheme(theme === "dark" ? "light" : "dark");
+                        } else if (item.title === "Pesquisar") {
+                          handleSearchOpen();
+                        } else if (item.title === "Criar Publicação") {
+                          handleCreatePostOpen();
+                        } else if (item.url !== "#") {
+                          navigate(item.url);
+                        }
+                      }}
+                      className={`flex cursor-pointer ${
+                        state === "collapsed"
                           ? "justify-center w-full py-2"
                           : "items-center gap-2"
-                          }`}
+                      }`}
+                    >
+                      <div
+                        className={
+                          state === "collapsed" ? "flex justify-center" : ""
+                        }
                       >
-                        <div
+                        <item.icon
+                          style={{
+                            width: "24px",
+                            height: "24px",
+                            color:
+                              item.url !== "#" && pathname === item.url
+                                ? "#22C55E"
+                                : "currentColor",
+                          }}
+                        />
+                      </div>
+                      {state !== "collapsed" && (
+                        <span
                           className={
-                            state === "collapsed" ? "flex justify-center" : ""
+                            item.url !== "#" && pathname === item.url
+                              ? "text-[#22C55E]"
+                              : ""
                           }
                         >
-                          <item.icon
-                            style={{
-                              width: "24px",
-                              height: "24px",
-                              color:
-                                item.url !== "#" && pathname === item.url
-                                  ? "#22C55E"
-                                  : "currentColor",
-                            }}
-                          />
-                        </div>
-                        {state !== "collapsed" && (
-                          <span
-                            className={
-                              item.url !== "#" && pathname === item.url
-                                ? "text-[#22C55E]"
-                                : ""
-                            }
-                          >
-                            {item.title}
-                          </span>
-                        )}
-                      </a>
+                          {item.title}
+                        </span>
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -241,24 +250,23 @@ export function LeftSidebar() {
           <SidebarMenu className="mb-3">
             <SidebarMenuItem
               className={
-                state === "collapsed" ? "w-full flex justify-center" : ""
+                state === "collapsed" || isMobile
+                  ? "w-full flex justify-center"
+                  : ""
               }
-
             >
               <DropdownMenu>
                 <DropdownMenuTrigger asChild className="hover:cursor-pointer">
                   <SidebarMenuButton
-                    className={`flex ${state === "collapsed"
-                      ? "justify-center w-full "
-                      : "items-center gap-2 "
-                      }` }
+                    className={`flex ${
+                      state === "collapsed"
+                        ? "justify-center w-full "
+                        : "items-center gap-2 "
+                    }`}
                   >
                     <Avatar className={state === "collapsed" ? "mx-auto" : ""}>
-                      <AvatarImage
-                        src={user?.profileImg}
-                        alt="@shadcn"
-                      />
-                      <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
+                      <AvatarImage src={user?.profileImg} alt="@shadcn" />
+                      <AvatarFallback> {initials}</AvatarFallback>
                     </Avatar>
                     {state !== "collapsed" && <p>{user?.username}</p>}
                   </SidebarMenuButton>
@@ -278,7 +286,10 @@ export function LeftSidebar() {
                   </div>
 
                   <div className="space-y-1 py-1">
-                    <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                    <DropdownMenuItem
+                      className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors"
+                      onClick={() => navigate("/profile")}
+                    >
                       <User className="h-4 w-4 text-gray-500" />
                       <p>Perfil</p>
                     </DropdownMenuItem>

@@ -51,7 +51,7 @@ export const verifyEmailRequest = async (data: VerifyCode, email: string) => {
 
 export const signUpCompanyRequest = async (data: SignUpCompany) => {
   try {
-    const response = await axios.post("/auth/signupcompany", { data });
+    const response = await axios.post("/auth/signup/company", data);
     return {
       success: true,
       data: response.data,
@@ -112,12 +112,12 @@ export const sendResetPasswordRequest = async (data: SendResetPassword) => {
 
 export const verifyResetTokenRequest = async (
   data: VerifyCode,
-  email: string
+  email: string,
 ) => {
   try {
     const response = await axios.post(
       `/auth/verify-reset-token/${email}`,
-      data
+      data,
     );
     return {
       success: true,
@@ -138,12 +138,12 @@ export const verifyResetTokenRequest = async (
 
 export const resetPasswordRequest = async (
   data: ResetPassword,
-  verificationToken: string
+  verificationToken: string,
 ) => {
   try {
     const response = await axios.post(
       `/auth/reset-password/${verificationToken}`,
-      data
+      data,
     );
     return {
       success: true,

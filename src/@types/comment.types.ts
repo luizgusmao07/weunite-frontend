@@ -11,10 +11,20 @@ export interface Comment {
   id: string;
   text: string | null;
   imageUrl: string | null;
-  likes: Like[];
+  likes?: Like[];
   comments: Comment[];
   createdAt: string;
+  updatedAt: string | null;
   user: User;
   post: Post;
   parentComment?: Comment | null;
+}
+
+export interface UpdateComment {
+  text: string | null;
+  media: File | null;
+}
+
+export interface GetComment {
+  id: string;
 }

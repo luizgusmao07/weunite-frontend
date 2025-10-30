@@ -12,6 +12,7 @@ export const signUpSchema = z.object({
   username: usernameSchema,
   email: emailSchema,
   password: passwordSchema,
+  role: z.literal("athlete"),
 });
 
 export const signUpCompanySchema = z.object({
@@ -21,4 +22,6 @@ export const signUpCompanySchema = z.object({
   cnpj: z.string().refine((val) => cnpjValidator(val), {
     message: "CNPJ inválido",
   }),
+  password: passwordSchema,
+  role: z.literal("company"),
 });

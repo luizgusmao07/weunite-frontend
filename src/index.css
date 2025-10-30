@@ -49,7 +49,7 @@
 
 :root {
   --radius: 0.625rem;
-  --background: #EEEEEE;
+  --background: #eeeeee;
   --foreground: #0a0a0a;
   --hover-button: #000000;
   --card: #ffffff;
@@ -63,7 +63,7 @@
   --secondary-foreground: #171717;
   --third: #22c55e;
   --third-hover: #39e177;
-  --thrid-foreground: #000000;
+  --third-foreground: #0a0a0a;
   --muted: #f5f5f5;
   --muted-foreground: #737373;
   --accent: #f5f5f5;
@@ -102,11 +102,12 @@
   --secondary: #262626;
   --secondary-foreground: #fafafa;
   --third: #22c55e;
+  --third-foreground: #fafafa;
   --muted: #262626;
   --muted-foreground: #a1a1a1;
   --accent: #262626;
   --accent-foreground: #fafafa;
-  --destructive: #22c55e;
+  --destructive: #e7000b;
   --border: #ffffff1a;
   --separator-post: #848484;
   --input: #ffffff26;
@@ -124,6 +125,50 @@
   --sidebar-accent-foreground: #fafafa;
   --sidebar-border: #ffffff1a;
   --sidebar-ring: #737373;
+}
+
+html::-webkit-scrollbar {
+  width: 8px;
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: var(--third);
+  border-radius: 10px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background-color: var(--third-hover);
+}
+
+/* scrollbar invisvel */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+}
+
+/* scrollbar verde */
+.scrollbar-thumb::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-thumb::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thumb::-webkit-scrollbar-thumb {
+  background-color: var(--third);
+  border-radius: 10px;
+}
+
+.scrollbar-thumb::-webkit-scrollbar-thumb:hover {
+  background-color: var(--third-hover);
 }
 
 @layer base {

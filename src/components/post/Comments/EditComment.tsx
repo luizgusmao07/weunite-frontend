@@ -10,19 +10,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreatePost } from "@/state/usePosts";
+import { useUpdateComments } from "@/state/useComments";
 import { createPostSchema } from "@/schemas/post/createPost.schema";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import type { Comment } from "@/@types/comment.types";
 
-interface CreatePostProps {
+import { useEffect } from "react";
+
+interface EditCommentProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  comment?: Comment;
 }
 
-export function CreatePost({ open, onOpenChange }: CreatePostProps) {
+export function EditComment({ open, onOpenChange, comment }: EditCommentProps) {
   const form = useForm<z.infer<typeof createPostSchema>>({
     resolver: zodResolver(createPostSchema),
     defaultValues: {
@@ -32,15 +36,28 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
   });
 
   const { user } = useAuthStore();
+  const updateCommentMutation = useUpdateComments();
 
-  const createPostMutation  = useCreatePost();
+  useEffect(() => {
+    if (comment && open) {
+      form.reset({
+        text: comment.text || "",
+        media: null,
+      });
+    }
+  }, [comment, open, form]);
 
   async function onSubmit(values: z.infer<typeof createPostSchema>) {
     if (!user?.id) return;
 
-    const result = await createPostMutation.mutateAsync({
-      data: values,
+    const result = await updateCommentMutation.mutateAsync({
+      data: {
+        text: values.text,
+        media: values.media,
+      },
       userId: Number(user.id),
+      commentId: Number(comment?.id),
+      postId: Number(comment?.post.id),
     });
 
     if (result.success) {
@@ -49,16 +66,18 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
     }
   }
 
+  const isSubmitting = updateCommentMutation.isPending;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]" aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>Criar nova publicação</DialogTitle>
+          <DialogTitle>Editar comentário</DialogTitle>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
           <div className="grid gap-4 py-2">
             <div className="grid gap-2">
-              <Label htmlFor="post-text">
+              <Label htmlFor="comment-text">
                 O que você gostaria de compartilhar?
               </Label>
               <Controller
@@ -66,7 +85,7 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
                 control={form.control}
                 render={({ field }) => (
                   <Textarea
-                    id="post-text"
+                    id="comment-text"
                     placeholder="Escreva sua mensagem aqui..."
                     className="min-h-[150px]"
                     {...field}
@@ -74,34 +93,21 @@ export function CreatePost({ open, onOpenChange }: CreatePostProps) {
                 )}
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="post-image">Adicionar imagem (opcional)</Label>
-              <Controller
-                name="media"
-                control={form.control}
-                render={({ field: { onChange, name } }) => (
-                  <Input
-                    id="post-image"
-                    name={name}
-                    type="file"
-                    accept="image/*, video/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      onChange(file);
-                    }}
-                    className="file:cursor-pointer hover:cursor-pointer"
-                  />
-                )}
-              />
-            </div>
           </div>
           <DialogFooter className="mt-4">
             <DialogClose asChild>
-              <Button variant="outline" className="hover:cursor-pointer">Cancelar</Button>
+              <Button variant="outline" className="hover:cursor-pointer">
+                Cancelar
+              </Button>
             </DialogClose>
-            <Button type="submit" className="bg-third hover:bg-third hover:cursor-pointer" disabled={createPostMutation.isPending}>
-            {createPostMutation.isPending ? "Publicando..." : "Publicar"}
-          </Button>
+            <Button
+              type="submit"
+              variant="third"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+            >
+              {isSubmitting ? "Salvando..." : "Editar"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

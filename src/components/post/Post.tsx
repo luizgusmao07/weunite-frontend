@@ -34,7 +34,7 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogTitle,
-  AlertDialogTrigger
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 import type { Post } from "@/@types/post.types";
@@ -42,14 +42,18 @@ import { getTimeAgo } from "@/hooks/useGetTimeAgo";
 import { useToggleLike } from "@/state/useLikes";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useState } from "react";
-import { EditPost } from "../shared/EditPost";
+import { EditPost } from "./EditPost";
 import { useDeletePost } from "@/state/usePosts";
 import { AlertDialogFooter, AlertDialogHeader } from "../ui/alert-dialog";
-
+import Comments from "./Comments/Comments";
+import { getInitials } from "@/utils/getInitials";
+import { useNavigate } from "react-router-dom";
 
 const actions = [{ icon: Heart }, { icon: MessageCircle }, { icon: Repeat2 }];
 
 export default function Post({ post }: { post: Post }) {
+  const initials = getInitials(post.user.name);
+
   const { user } = useAuthStore();
 
   const toggleLike = useToggleLike();
@@ -62,10 +66,12 @@ export default function Post({ post }: { post: Post }) {
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
+
   const handleLikeClick = () => {
     if (!user?.id) return;
 
-    toggleLike.mutate({ postId: post.id, userId: user.id });
+    toggleLike.mutate({ postId: post.id, userId: user.id, commentId: "" });
   };
 
   const isOwner = post.user.id === user?.id;
@@ -79,40 +85,55 @@ export default function Post({ post }: { post: Post }) {
 
     deletePost.mutate({
       userId: Number(user.id),
-      postId: Number(post.id)
+      postId: Number(post.id),
     });
 
     setIsDeleteDialogOpen(false);
   };
 
-  const getInitials = (name: String | undefined): string => {
-    if (!name) return "U"
+  const handleCommentsOpen = () => {
+    setIsCommentsOpen(true);
+  };
 
-    const words = name.trim().split(" ");
-    if (words.length === 1) {
-      return words[0].charAt(0).toUpperCase();
+  const navigate = useNavigate();
+
+  const handleProfileClick = () => {
+    if (isOwner) {
+      navigate("/profile");
+    } else {
+      navigate(`/profile/${post.user.username}`);
     }
-
-    return words[0].charAt(0) + words[words.length - 1].charAt(0).toUpperCase();
-  }
+  };
 
   return (
     <>
+      <Comments
+        isOpen={isCommentsOpen}
+        onOpenChange={setIsCommentsOpen}
+        post={post}
+      />
+
       <EditPost
         open={isEditPostOpen}
         onOpenChange={setIsEditPostOpen}
         post={post}
       />
 
-      <Card className="w-full max-w-[700px] bg-red shadow-none border-0 border-b rounded-none border-foreground/50 ">
-        <CardHeader className="flex flex-row items-center gap-4">
-          <Avatar className="hover:cursor-pointer size-9">
-            <AvatarImage src={user?.profileImg} alt="profile image" />
-            <AvatarFallback className="">{getInitials(user?.name)}</AvatarFallback>
+      <Card className="w-full max-w-[45em] bg-red shadow-none border-0 border-b rounded-none border-foreground/50">
+        <CardHeader className="flex flex-row items-center gap-2 mb-[0.5em]">
+          <Avatar
+            className="hover:cursor-pointer h-[2.8em] w-[2.8em]"
+            onClick={handleProfileClick}
+          >
+            <AvatarImage src={post.user.profileImg} alt="profile image" />
+            <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
 
           <div className="flex flex-col">
-            <CardTitle className="text-base font-medium hover:cursor-pointer">
+            <CardTitle
+              className="text-base font-medium hover:cursor-pointer"
+              onClick={handleProfileClick}
+            >
               {post.user.username}
             </CardTitle>
 
@@ -128,12 +149,18 @@ export default function Post({ post }: { post: Post }) {
             <DropdownMenuContent align="end" className="w-48">
               {isOwner ? (
                 <>
-                  <DropdownMenuItem onClick={handleEditPostOpen} className=" hover:cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={handleEditPostOpen}
+                    className=" hover:cursor-pointer"
+                  >
                     <Edit className="mr-2 h-4 w-4" />
                     Editar
                   </DropdownMenuItem>
 
-                  <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                  <AlertDialog
+                    open={isDeleteDialogOpen}
+                    onOpenChange={setIsDeleteDialogOpen}
+                  >
                     <AlertDialogTrigger asChild>
                       <DropdownMenuItem
                         className="hover:cursor-pointer"
@@ -150,12 +177,14 @@ export default function Post({ post }: { post: Post }) {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Esta ação não pode ser desfeita. O post será permanentemente
-                          removido da plataforma.
+                          Esta ação não pode ser desfeita. O post será
+                          permanentemente removido da plataforma.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel className="hover:cursor-pointer">Cancelar</AlertDialogCancel>
+                        <AlertDialogCancel className="hover:cursor-pointer">
+                          Cancelar
+                        </AlertDialogCancel>
                         <AlertDialogAction
                           onClick={handleDelete}
                           className="bg-red-600 hover:bg-red-700 text-zinc-100 hover:cursor-pointer"
@@ -188,21 +217,23 @@ export default function Post({ post }: { post: Post }) {
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-
         </CardHeader>
 
-        <CardContent className="mt-[-18px]">
-          {post.imageUrl && (
-            <img
-              src={post.imageUrl}
-              alt="Post media"
-              className="w-full h-auto rounded-sm mb-2"
-            />
-          )}
+        <CardContent className="w-full mt-[-18px]">
+          <div className="w-full flex justify-center items-center">
+            {post.imageUrl && (
+              <img
+                src={post.imageUrl}
+                alt="Post media"
+                className="rounded-sm mb-2"
+              />
+            )}
+          </div>
+
           <p className="">{post.text}</p>
         </CardContent>
 
-        <CardFooter className="flex flex-col mt-[-20px]  ">
+        <CardFooter className="flex flex-col mt-[-20px]">
           <div className="flex justify-between w-full mb-3">
             <span className="text-sm text-muted-foreground">
               {post.likes.length || 0} curtidas • {post.comments.length || 0}{" "}
@@ -215,13 +246,21 @@ export default function Post({ post }: { post: Post }) {
               {actions.map((action, index) => (
                 <div
                   key={index}
-                  onClick={index === 0 ? handleLikeClick : undefined}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (action.icon === Heart) {
+                      handleLikeClick();
+                    } else if (action.icon === MessageCircle) {
+                      handleCommentsOpen();
+                    }
+                  }}
                 >
                   <action.icon
-                    className={`h-5 w-5 transition-colors  ${index === 0 && isLiked
+                    className={`h-5 w-5 transition-colors  ${
+                      index === 0 && isLiked
                         ? "text-red-500 fill-red-500"
                         : "text-muted-foreground"
-                      }`}
+                    }`}
                   />
                 </div>
               ))}
@@ -233,7 +272,6 @@ export default function Post({ post }: { post: Post }) {
               </div>
             </CardAction>
           </div>
-
         </CardFooter>
       </Card>
     </>
