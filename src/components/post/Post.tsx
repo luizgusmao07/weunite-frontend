@@ -48,6 +48,7 @@ import { AlertDialogFooter, AlertDialogHeader } from "../ui/alert-dialog";
 import Comments from "./Comments/Comments";
 import { getInitials } from "@/utils/getInitials";
 import { useNavigate } from "react-router-dom";
+import { ReportModal } from "../shared/ReportModal";
 
 const actions = [{ icon: Heart }, { icon: MessageCircle }, { icon: Repeat2 }];
 
@@ -67,6 +68,8 @@ export default function Post({ post }: { post: Post }) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
+
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const handleLikeClick = () => {
     if (!user?.id) return;
@@ -95,6 +98,10 @@ export default function Post({ post }: { post: Post }) {
     setIsCommentsOpen(true);
   };
 
+  const handleReportClick = () => {
+    setIsReportModalOpen(true);
+  };
+
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
@@ -117,6 +124,16 @@ export default function Post({ post }: { post: Post }) {
         open={isEditPostOpen}
         onOpenChange={setIsEditPostOpen}
         post={post}
+      />
+
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onOpenChange={setIsReportModalOpen}
+        entityType="POST"
+        entityId={Number(post.id)}
+        entityTitle={
+          post.text.substring(0, 50) + (post.text.length > 50 ? "..." : "")
+        }
       />
 
       <Card className="w-full max-w-[45em] bg-red shadow-none border-0 border-b rounded-none border-foreground/50">
@@ -209,7 +226,10 @@ export default function Post({ post }: { post: Post }) {
                     Compartilhar
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-600 hover:cursor-pointer">
+                  <DropdownMenuItem
+                    className="text-red-600 hover:cursor-pointer"
+                    onClick={handleReportClick}
+                  >
                     <Flag className="mr-2 h-4 w-4" />
                     Denunciar
                   </DropdownMenuItem>
