@@ -98,11 +98,17 @@ export function AdminUsersPage() {
   };
 
   const getRoleBadge = (role: string) => {
-    return role === "company" ? (
-      <Badge variant="outline" className="bg-blue-50 text-blue-700">
-        Empresa
-      </Badge>
-    ) : (
+    const normalizedRole = role?.toLowerCase().trim();
+
+    if (normalizedRole === "company") {
+      return (
+        <Badge variant="outline" className="bg-blue-50 text-blue-700">
+          Empresa
+        </Badge>
+      );
+    }
+
+    return (
       <Badge variant="outline" className="bg-purple-50 text-purple-700">
         Atleta
       </Badge>

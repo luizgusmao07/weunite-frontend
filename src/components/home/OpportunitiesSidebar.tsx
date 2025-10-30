@@ -11,7 +11,6 @@ import {
 import { Lightbulb } from "lucide-react";
 import CardSuggestionOpportunity from "@/components/opportunity/CardSuggestionOpportunity";
 import { useGetOpportunities } from "@/state/useOpportunities";
-import type { Opportunity } from "@/@types/opportunity.types";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const useCustomBreakpoint = (breakpoint: number = 1500) => {

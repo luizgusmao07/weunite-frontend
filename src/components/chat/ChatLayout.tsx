@@ -206,7 +206,7 @@ export const ChatLayout = () => {
 
   return (
     <div
-      className={`flex w-full h-full bg-background ${!maxLeftSideBar ? "rounded-lg shadow-sm border border-border" : ""} ${maxLeftSideBar ? "min-h-0" : ""}`}
+      className={`flex w-full h-[98vh] bg-red ${!maxLeftSideBar ? "rounded-lg shadow-sm border border-border -mt-[0.7em]" : ""} ${maxLeftSideBar ? "min-h-0" : ""}`}
     >
       {/* Mobile/Tablet: Mostra apenas uma tela por vez */}
       {maxLeftSideBar ? (
