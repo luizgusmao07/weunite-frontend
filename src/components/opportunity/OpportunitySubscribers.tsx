@@ -91,7 +91,7 @@ export function OpportunitySubscribers({
                     variant="outline"
                     size="sm"
                     className="w-full"
-                    onClick={() => navigate(`/profile/${athlete.id}`)}
+                    onClick={() => navigate(`/profile/${athlete.username}`)}
                   >
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Ver Perfil

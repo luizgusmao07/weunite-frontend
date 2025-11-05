@@ -158,8 +158,8 @@ export const getOpportunitySubscribersRequest = async (
     );
     return {
       success: true,
-      data: response.data.data, // Acessando response.data.data para pegar o array
-      message: response.data.message || "Inscritos carregados com sucesso!",
+      data: response.data, // Backend retorna List<SubscriberDTO> diretamente
+      message: "Inscritos carregados com sucesso!",
       error: null,
     };
   } catch (err) {
