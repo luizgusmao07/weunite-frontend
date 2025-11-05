@@ -5,10 +5,10 @@ export interface Skill {
   name: string;
 }
 
-export interface Subscriber {
+export interface SubscriberDetail {
   id: number;
-  athleteId: number;
-  opportunityId: number;
+  athlete: User;
+  opportunity: Opportunity;
 }
 
 export interface CreateOpportunity {
@@ -35,8 +35,8 @@ export interface Opportunity {
   location: string;
   dateEnd: Date;
   skills?: Skill[];
-  subscribers?: Subscriber[];
   createdAt: Date;
   updatedAt?: Date;
   company?: User;
+  subscribersCount?: number;
 }
