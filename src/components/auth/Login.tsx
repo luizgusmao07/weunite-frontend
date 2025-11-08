@@ -54,7 +54,7 @@ export function Login({
         />
       </div>
 
-      <Card className="w-105 lg:120 xl:w-125 ">
+      <Card className="w-[24em] lg:w-[30em] xl:w-[32em]">
         <div className="flex flex-col item-center text-center">
           <FormItem>
             <h1 className="text-2xl font-bold">Bem-Vindo a WeUnite</h1>
