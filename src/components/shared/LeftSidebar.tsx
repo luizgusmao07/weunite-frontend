@@ -52,19 +52,7 @@ export function LeftSidebar() {
   const { user } = useAuthStore();
   const initials = getInitials(user?.name);
 
-  // Lista temporária de emails de administradores
-  const ADMIN_EMAILS = [
-    "admin@weunite.com",
-    "luiz@weunite.com",
-    "matheus@weunite.com",
-    "matheusoliveirale2007@gmail.com",
-    "mathessoliv@gmail.com",
-    "manoel_jonathan@hotmail.com",
-  ];
-
-  // Verifica se o usuário é administrador
-  const isAdmin =
-    user?.isAdmin || (user?.email && ADMIN_EMAILS.includes(user.email));
+  const isAdmin = user?.role === "admin".toUpperCase();
 
   const { setTheme, theme } = useTheme();
   const themeIcon = theme === "dark" ? Sun : Moon;
@@ -309,29 +297,29 @@ export function LeftSidebar() {
                       <p>Perfil</p>
                     </DropdownMenuItem>
 
-                    {isAdmin && (
-                      <DropdownMenuItem
-                        className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer hover:bg-blue-50 transition-colors text-blue-600"
-                        onClick={() => {
-                          console.log("Clicou no Painel Admin!", {
-                            isAdmin,
-                            userEmail: user?.email,
-                          });
-                          console.log("Navegando para /admin...");
-                          navigate("/admin");
-                          console.log("Navigate executado!");
-                        }}
-                      >
-                        <Shield className="h-4 w-4 text-blue-500" />
-                        <p>Painel Admin</p>
-                      </DropdownMenuItem>
-                    )}
-
                     <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                       <Settings className="h-4 w-4 text-gray-500" />
                       <p>Configurações</p>
                     </DropdownMenuItem>
                   </div>
+
+                  {isAdmin && (
+                    <DropdownMenuItem
+                      className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer hover:bg-blue-50 transition-colors text-blue-600"
+                      onClick={() => {
+                        console.log("Clicou no Painel Admin!", {
+                          isAdmin,
+                          userEmail: user?.email,
+                        });
+                        console.log("Navegando para /admin...");
+                        navigate("/admin");
+                        console.log("Navigate executado!");
+                      }}
+                    >
+                      <Shield className="h-4 w-4 text-blue-500" />
+                      <p>Painel Admin</p>
+                    </DropdownMenuItem>
+                  )}
 
                   <div className="h-px bg-gray-100 my-1"></div>
                   <DropdownMenuItem
