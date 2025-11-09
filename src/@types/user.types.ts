@@ -4,7 +4,7 @@ export interface User {
   username: string;
   email: string;
   password: string;
-  role: "ahtlete" | "company";
+  role: "ahtlete" | "company" | "ATHLETE" | "COMPANY";
   isAdmin?: boolean; // Campo para identificar administradores
   cnpj?: string;
   profileImg?: string;
