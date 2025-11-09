@@ -5,7 +5,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -13,150 +13,69 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { Input } from "./ui/input";
-import { Avatar, AvatarFallback } from "./ui/avatar";
-import { AlertCircle, FileText, Briefcase, User, Search } from "lucide-react";
-import { ReportDetailsDrawer } from "./report-details-drawer";
+} from "@/components/ui/Select";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AlertCircle, FileText, Briefcase, Search } from "lucide-react";
+import { ReportDetailsModal } from "./ReportDetailsModal";
+import type { Report } from "@/@types/admin.types";
+import {
+  getReportStatusBadge,
+  getReportReasonBadge,
+} from "@/utils/adminBadges";
 
-type ReportType = "post" | "opportunity" | "user";
-type ReportStatus = "pending" | "under_review" | "resolved" | "rejected";
-
-interface Report {
-  id: number;
-  type: ReportType;
-  targetName: string;
-  targetInitials: string;
-  reportedBy: string;
-  reporterInitials: string;
-  reason: string;
-  description: string;
-  status: ReportStatus;
-  date: string;
-  severity: "low" | "medium" | "high";
-}
-
-const mockReports: Report[] = [
+// Mock data simplificado - usar tipos corretos
+// TODO: Substituir por dados reais da API
+const mockReportsData: Report[] = [
   {
-    id: 1,
-    type: "post",
-    targetName: "Post de Pedro Lima",
-    targetInitials: "PL",
-    reportedBy: "Maria Silva",
-    reporterInitials: "MS",
-    reason: "Conteúdo inapropriado",
+    id: "1",
+    entityId: 123,
+    entityType: "POST",
+    reportedBy: { name: "Maria Silva", username: "mariasilva" },
+    reportedUser: { name: "Pedro Lima", username: "pedrolima" },
+    reason: "inappropriate_content",
     description: "O post contém linguagem ofensiva e ataca outros usuários",
     status: "pending",
-    date: "2 horas atrás",
-    severity: "high",
+    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    content: "Post com conteúdo inapropriado...",
   },
   {
-    id: 2,
-    type: "user",
-    targetName: "Carlos Santos",
-    targetInitials: "CS",
-    reportedBy: "Ana Costa",
-    reporterInitials: "AC",
-    reason: "Assédio",
+    id: "2",
+    entityId: 456,
+    entityType: "POST",
+    reportedBy: { name: "Ana Costa", username: "anacosta" },
+    reportedUser: { name: "Carlos Santos", username: "carlossantos" },
+    reason: "harassment",
     description: "Usuário enviou mensagens ofensivas repetidamente",
     status: "under_review",
-    date: "5 horas atrás",
-    severity: "high",
+    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    content: "Mensagens de assédio...",
   },
   {
-    id: 3,
-    type: "opportunity",
-    targetName: "Vaga Falsa - Desenvolvedor",
-    targetInitials: "VF",
-    reportedBy: "João Oliveira",
-    reporterInitials: "JO",
-    reason: "Fraude/Spam",
+    id: "3",
+    entityId: 789,
+    entityType: "OPPORTUNITY",
+    reportedBy: { name: "João Oliveira", username: "joaooliveira" },
+    reportedUser: { name: "Empresa Falsa", username: "empresafalsa" },
+    reason: "fake_opportunity",
     description: "Vaga solicita pagamento antecipado, parece ser golpe",
     status: "pending",
-    date: "1 dia atrás",
-    severity: "high",
-  },
-  {
-    id: 4,
-    type: "post",
-    targetName: "Post de Laura Mendes",
-    targetInitials: "LM",
-    reportedBy: "Ricardo Souza",
-    reporterInitials: "RS",
-    reason: "Spam",
-    description: "Post promocional repetitivo sem valor para comunidade",
-    status: "pending",
-    date: "1 dia atrás",
-    severity: "medium",
-  },
-  {
-    id: 5,
-    type: "user",
-    targetName: "Fake Account",
-    targetInitials: "FA",
-    reportedBy: "Patricia Lima",
-    reporterInitials: "PL",
-    reason: "Perfil falso",
-    description: "Perfil usando fotos e informações de outra pessoa",
-    status: "resolved",
-    date: "2 dias atrás",
-    severity: "medium",
-  },
-  {
-    id: 6,
-    type: "post",
-    targetName: "Post de André Costa",
-    targetInitials: "AC",
-    reportedBy: "Beatriz Santos",
-    reporterInitials: "BS",
-    reason: "Informação falsa",
-    description: "Post contém notícias falsas sobre saúde",
-    status: "under_review",
-    date: "3 dias atrás",
-    severity: "high",
-  },
-  {
-    id: 7,
-    type: "opportunity",
-    targetName: "Empresa XYZ - Designer",
-    targetInitials: "XY",
-    reportedBy: "Fernando Alves",
-    reporterInitials: "FA",
-    reason: "Conteúdo enganoso",
-    description: "Descrição da vaga não corresponde à realidade",
-    status: "rejected",
-    date: "4 dias atrás",
-    severity: "low",
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    content: "Vaga de desenvolvedor com pagamento antecipado...",
   },
 ];
 
-const statusLabels: Record<ReportStatus, string> = {
-  pending: "Pendente",
-  under_review: "Em análise",
-  resolved: "Resolvida",
-  rejected: "Rejeitada",
-};
-
-const typeLabels: Record<ReportType, string> = {
-  post: "Post",
-  opportunity: "Oportunidade",
-  user: "Usuário",
-};
-
-const severityColors = {
-  low: "text-yellow-600",
-  medium: "text-orange-600",
-  high: "text-red-600",
+const typeLabels: Record<string, string> = {
+  POST: "Post",
+  OPPORTUNITY: "Oportunidade",
 };
 
 export function ReportsView() {
@@ -164,41 +83,36 @@ export function ReportsView() {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const filteredReports = mockReports.filter((report) => {
-    const matchesType = filterType === "all" || report.type === filterType;
+  const filteredReports = mockReportsData.filter((report) => {
+    const matchesType =
+      filterType === "all" || report.entityType === filterType;
     const matchesStatus =
       filterStatus === "all" || report.status === filterStatus;
     const matchesSearch =
-      report.targetName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      report.reportedBy.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      report.reportedUser.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      report.reportedBy.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
       report.reason.toLowerCase().includes(searchQuery.toLowerCase());
 
     return matchesType && matchesStatus && matchesSearch;
   });
 
-  const pendingCount = mockReports.filter((r) => r.status === "pending").length;
-  const underReviewCount = mockReports.filter(
+  const pendingCount = mockReportsData.filter(
+    (r) => r.status === "pending",
+  ).length;
+  const underReviewCount = mockReportsData.filter(
     (r) => r.status === "under_review",
   ).length;
-  const highSeverityCount = mockReports.filter(
-    (r) =>
-      r.severity === "high" &&
-      r.status !== "resolved" &&
-      r.status !== "rejected",
-  ).length;
+  const highSeverityCount = pendingCount + underReviewCount; // Simplificado
 
   const handleReportClick = (report: Report) => {
     setSelectedReport(report);
-    setDrawerOpen(true);
-  };
-
-  const handleReportAction = (action: string) => {
-    console.log(
-      `Ação "${action}" executada para denúncia #${selectedReport?.id}`,
-    );
-    setDrawerOpen(false);
+    setModalOpen(true);
   };
 
   return (
@@ -264,9 +178,8 @@ export function ReportsView() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos os tipos</SelectItem>
-                <SelectItem value="post">Posts</SelectItem>
-                <SelectItem value="opportunity">Oportunidades</SelectItem>
-                <SelectItem value="user">Usuários</SelectItem>
+                <SelectItem value="POST">Posts</SelectItem>
+                <SelectItem value="OPPORTUNITY">Oportunidades</SelectItem>
               </SelectContent>
             </Select>
 
@@ -279,7 +192,7 @@ export function ReportsView() {
                 <SelectItem value="pending">Pendente</SelectItem>
                 <SelectItem value="under_review">Em análise</SelectItem>
                 <SelectItem value="resolved">Resolvida</SelectItem>
-                <SelectItem value="rejected">Rejeitada</SelectItem>
+                <SelectItem value="dismissed">Rejeitada</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -289,10 +202,9 @@ export function ReportsView() {
             <TableHeader>
               <TableRow>
                 <TableHead>Tipo</TableHead>
-                <TableHead>Alvo</TableHead>
+                <TableHead>Denunciado</TableHead>
                 <TableHead>Denunciado por</TableHead>
                 <TableHead>Motivo</TableHead>
-                <TableHead>Severidade</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Data</TableHead>
                 <TableHead className="w-[100px]">Ação</TableHead>
@@ -302,7 +214,7 @@ export function ReportsView() {
               {filteredReports.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={7}
                     className="text-center text-muted-foreground py-8"
                   >
                     Nenhuma denúncia encontrada
@@ -313,74 +225,46 @@ export function ReportsView() {
                   <TableRow key={report.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        {report.type === "post" && (
+                        {report.entityType === "POST" && (
                           <FileText className="h-4 w-4 text-muted-foreground" />
                         )}
-                        {report.type === "opportunity" && (
+                        {report.entityType === "OPPORTUNITY" && (
                           <Briefcase className="h-4 w-4 text-muted-foreground" />
                         )}
-                        {report.type === "user" && (
-                          <User className="h-4 w-4 text-muted-foreground" />
-                        )}
-                        <span>{typeLabels[report.type]}</span>
+                        <span>{typeLabels[report.entityType]}</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
                           <AvatarFallback>
-                            {report.targetInitials}
+                            {report.reportedUser.name.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="max-w-[200px] truncate">
-                          {report.targetName}
-                        </span>
+                        <div>
+                          <p className="font-medium">
+                            {report.reportedUser.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            @{report.reportedUser.username}
+                          </p>
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
                           <AvatarFallback>
-                            {report.reporterInitials}
+                            {report.reportedBy.name.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
-                        <span>{report.reportedBy}</span>
+                        <span>{report.reportedBy.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="max-w-[200px] truncate">
-                      {report.reason}
-                    </TableCell>
-                    <TableCell>
-                      <div
-                        className={`flex items-center gap-1 ${severityColors[report.severity]}`}
-                      >
-                        <AlertCircle className="h-4 w-4" />
-                        <span className="capitalize">
-                          {report.severity === "high"
-                            ? "Alta"
-                            : report.severity === "medium"
-                              ? "Média"
-                              : "Baixa"}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          report.status === "pending"
-                            ? "default"
-                            : report.status === "under_review"
-                              ? "secondary"
-                              : report.status === "resolved"
-                                ? "outline"
-                                : "destructive"
-                        }
-                      >
-                        {statusLabels[report.status]}
-                      </Badge>
-                    </TableCell>
+                    <TableCell>{getReportReasonBadge(report.reason)}</TableCell>
+                    <TableCell>{getReportStatusBadge(report.status)}</TableCell>
                     <TableCell className="text-muted-foreground">
-                      {report.date}
+                      {new Date(report.createdAt).toLocaleDateString("pt-BR")}
                     </TableCell>
                     <TableCell>
                       <Button
@@ -399,11 +283,10 @@ export function ReportsView() {
         </CardContent>
       </Card>
 
-      <ReportDetailsDrawer
+      <ReportDetailsModal
+        isOpen={modalOpen}
+        onOpenChange={setModalOpen}
         report={selectedReport}
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-        onAction={handleReportAction}
       />
     </div>
   );

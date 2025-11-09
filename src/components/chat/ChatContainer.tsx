@@ -31,7 +31,7 @@ export const ChatContainer = ({
   isMobile = false,
 }: ChatContainerProps) => {
   const userId = useAuthStore((state) => state.user?.id);
-  const [isOtherTyping, setIsOtherTyping] = useState(false);
+  const [isOtherTyping] = useState(false);
 
   // Pull-to-refresh state
   const [isRefreshing, setIsRefreshing] = useState(false);

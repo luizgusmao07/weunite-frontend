@@ -30,7 +30,7 @@ const useCustomBreakpoint = (breakpoint: number = 1500) => {
 
 export const OpportunitiesSidebar: React.FC = () => {
   const [showAll, setShowAll] = useState(false);
-  const [visibleOpportunities, setVisibleOpportunities] = useState(1);
+  const [, setVisibleOpportunities] = useState(1);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const isDesktop = useCustomBreakpoint(1500);
@@ -46,8 +46,6 @@ export const OpportunitiesSidebar: React.FC = () => {
     setShowAll(false);
     setVisibleOpportunities(1);
   };
-
-  const displayedOpportunities = cardSuggestion.slice(0, visibleOpportunities);
 
   const OpportunitiesContent = () => (
     <>

@@ -5,13 +5,18 @@ import type {
   ReportedOpportunity,
   ReportSummary,
 } from "@/@types/admin.types";
+import type { ApiResponse } from "@/types/api.types";
 
-interface ApiResponse<T> {
-  success: boolean;
-  data: T | null;
-  message: string | null;
-  error: string | null;
-}
+/**
+ * Serviço Admin - Gerenciamento de Denúncias e Conteúdo Reportado
+ *
+ * Este arquivo contém funções para:
+ * - Buscar posts e oportunidades denunciadas
+ * - Deletar conteúdo denunciado
+ * - Gerenciar status de denúncias (dismiss, resolve, review)
+ *
+ * Para moderação específica de posts (ocultar, etc), veja moderationService.ts
+ */
 
 /**
  * Busca resumo dos posts denunciados (apenas IDs e contagem)

@@ -1,12 +1,6 @@
 import { instance as axios } from "../axios";
 import type { AxiosError } from "axios";
-
-interface ApiResponse<T> {
-  success: boolean;
-  data: T | null;
-  message: string | null;
-  error: string | null;
-}
+import type { ApiResponse } from "@/types/api.types";
 
 interface CreateReportRequest {
   type: "POST" | "OPPORTUNITY";

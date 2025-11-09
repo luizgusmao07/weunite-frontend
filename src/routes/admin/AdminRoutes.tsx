@@ -5,7 +5,6 @@ import { AdminDashboardPage } from "@/pages/admin/AdminDashboardPage";
 import { AdminUsersPage } from "@/pages/admin/AdminUsersPage";
 import { AdminReportsPage } from "@/pages/admin/AdminReportsPage";
 import { ReportedPostsPage } from "@/pages/admin/ReportedPostsPage";
-import { AdminModerationDemo } from "@/pages/admin/AdminModerationDemo";
 
 function AdminProtectedRoutes() {
   const { isAuthenticated, user } = useAuthStore();
@@ -14,7 +13,8 @@ function AdminProtectedRoutes() {
     return <Navigate to="/auth/login" replace />;
   }
 
-  const isAdmin = user?.role === "admin".toUpperCase();
+  // Corrigido: comparação de role deve ser case-insensitive
+  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
 
   if (!isAdmin) {
     return <Navigate to="/" replace />;
@@ -32,8 +32,6 @@ export function AdminRoutes() {
         <Route path="/users" element={<AdminUsersPage />} />
         <Route path="/reports" element={<AdminReportsPage />} />
         <Route path="/posts/reported" element={<ReportedPostsPage />} />
-        <Route path="/moderation-demo" element={<AdminModerationDemo />} />
-        {/* Adicionar outras rotas admin aqui */}
       </Route>
     </Routes>
   );

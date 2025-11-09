@@ -17,6 +17,7 @@ import {
   dismissReportsRequest,
 } from "@/api/services/adminService";
 import { useState } from "react";
+import { getReportReasonText } from "@/utils/adminBadges";
 
 interface ReportDetailsModalProps {
   isOpen: boolean;
@@ -37,19 +38,6 @@ export function ReportDetailsModal({
   const [isLoading, setIsLoading] = useState(false);
 
   if (!report) return null;
-
-  const getReasonText = (reason: string) => {
-    const reasonMap: Record<string, string> = {
-      spam: "Spam",
-      harassment: "Assédio",
-      inappropriate_content: "Conteúdo Inadequado",
-      fake_profile: "Perfil Falso",
-      fake_opportunity: "Oportunidade Falsa",
-      copyright_violation: "Violação de Direitos",
-      other: "Outros",
-    };
-    return reasonMap[reason] || reason;
-  };
 
   const handleResolve = async () => {
     setIsLoading(true);
@@ -176,7 +164,7 @@ export function ReportDetailsModal({
             <div>
               <h4 className="text-sm font-medium mb-2">Motivo</h4>
               <Badge variant="outline" className="text-sm">
-                {getReasonText(report.reason)}
+                {getReportReasonText(report.reason)}
               </Badge>
             </div>
 

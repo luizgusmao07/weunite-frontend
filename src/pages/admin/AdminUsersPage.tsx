@@ -26,49 +26,14 @@ import {
   Eye,
 } from "lucide-react";
 import { useState } from "react";
-
-// Mock data - substituir por dados reais da API
-const mockUsers = [
-  {
-    id: "1",
-    name: "João Silva",
-    email: "joao@email.com",
-    username: "joaosilva",
-    role: "athlete",
-    status: "active",
-    lastLogin: "2024-10-15",
-    postCount: 23,
-    reportCount: 0,
-  },
-  {
-    id: "2",
-    name: "Tech Solutions Ltd",
-    email: "contato@techsolutions.com",
-    username: "techsolutions",
-    role: "company",
-    status: "active",
-    lastLogin: "2024-10-14",
-    postCount: 15,
-    reportCount: 1,
-  },
-  {
-    id: "3",
-    name: "Maria Santos",
-    email: "maria@email.com",
-    username: "mariasantos",
-    role: "athlete",
-    status: "suspended",
-    lastLogin: "2024-10-10",
-    postCount: 8,
-    reportCount: 3,
-  },
-];
+import { MOCK_USERS } from "@/constants/adminMockData";
+import { getUserStatusBadge, getUserRoleBadge } from "@/utils/adminBadges";
 
 export function AdminUsersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const filteredUsers = mockUsers.filter((user) => {
+  const filteredUsers = MOCK_USERS.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -79,35 +44,6 @@ export function AdminUsersPage() {
 
     return matchesSearch && matchesStatus;
   });
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "active":
-        return (
-          <Badge variant="default" className="bg-green-100 text-green-800">
-            Ativo
-          </Badge>
-        );
-      case "suspended":
-        return <Badge variant="destructive">Suspenso</Badge>;
-      case "banned":
-        return <Badge variant="destructive">Banido</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
-  };
-
-  const getRoleBadge = (role: string) => {
-    return role === "company" ? (
-      <Badge variant="outline" className="bg-blue-50 text-blue-700">
-        Empresa
-      </Badge>
-    ) : (
-      <Badge variant="outline" className="bg-purple-50 text-purple-700">
-        Atleta
-      </Badge>
-    );
-  };
 
   return (
     <AdminLayout>
@@ -177,8 +113,8 @@ export function AdminUsersPage() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{getRoleBadge(user.role)}</TableCell>
-                    <TableCell>{getStatusBadge(user.status)}</TableCell>
+                    <TableCell>{getUserRoleBadge(user.role)}</TableCell>
+                    <TableCell>{getUserStatusBadge(user.status)}</TableCell>
                     <TableCell>
                       {new Date(user.lastLogin).toLocaleDateString()}
                     </TableCell>

@@ -1,7 +1,6 @@
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -13,43 +12,11 @@ import {
 import { useState } from "react";
 import { ReportDetailsModal } from "@/components/admin/ReportDetailsModal";
 import type { Report } from "@/@types/admin.types";
-
-/**
- * Dados mockados de denúncias
- * TODO: Substituir por dados reais da API
- */
-const mockReports: Report[] = [
-  {
-    id: "1",
-    reportedBy: { name: "João Silva", username: "joaosilva" },
-    reportedUser: { name: "Pedro Lima", username: "pedrolima" },
-    reason: "harassment",
-    description: "Usuário enviando mensagens ofensivas",
-    status: "pending",
-    createdAt: "2024-10-15",
-    content: "Post ofensivo sobre....",
-  },
-  {
-    id: "2",
-    reportedBy: { name: "Maria Santos", username: "mariasantos" },
-    reportedUser: { name: "Tech Corp", username: "techcorp" },
-    reason: "fake_opportunity",
-    description: "Oportunidade falsa publicada pela empresa",
-    status: "under_review",
-    createdAt: "2024-10-14",
-    content: "Vaga de desenvolvedor com salário irreal",
-  },
-  {
-    id: "3",
-    reportedBy: { name: "Carlos Oliveira", username: "carlosoliveira" },
-    reportedUser: { name: "Ana Costa", username: "anacosta" },
-    reason: "spam",
-    description: "Múltiplas publicações repetitivas",
-    status: "resolved",
-    createdAt: "2024-10-13",
-    content: "Spam sobre curso online",
-  },
-];
+import { MOCK_REPORTS } from "@/constants/adminMockData";
+import {
+  getReportStatusBadge,
+  getReportReasonBadge,
+} from "@/utils/adminBadges";
 
 /**
  * Página de gerenciamento de denúncias
@@ -64,59 +31,9 @@ export function AdminReportsPage() {
     setIsModalOpen(true);
   };
 
-  const filteredReports = mockReports.filter((report) => {
+  const filteredReports = MOCK_REPORTS.filter((report) => {
     return statusFilter === "all" || report.status === statusFilter;
   });
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "pending":
-        return (
-          <Badge
-            variant="destructive"
-            className="bg-red-600 text-white hover:bg-red-700"
-          >
-            Pendente
-          </Badge>
-        );
-      case "under_review":
-        return (
-          <Badge
-            variant="outline"
-            className="border-blue-500 text-blue-600 bg-blue-50"
-          >
-            Em Análise
-          </Badge>
-        );
-      case "resolved":
-        return (
-          <Badge
-            variant="outline"
-            className="border-green-500 text-green-600 bg-green-50"
-          >
-            Resolvido
-          </Badge>
-        );
-      case "dismissed":
-        return <Badge variant="secondary">Rejeitado</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
-  };
-
-  const getReasonBadge = (reason: string) => {
-    const reasonMap: Record<string, string> = {
-      spam: "Spam",
-      harassment: "Assédio",
-      inappropriate_content: "Conteúdo Inadequado",
-      fake_profile: "Perfil Falso",
-      fake_opportunity: "Oportunidade Falsa",
-      copyright_violation: "Violação de Direitos",
-      other: "Outros",
-    };
-
-    return <Badge variant="outline">{reasonMap[reason] || reason}</Badge>;
-  };
 
   return (
     <AdminLayout>
@@ -233,8 +150,8 @@ export function AdminReportsPage() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{getReasonBadge(report.reason)}</TableCell>
-                    <TableCell>{getStatusBadge(report.status)}</TableCell>
+                    <TableCell>{getReportReasonBadge(report.reason)}</TableCell>
+                    <TableCell>{getReportStatusBadge(report.status)}</TableCell>
                     <TableCell>
                       {new Date(report.createdAt).toLocaleDateString()}
                     </TableCell>
