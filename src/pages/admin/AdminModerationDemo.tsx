@@ -27,7 +27,6 @@ export function AdminModerationDemo() {
       password: "",
       role: "athlete" as const,
       profileImg: "https://api.dicebear.com/7.x/avataaars/svg?seed=Roberto",
-      isAdmin: false,
     },
     likes: [],
     comments: [],
