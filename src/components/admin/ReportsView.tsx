@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -23,55 +23,23 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AlertCircle, FileText, Briefcase, Search } from "lucide-react";
 import { ReportDetailsModal } from "./ReportDetailsModal";
-import type { Report } from "@/@types/admin.types";
+import type {
+  Report,
+  ReportedPost,
+  ReportedOpportunity,
+} from "@/@types/admin.types";
 import {
   getReportStatusBadge,
   getReportReasonBadge,
 } from "@/utils/adminBadges";
-
-// Mock data simplificado - usar tipos corretos
-// TODO: Substituir por dados reais da API
-const mockReportsData: Report[] = [
-  {
-    id: "1",
-    entityId: 123,
-    entityType: "POST",
-    reportedBy: { name: "Maria Silva", username: "mariasilva" },
-    reportedUser: { name: "Pedro Lima", username: "pedrolima" },
-    reason: "inappropriate_content",
-    description: "O post contém linguagem ofensiva e ataca outros usuários",
-    status: "pending",
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    content: "Post com conteúdo inapropriado...",
-  },
-  {
-    id: "2",
-    entityId: 456,
-    entityType: "POST",
-    reportedBy: { name: "Ana Costa", username: "anacosta" },
-    reportedUser: { name: "Carlos Santos", username: "carlossantos" },
-    reason: "harassment",
-    description: "Usuário enviou mensagens ofensivas repetidamente",
-    status: "under_review",
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    content: "Mensagens de assédio...",
-  },
-  {
-    id: "3",
-    entityId: 789,
-    entityType: "OPPORTUNITY",
-    reportedBy: { name: "João Oliveira", username: "joaooliveira" },
-    reportedUser: { name: "Empresa Falsa", username: "empresafalsa" },
-    reason: "fake_opportunity",
-    description: "Vaga solicita pagamento antecipado, parece ser golpe",
-    status: "pending",
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    content: "Vaga de desenvolvedor com pagamento antecipado...",
-  },
-];
+import {
+  getReportedPostsDetailsRequest,
+  getReportedOpportunitiesDetailsRequest,
+} from "@/api/services/adminService";
+import { toast } from "sonner";
 
 const typeLabels: Record<string, string> = {
   POST: "Post",
@@ -84,12 +52,132 @@ export function ReportsView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [reportsData, setReportsData] = useState<Report[]>([]);
 
-  const filteredReports = mockReportsData.filter((report) => {
+  // Buscar dados da API
+  useEffect(() => {
+    const fetchReportsData = async () => {
+      try {
+        setLoading(true);
+        console.log("🔍 Buscando denúncias...");
+
+        const [postsResponse, opportunitiesResponse] = await Promise.all([
+          getReportedPostsDetailsRequest(),
+          getReportedOpportunitiesDetailsRequest(),
+        ]);
+
+        console.log("📊 Posts Response:", postsResponse);
+        console.log("📊 Opportunities Response:", opportunitiesResponse);
+
+        const allReports: Report[] = [];
+
+        // Processar posts reportados
+        if (postsResponse.success && postsResponse.data) {
+          console.log(
+            `✅ ${postsResponse.data.length} posts denunciados encontrados`,
+          );
+          postsResponse.data.forEach((reportedPost: ReportedPost) => {
+            reportedPost.reports.forEach((report) => {
+              allReports.push({
+                id: report.id,
+                entityId: Number(reportedPost.post.id),
+                entityType: "POST",
+                reportedBy: {
+                  name: report.reporter.name,
+                  username: report.reporter.username,
+                },
+                reportedUser: {
+                  name: reportedPost.post.user.name,
+                  username: reportedPost.post.user.username,
+                },
+                reason: report.reason,
+                description: "", // Backend não retorna descrição detalhada
+                status: report.status.toLowerCase(),
+                createdAt: report.createdAt,
+                content: reportedPost.post.text,
+                imageUrl: reportedPost.post.imageUrl || undefined,
+              });
+            });
+          });
+        } else {
+          console.log(
+            "⚠️ Nenhum post denunciado ou erro:",
+            postsResponse.error,
+          );
+        }
+
+        // Processar oportunidades reportadas
+        if (opportunitiesResponse.success && opportunitiesResponse.data) {
+          console.log(
+            `✅ ${opportunitiesResponse.data.length} oportunidades denunciadas encontradas`,
+          );
+          opportunitiesResponse.data.forEach(
+            (reportedOpportunity: ReportedOpportunity) => {
+              reportedOpportunity.reports.forEach((report) => {
+                allReports.push({
+                  id: report.id,
+                  entityId: Number(reportedOpportunity.opportunity.id),
+                  entityType: "OPPORTUNITY",
+                  reportedBy: {
+                    name: report.reporter.name,
+                    username: report.reporter.username,
+                  },
+                  reportedUser: {
+                    name: reportedOpportunity.opportunity.company.name,
+                    username: reportedOpportunity.opportunity.company.username,
+                  },
+                  reason: report.reason,
+                  description: "",
+                  status: report.status.toLowerCase(),
+                  createdAt: report.createdAt,
+                  content: reportedOpportunity.opportunity.description,
+                });
+              });
+            },
+          );
+        } else {
+          console.log(
+            "⚠️ Nenhuma oportunidade denunciada ou erro:",
+            opportunitiesResponse.error,
+          );
+        }
+
+        // Ordenar por data (mais recentes primeiro)
+        allReports.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        );
+
+        console.log(`📋 Total de denúncias processadas: ${allReports.length}`);
+        console.log("📋 Denúncias completas:", allReports);
+
+        setReportsData(allReports);
+      } catch (error) {
+        toast.error("Erro ao carregar denúncias");
+        console.error("❌ Erro ao buscar denúncias:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReportsData();
+  }, []);
+
+  const filteredReports = reportsData.filter((report) => {
     const matchesType =
       filterType === "all" || report.entityType === filterType;
+
+    // Normalizar status para comparação
+    const normalizedReportStatus = report.status
+      .toLowerCase()
+      .replace(/_/g, "_");
+    const normalizedFilterStatus = filterStatus.toLowerCase();
+
     const matchesStatus =
-      filterStatus === "all" || report.status === filterStatus;
+      filterStatus === "all" ||
+      normalizedReportStatus === normalizedFilterStatus;
+
     const matchesSearch =
       report.reportedUser.name
         .toLowerCase()
@@ -102,54 +190,89 @@ export function ReportsView() {
     return matchesType && matchesStatus && matchesSearch;
   });
 
-  const pendingCount = mockReportsData.filter(
-    (r) => r.status === "pending",
+  console.log(`🔍 Total denúncias no estado: ${reportsData.length}`);
+  console.log(`🔍 Denúncias filtradas: ${filteredReports.length}`);
+  console.log(
+    `🔍 Filtro tipo: ${filterType}, status: ${filterStatus}, busca: "${searchQuery}"`,
+  );
+
+  const pendingCount = reportsData.filter(
+    (r) => r.status.toLowerCase() === "pending",
   ).length;
-  const underReviewCount = mockReportsData.filter(
-    (r) => r.status === "under_review",
+  const underReviewCount = reportsData.filter(
+    (r) =>
+      r.status.toLowerCase() === "under_review" ||
+      r.status.toLowerCase() === "reviewed",
   ).length;
-  const highSeverityCount = pendingCount + underReviewCount; // Simplificado
+  const resolvedCount = reportsData.filter((r) =>
+    r.status.toLowerCase().startsWith("resolved_"),
+  ).length;
+  const suspendedCount = reportsData.filter(
+    (r) => r.status.toLowerCase() === "resolved_suspended",
+  ).length;
+  const bannedCount = reportsData.filter(
+    (r) => r.status.toLowerCase() === "resolved_banned",
+  ).length;
 
   const handleReportClick = (report: Report) => {
     setSelectedReport(report);
     setModalOpen(true);
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-muted-foreground">Carregando denúncias...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle>Denúncias Pendentes</CardTitle>
+            <CardTitle className="text-sm font-medium">Pendentes</CardTitle>
             <AlertCircle className="h-4 w-4 text-orange-600" />
           </CardHeader>
           <CardContent>
-            <h3>{pendingCount}</h3>
-            <p className="text-muted-foreground mt-1">Aguardando revisão</p>
+            <div className="text-2xl font-bold">{pendingCount}</div>
+            <p className="text-xs text-muted-foreground">Aguardando análise</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle>Em Análise</CardTitle>
+            <CardTitle className="text-sm font-medium">Em Análise</CardTitle>
             <AlertCircle className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <h3>{underReviewCount}</h3>
-            <p className="text-muted-foreground mt-1">Sendo revisadas</p>
+            <div className="text-2xl font-bold">{underReviewCount}</div>
+            <p className="text-xs text-muted-foreground">Sendo revisadas</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle>Alta Severidade</CardTitle>
-            <AlertCircle className="h-4 w-4 text-red-600" />
+            <CardTitle className="text-sm font-medium">Resolvidas</CardTitle>
+            <AlertCircle className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <h3>{highSeverityCount}</h3>
-            <p className="text-muted-foreground mt-1">
-              Requerem atenção urgente
+            <div className="text-2xl font-bold">{resolvedCount}</div>
+            <p className="text-xs text-muted-foreground">
+              {suspendedCount} suspensos, {bannedCount} banidos
             </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total</CardTitle>
+            <AlertCircle className="h-4 w-4 text-gray-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{reportsData.length}</div>
+            <p className="text-xs text-muted-foreground">Todas denúncias</p>
           </CardContent>
         </Card>
       </div>
@@ -184,15 +307,16 @@ export function ReportsView() {
             </Select>
 
             <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos os status</SelectItem>
-                <SelectItem value="pending">Pendente</SelectItem>
-                <SelectItem value="under_review">Em análise</SelectItem>
-                <SelectItem value="resolved">Resolvida</SelectItem>
-                <SelectItem value="dismissed">Rejeitada</SelectItem>
+                <SelectItem value="pending">⏳ Pendente</SelectItem>
+                <SelectItem value="under_review">🔍 Em Análise</SelectItem>
+                <SelectItem value="resolved_dismissed">❌ Rejeitada</SelectItem>
+                <SelectItem value="resolved_suspended">🚫 Suspenso</SelectItem>
+                <SelectItem value="resolved_banned">🔒 Banido</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -237,6 +361,11 @@ export function ReportsView() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
+                          {report.reportedUser.username && (
+                            <AvatarImage
+                              src={`https://api.dicebear.com/7.x/initials/svg?seed=${report.reportedUser.username}`}
+                            />
+                          )}
                           <AvatarFallback>
                             {report.reportedUser.name.charAt(0).toUpperCase()}
                           </AvatarFallback>
@@ -254,6 +383,11 @@ export function ReportsView() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
+                          {report.reportedBy.username && (
+                            <AvatarImage
+                              src={`https://api.dicebear.com/7.x/initials/svg?seed=${report.reportedBy.username}`}
+                            />
+                          )}
                           <AvatarFallback>
                             {report.reportedBy.name.charAt(0).toUpperCase()}
                           </AvatarFallback>

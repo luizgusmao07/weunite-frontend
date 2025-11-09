@@ -8,7 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle, XCircle, AlertTriangle, User } from "lucide-react";
+import {
+  XCircle,
+  AlertTriangle,
+  User,
+  ShieldAlert,
+  ShieldBan,
+} from "lucide-react";
 import type { Report } from "@/@types/admin.types";
 import { toast } from "sonner";
 import {
@@ -223,6 +229,7 @@ export function ReportDetailsModal({
           <div>
             <h4 className="text-sm font-medium mb-3">Ações de Moderação</h4>
             <div className="space-y-2">
+              {/* Marcar como em análise */}
               {report.status === "pending" && (
                 <Button
                   variant="outline"
@@ -234,23 +241,46 @@ export function ReportDetailsModal({
                   {isLoading ? "Processando..." : "Marcar como Em Análise"}
                 </Button>
               )}
+
+              {/* Rejeitar denúncia (denúncia falsa) */}
               <Button
                 variant="outline"
-                className="w-full justify-start gap-2 hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-950/20"
-                onClick={handleResolve}
-                disabled={isLoading}
-              >
-                <CheckCircle className="h-4 w-4" />
-                {isLoading ? "Processando..." : "Resolver Denúncia"}
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-2 hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-950/20"
+                className="w-full justify-start gap-2 hover:bg-gray-50 hover:text-gray-600 hover:border-gray-200 dark:hover:bg-gray-950/20"
                 onClick={handleReject}
                 disabled={isLoading}
               >
                 <XCircle className="h-4 w-4" />
-                {isLoading ? "Processando..." : "Rejeitar Denúncia"}
+                {isLoading ? "Processando..." : "Rejeitar Denúncia (Falsa)"}
+              </Button>
+
+              <div className="my-2 border-t pt-2">
+                <p className="text-xs text-muted-foreground mb-2">
+                  Ações com punição ao usuário:
+                </p>
+              </div>
+
+              {/* Suspender usuário */}
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200 dark:hover:bg-orange-950/20"
+                onClick={handleResolve}
+                disabled={isLoading}
+              >
+                <ShieldAlert className="h-4 w-4" />
+                {isLoading
+                  ? "Processando..."
+                  : "Suspender Usuário (Temporário)"}
+              </Button>
+
+              {/* Banir usuário */}
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 hover:bg-red-50 hover:text-red-700 hover:border-red-200 dark:hover:bg-red-950/20"
+                onClick={handleResolve}
+                disabled={isLoading}
+              >
+                <ShieldBan className="h-4 w-4" />
+                {isLoading ? "Processando..." : "Banir Usuário (Permanente)"}
               </Button>
             </div>
           </div>

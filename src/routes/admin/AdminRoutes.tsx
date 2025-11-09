@@ -5,6 +5,7 @@ import { AdminDashboardPage } from "@/pages/admin/AdminDashboardPage";
 import { AdminUsersPage } from "@/pages/admin/AdminUsersPage";
 import { AdminReportsPage } from "@/pages/admin/AdminReportsPage";
 import { ReportedPostsPage } from "@/pages/admin/ReportedPostsPage";
+import { ReportedOpportunitiesPage } from "@/pages/admin/ReportedOpportunitiesPage";
 
 function AdminProtectedRoutes() {
   const { isAuthenticated, user } = useAuthStore();
@@ -32,6 +33,10 @@ export function AdminRoutes() {
         <Route path="/users" element={<AdminUsersPage />} />
         <Route path="/reports" element={<AdminReportsPage />} />
         <Route path="/posts/reported" element={<ReportedPostsPage />} />
+        <Route
+          path="/opportunities/reported"
+          element={<ReportedOpportunitiesPage />}
+        />
       </Route>
     </Routes>
   );

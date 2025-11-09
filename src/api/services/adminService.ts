@@ -4,6 +4,9 @@ import type {
   ReportedPost,
   ReportedOpportunity,
   ReportSummary,
+  AdminStats,
+  ChartDataPoint,
+  UserTypeData,
 } from "@/@types/admin.types";
 import type { ApiResponse } from "@/types/api.types";
 
@@ -11,12 +14,100 @@ import type { ApiResponse } from "@/types/api.types";
  * Serviço Admin - Gerenciamento de Denúncias e Conteúdo Reportado
  *
  * Este arquivo contém funções para:
+ * - Buscar estatísticas do dashboard
  * - Buscar posts e oportunidades denunciadas
  * - Deletar conteúdo denunciado
  * - Gerenciar status de denúncias (dismiss, resolve, review)
  *
  * Para moderação específica de posts (ocultar, etc), veja moderationService.ts
  */
+
+// ========== Endpoints de Estatísticas ==========
+
+/**
+ * Busca estatísticas gerais do dashboard
+ */
+export const getAdminStatsRequest = async (): Promise<
+  ApiResponse<AdminStats>
+> => {
+  try {
+    const response = await axios.get("/admin/stats");
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Estatísticas carregadas com sucesso",
+      error: null,
+    };
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+
+    return {
+      success: false,
+      data: null,
+      message: null,
+      error: error.response?.data?.message || "Erro ao carregar estatísticas",
+    };
+  }
+};
+
+/**
+ * Busca dados mensais dos últimos 6 meses
+ */
+export const getMonthlyDataRequest = async (): Promise<
+  ApiResponse<ChartDataPoint[]>
+> => {
+  try {
+    const response = await axios.get("/admin/stats/monthly");
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Dados mensais carregados com sucesso",
+      error: null,
+    };
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+
+    return {
+      success: false,
+      data: null,
+      message: null,
+      error: error.response?.data?.message || "Erro ao carregar dados mensais",
+    };
+  }
+};
+
+/**
+ * Busca distribuição de usuários por tipo
+ */
+export const getUserTypeDataRequest = async (): Promise<
+  ApiResponse<UserTypeData[]>
+> => {
+  try {
+    const response = await axios.get("/admin/stats/user-types");
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Distribuição de usuários carregada com sucesso",
+      error: null,
+    };
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+
+    return {
+      success: false,
+      data: null,
+      message: null,
+      error:
+        error.response?.data?.message ||
+        "Erro ao carregar distribuição de usuários",
+    };
+  }
+};
+
+// ========== Endpoints de Posts/Oportunidades Reportados ==========
 
 /**
  * Busca resumo dos posts denunciados (apenas IDs e contagem)

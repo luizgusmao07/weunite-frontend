@@ -44,6 +44,13 @@ export interface TooltipProps {
 }
 
 // Tipos para gerenciamento de denúncias
+export type ReportStatus =
+  | "PENDING" // Pendente - aguardando análise
+  | "UNDER_REVIEW" // Em análise - moderador revisando
+  | "RESOLVED_DISMISSED" // Resolvida - Denúncia falsa/improcedente
+  | "RESOLVED_SUSPENDED" // Resolvida - Usuário suspenso
+  | "RESOLVED_BANNED"; // Resolvida - Usuário banido
+
 export interface PostReport {
   id: string;
   reporter: {
@@ -56,8 +63,11 @@ export interface PostReport {
   type: string;
   entityId: number;
   reason: string;
-  status: "PENDING" | "REVIEWED" | "DISMISSED";
+  status: ReportStatus;
   createdAt: string;
+  resolvedAt?: string;
+  resolvedBy?: string;
+  moderationNote?: string;
 }
 
 export interface ReportedPost {

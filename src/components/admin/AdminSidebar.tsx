@@ -31,7 +31,7 @@ const adminMenuItems = [
   },
   {
     title: "Oportunidades",
-    href: "/admin/opportunities",
+    href: "/admin/opportunities/reported",
     icon: Briefcase,
   },
   {

@@ -7,7 +7,12 @@ import { Badge } from "@/components/ui/badge";
 
 // Tipos de status
 type UserStatus = "active" | "suspended" | "banned";
-type ReportStatus = "pending" | "under_review" | "resolved" | "dismissed";
+type ReportStatus =
+  | "pending"
+  | "under_review"
+  | "resolved_dismissed"
+  | "resolved_suspended"
+  | "resolved_banned";
 
 // Mapeamentos de texto
 export const reportReasonMap: Record<string, string> = {
@@ -17,14 +22,20 @@ export const reportReasonMap: Record<string, string> = {
   fake_profile: "Perfil Falso",
   fake_opportunity: "Oportunidade Falsa",
   copyright_violation: "Violação de Direitos",
+  violence: "Violência",
+  hate_speech: "Discurso de Ódio",
+  misinformation: "Desinformação",
+  scam: "Golpe",
+  discrimination: "Discriminação",
   other: "Outros",
 };
 
 export const reportStatusMap: Record<ReportStatus, string> = {
   pending: "Pendente",
   under_review: "Em Análise",
-  resolved: "Resolvido",
-  dismissed: "Rejeitado",
+  resolved_dismissed: "Rejeitada",
+  resolved_suspended: "Usuário Suspenso",
+  resolved_banned: "Usuário Banido",
 };
 
 export const userStatusMap: Record<UserStatus, string> = {
@@ -72,36 +83,56 @@ export function getUserRoleBadge(role: string) {
  * Renderiza badge de status de denúncia/report
  */
 export function getReportStatusBadge(status: string) {
-  switch (status) {
+  const normalizedStatus = status.toLowerCase();
+
+  switch (normalizedStatus) {
     case "pending":
       return (
         <Badge
           variant="destructive"
-          className="bg-red-600 text-white hover:bg-red-700"
+          className="bg-orange-600 text-white hover:bg-orange-700"
         >
           {reportStatusMap.pending}
         </Badge>
       );
     case "under_review":
+    case "reviewed": // backward compatibility
       return (
         <Badge
           variant="outline"
-          className="border-blue-500 text-blue-600 bg-blue-50"
+          className="border-blue-500 text-blue-600 bg-blue-50 dark:bg-blue-950/30"
         >
           {reportStatusMap.under_review}
         </Badge>
       );
-    case "resolved":
+    case "resolved_dismissed":
+    case "dismissed": // backward compatibility
       return (
         <Badge
           variant="outline"
-          className="border-green-500 text-green-600 bg-green-50"
+          className="border-gray-500 text-gray-600 bg-gray-50 dark:bg-gray-950/30"
         >
-          {reportStatusMap.resolved}
+          {reportStatusMap.resolved_dismissed}
         </Badge>
       );
-    case "dismissed":
-      return <Badge variant="secondary">{reportStatusMap.dismissed}</Badge>;
+    case "resolved_suspended":
+      return (
+        <Badge
+          variant="outline"
+          className="border-red-500 text-red-700 bg-red-50 dark:bg-red-950/30"
+        >
+          {reportStatusMap.resolved_suspended}
+        </Badge>
+      );
+    case "resolved_banned":
+      return (
+        <Badge
+          variant="destructive"
+          className="bg-red-700 text-white hover:bg-red-800"
+        >
+          {reportStatusMap.resolved_banned}
+        </Badge>
+      );
     default:
       return <Badge variant="secondary">{status}</Badge>;
   }
