@@ -19,11 +19,14 @@ import type { Report } from "@/@types/admin.types";
 import { toast } from "sonner";
 import {
   markReportsAsReviewedRequest,
-  resolveReportsRequest,
   dismissReportsRequest,
+  banUserRequest,
+  suspendUserRequest,
 } from "@/api/services/adminService";
 import { useState } from "react";
 import { getReportReasonText } from "@/utils/adminBadges";
+import { SuspendUserDialog } from "./SuspendUserDialog";
+import { BanUserConfirmDialog } from "./BanUserConfirmDialog";
 
 interface ReportDetailsModalProps {
   isOpen: boolean;
@@ -42,26 +45,70 @@ export function ReportDetailsModal({
   onActionComplete,
 }: ReportDetailsModalProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuspendDialogOpen, setIsSuspendDialogOpen] = useState(false);
+  const [isBanDialogOpen, setIsBanDialogOpen] = useState(false);
 
   if (!report) return null;
 
-  const handleResolve = async () => {
+  // TODO: Pegar o admin ID do contexto de autenticação
+  const adminId = 1; // Temporário - substituir por ID real do admin logado
+
+  const handleSuspendUser = async (durationInDays: number, reason: string) => {
+    const reportedUserWithId = report.reportedUser as any;
+    const userId = reportedUserWithId.id;
+
+    if (!userId) {
+      toast.error("Não foi possível identificar o ID do usuário denunciado");
+      return;
+    }
+
     setIsLoading(true);
 
-    // Usar o entityId do report (ID do post/opportunity)
-    const entityId = report.entityId;
-    const type = report.entityType;
-
-    const response = await resolveReportsRequest(entityId, type);
+    const response = await suspendUserRequest({
+      userId: Number(userId),
+      adminId,
+      durationInDays,
+      reason,
+      reportId: parseInt(report.id),
+    });
 
     setIsLoading(false);
 
     if (response.success) {
-      toast.success(response.message || "Denúncia resolvida com sucesso!");
+      toast.success(response.message || "Usuário suspenso com sucesso!");
       onOpenChange(false);
       onActionComplete?.();
     } else {
-      toast.error(response.error || "Erro ao resolver denúncia");
+      toast.error(response.error || "Erro ao suspender usuário");
+    }
+  };
+
+  const handleBanUser = async (reason: string) => {
+    const reportedUserWithId = report.reportedUser as any;
+    const userId = reportedUserWithId.id;
+
+    if (!userId) {
+      toast.error("Não foi possível identificar o ID do usuário denunciado");
+      return;
+    }
+
+    setIsLoading(true);
+
+    const response = await banUserRequest({
+      userId: Number(userId),
+      adminId,
+      reason,
+      reportId: parseInt(report.id),
+    });
+
+    setIsLoading(false);
+
+    if (response.success) {
+      toast.success(response.message || "Usuário banido com sucesso!");
+      onOpenChange(false);
+      onActionComplete?.();
+    } else {
+      toast.error(response.error || "Erro ao banir usuário");
     }
   };
 
@@ -263,7 +310,7 @@ export function ReportDetailsModal({
               <Button
                 variant="outline"
                 className="w-full justify-start gap-2 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200 dark:hover:bg-orange-950/20"
-                onClick={handleResolve}
+                onClick={() => setIsSuspendDialogOpen(true)}
                 disabled={isLoading}
               >
                 <ShieldAlert className="h-4 w-4" />
@@ -276,7 +323,7 @@ export function ReportDetailsModal({
               <Button
                 variant="outline"
                 className="w-full justify-start gap-2 hover:bg-red-50 hover:text-red-700 hover:border-red-200 dark:hover:bg-red-950/20"
-                onClick={handleResolve}
+                onClick={() => setIsBanDialogOpen(true)}
                 disabled={isLoading}
               >
                 <ShieldBan className="h-4 w-4" />
@@ -286,6 +333,21 @@ export function ReportDetailsModal({
           </div>
         </div>
       </DialogContent>
+
+      {/* Dialogs de confirmação */}
+      <SuspendUserDialog
+        isOpen={isSuspendDialogOpen}
+        onOpenChange={setIsSuspendDialogOpen}
+        onConfirm={handleSuspendUser}
+        username={report.reportedUser.username}
+      />
+
+      <BanUserConfirmDialog
+        isOpen={isBanDialogOpen}
+        onOpenChange={setIsBanDialogOpen}
+        onConfirm={handleBanUser}
+        username={report.reportedUser.username}
+      />
     </Dialog>
   );
 }

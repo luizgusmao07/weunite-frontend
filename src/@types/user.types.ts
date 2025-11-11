@@ -8,6 +8,14 @@ export interface User {
   cnpj?: string;
   profileImg?: string;
   bannerImg?: string;
+  // Campos de moderação
+  isBanned?: boolean;
+  bannedAt?: string;
+  bannedReason?: string;
+  bannedByAdminId?: number;
+  isSuspended?: boolean;
+  suspendedUntil?: string;
+  suspensionReason?: string;
 }
 
 export interface GetUserByUsername {

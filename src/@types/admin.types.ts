@@ -139,6 +139,7 @@ export interface Report {
     username: string;
   };
   reportedUser: {
+    id?: string;
     name: string;
     username: string;
   };

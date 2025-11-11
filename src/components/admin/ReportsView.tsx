@@ -88,6 +88,7 @@ export function ReportsView() {
                   username: report.reporter.username,
                 },
                 reportedUser: {
+                  id: reportedPost.post.user.id,
                   name: reportedPost.post.user.name,
                   username: reportedPost.post.user.username,
                 },
@@ -124,8 +125,13 @@ export function ReportsView() {
                     username: report.reporter.username,
                   },
                   reportedUser: {
-                    name: reportedOpportunity.opportunity.company.name,
-                    username: reportedOpportunity.opportunity.company.username,
+                    id: reportedOpportunity.opportunity.company?.id,
+                    name:
+                      reportedOpportunity.opportunity.company?.name ||
+                      "Empresa desconhecida",
+                    username:
+                      reportedOpportunity.opportunity.company?.username ||
+                      "unknown",
                   },
                   reason: report.reason,
                   description: "",

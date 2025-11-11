@@ -74,6 +74,7 @@ export function ReportedPostsPage() {
         username: firstReport.reporter.username,
       },
       reportedUser: {
+        id: reportedPost.post.user.id, // ID do usuário denunciado (dono do post)
         name: reportedPost.post.user.name,
         username: reportedPost.post.user.username,
       },

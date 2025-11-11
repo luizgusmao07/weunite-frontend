@@ -81,8 +81,12 @@ export function ReportedOpportunitiesPage() {
         username: firstReport.reporter.username,
       },
       reportedUser: {
-        name: reportedOpportunity.opportunity.company.name,
-        username: reportedOpportunity.opportunity.company.username,
+        id: reportedOpportunity.opportunity.company?.id, // ID do usuário denunciado (dono da oportunidade)
+        name:
+          reportedOpportunity.opportunity.company?.name ||
+          "Empresa desconhecida",
+        username:
+          reportedOpportunity.opportunity.company?.username || "unknown",
       },
       reason: firstReport.reason,
       description: `Oportunidade denunciada por ${firstReport.reason}. Total de ${reportedOpportunity.totalReports} denúncias.`,
