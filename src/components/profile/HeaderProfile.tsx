@@ -13,12 +13,15 @@ import { useUserProfile } from "@/hooks/useUserProfile";
 import { useFollowAction } from "@/hooks/useFollowAction";
 import { useGetFollowers, useGetFollowing } from "@/state/useFollow";
 import { getInitials } from "@/utils/getInitials";
+import { useTheme } from "../ThemeProvider";
 
 interface HeaderProfileProps {
   profileUsername?: string;
 }
 
 export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
+  const { theme } = useTheme();
+
   const { user } = useAuthStore();
   const { data: profileUser } = useUserProfile(profileUsername);
 
@@ -77,6 +80,9 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
     setIsEditBannerOpen(true);
   };
 
+  const getDefaultBanner = () => {
+    return theme === "light" ? "/BannerWhite.png" : "/BannerBlack.png";
+  };
   const { isDesktop } = useBreakpoints();
 
   if (isDesktop) {
@@ -111,7 +117,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
           <div className="h-40 relative group ">
             <img
               className="w-full h-full object-cover rounded-b-sm"
-              src={displayUser?.bannerImg || "/BannerDefaultWhite.png"}
+              src={displayUser?.bannerImg || getDefaultBanner()}
             />
             {isOwnProfile && (
               <>
@@ -232,7 +238,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
         <div className="h-35 relative group">
           <img
             className="h-full w-full object-cover"
-            src={displayUser?.bannerImg || "/BannerDefaultWhite.png"}
+            src={displayUser?.bannerImg || getDefaultBanner()}
             alt="Banner do perfil"
           />
           {isOwnProfile && (
