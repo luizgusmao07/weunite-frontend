@@ -81,7 +81,10 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
   };
 
   const getDefaultBanner = () => {
-    return theme === "light" ? "/BannerWhite.png" : "/BannerBlack.png";
+    if (isOwnProfile) {
+      return theme === "light" ? "/BannerWhite.png" : "/BannerBlack.png";
+    }
+    return theme === "light" ? "/BannerBlackP.png" : "/BannerWhiteP.png";
   };
   const { isDesktop } = useBreakpoints();
 
