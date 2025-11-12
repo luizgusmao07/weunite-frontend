@@ -152,7 +152,7 @@ export function ReportDetailsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto scrollbar-thumb">
         <DialogHeader className="space-y-3">
           <DialogTitle className="text-xl">Detalhes da Denúncia</DialogTitle>
           <p className="text-sm text-muted-foreground">
