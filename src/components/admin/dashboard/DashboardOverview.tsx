@@ -1,23 +1,16 @@
-import { useState, useEffect } from "react";
-import { StatsCard } from "./StatsCard";
 import { FileText, Briefcase, Users, TrendingUp } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import type { CategoryData } from "@/@types/admin.types";
 import { getChartColors, calculateTrend } from "@/utils/adminUtils";
 import {
-  getAdminStatsRequest,
-  getMonthlyDataRequest,
-  getUserTypeDataRequest,
-} from "@/api/services/adminService";
-import { MonthlyActivityChart } from "./charts/MonthlyActivityChart";
-import { UserTypeDistributionChart } from "./charts/UserTypeDistributionChart";
-import { OpportunityCategoryChart } from "./charts/OpportunityCategoryChart";
-import { toast } from "sonner";
-import type {
-  AdminStats,
-  ChartDataPoint,
-  UserTypeData,
-} from "@/@types/admin.types";
+  useAdminStats,
+  useMonthlyActivity,
+  useUserTypeDistribution,
+} from "@/state/useAdminDashboard";
+import { StatsCard } from "../StatsCard";
+import { MonthlyActivityChart } from "../charts/MonthlyActivityChart";
+import { UserTypeDistributionChart } from "../charts/UserTypeDistributionChart";
+import { OpportunityCategoryChart } from "../charts/OpportunityCategoryChart";
 
 /**
  * Visão geral do dashboard administrativo
@@ -28,55 +21,9 @@ export function DashboardOverview() {
   const isDark = theme === "dark";
   const chartColors = getChartColors(isDark);
 
-  const [stats, setStats] = useState<AdminStats | null>(null);
-  const [monthlyData, setMonthlyData] = useState<ChartDataPoint[]>([]);
-  const [userTypeData, setUserTypeData] = useState<UserTypeData[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-
-        // Buscar todas as estatísticas em paralelo
-        const [statsResponse, monthlyResponse, userTypeResponse] =
-          await Promise.all([
-            getAdminStatsRequest(),
-            getMonthlyDataRequest(),
-            getUserTypeDataRequest(),
-          ]);
-
-        if (statsResponse.success && statsResponse.data) {
-          setStats(statsResponse.data);
-        } else {
-          toast.error(statsResponse.error || "Erro ao carregar estatísticas");
-        }
-
-        if (monthlyResponse.success && monthlyResponse.data) {
-          setMonthlyData(monthlyResponse.data);
-        } else {
-          toast.error(
-            monthlyResponse.error || "Erro ao carregar dados mensais",
-          );
-        }
-
-        if (userTypeResponse.success && userTypeResponse.data) {
-          setUserTypeData(userTypeResponse.data);
-        } else {
-          toast.error(
-            userTypeResponse.error || "Erro ao carregar tipos de usuário",
-          );
-        }
-      } catch (error) {
-        toast.error("Erro ao carregar dados do dashboard");
-        console.error("Erro ao buscar dados do dashboard:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-  }, []);
+  const { data: stats, isLoading: loadingStats } = useAdminStats();
+  const { data: monthlyData } = useMonthlyActivity();
+  const { data: userTypeData } = useUserTypeDistribution();
 
   // Dados de categoria com cores aplicadas dinamicamente
   const categoryData: CategoryData[] = [
@@ -87,7 +34,7 @@ export function DashboardOverview() {
     { category: "Outros", count: 67, fill: chartColors.danger },
   ];
 
-  if (loading || !stats) {
+  if (loadingStats || !stats) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-muted-foreground">Carregando estatísticas...</div>
@@ -139,9 +86,13 @@ export function DashboardOverview() {
 
       {/* Gráficos */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <MonthlyActivityChart data={monthlyData} colors={chartColors} />
+        {monthlyData && (
+          <MonthlyActivityChart data={monthlyData} colors={chartColors} />
+        )}
 
-        <UserTypeDistributionChart data={userTypeData} colors={chartColors} />
+        {userTypeData && (
+          <UserTypeDistributionChart data={userTypeData} colors={chartColors} />
+        )}
       </div>
 
       <OpportunityCategoryChart data={categoryData} />

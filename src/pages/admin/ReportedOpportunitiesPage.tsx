@@ -19,108 +19,122 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/Select";
-import { FileText, Flag, Heart, Search, Image, Loader2 } from "lucide-react";
-import type { Report, ReportedPost } from "@/@types/report.types";
+import { Briefcase, Flag, MapPin, Search, Loader2 } from "lucide-react";
+import type { Report, ReportedOpportunity } from "@/@types/admin.types";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import {
-  getReportedPostsDetailsRequest,
-  deletePostByAdminRequest,
+  getReportedOpportunitiesDetailsRequest,
+  deleteOpportunityByAdminRequest,
   dismissReportsRequest,
 } from "@/api/services/adminService";
 import { toast } from "sonner";
 
 /**
- * Página de gerenciamento de posts denunciados
+ * Página de gerenciamento de oportunidades denunciadas
  */
-export function ReportedPostsPage() {
+export function ReportedOpportunitiesPage() {
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [reportedPosts, setReportedPosts] = useState<ReportedPost[]>([]);
+  const [reportedOpportunities, setReportedOpportunities] = useState<
+    ReportedOpportunity[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadReportedPosts();
+    loadReportedOpportunities();
   }, []);
 
-  const loadReportedPosts = async () => {
+  const loadReportedOpportunities = async () => {
     setIsLoading(true);
-    const response = await getReportedPostsDetailsRequest();
+    const response = await getReportedOpportunitiesDetailsRequest();
 
     if (response.success && response.data) {
-      setReportedPosts(response.data);
+      setReportedOpportunities(response.data);
     } else {
-      console.error("Erro ao carregar posts denunciados:", response.error);
+      console.error(
+        "Erro ao carregar oportunidades denunciadas:",
+        response.error,
+      );
       toast.error(
-        `Erro: ${response.error || "Não foi possível carregar os posts denunciados"}`,
+        `Erro: ${response.error || "Não foi possível carregar as oportunidades denunciadas"}`,
       );
     }
     setIsLoading(false);
   };
 
-  const handleReviewPost = (reportedPost: ReportedPost) => {
+  const handleReviewOpportunity = (
+    reportedOpportunity: ReportedOpportunity,
+  ) => {
     // Pegar o primeiro report para exibir no modal
-    const firstReport = reportedPost.reports[0];
+    const firstReport = reportedOpportunity.reports[0];
 
     if (!firstReport) return;
 
     const report: Report = {
       id: firstReport.id,
-      entityId: Number(reportedPost.post.id), // ID do post que foi denunciado
-      entityType: "POST", // Tipo da entidade
+      entityId: Number(reportedOpportunity.opportunity.id), // ID da oportunidade que foi denunciada
+      entityType: "OPPORTUNITY", // Tipo da entidade
       reportedBy: {
         name: firstReport.reporter.name,
         username: firstReport.reporter.username,
       },
       reportedUser: {
-        id: reportedPost.post.user.id, // ID do usuário denunciado (dono do post)
-        name: reportedPost.post.user.name,
-        username: reportedPost.post.user.username,
+        id: reportedOpportunity.opportunity.company?.id, // ID do usuário denunciado (dono da oportunidade)
+        name:
+          reportedOpportunity.opportunity.company?.name ||
+          "Empresa desconhecida",
+        username:
+          reportedOpportunity.opportunity.company?.username || "unknown",
       },
       reason: firstReport.reason,
-      description: `Post denunciado por ${firstReport.reason}. Total de ${reportedPost.totalReports} denúncias.`,
+      description: `Oportunidade denunciada por ${firstReport.reason}. Total de ${reportedOpportunity.totalReports} denúncias.`,
       status: firstReport.status.toLowerCase() as any,
       createdAt: firstReport.createdAt,
-      content: reportedPost.post.text,
-      imageUrl: reportedPost.post.imageUrl || undefined,
+      content: reportedOpportunity.opportunity.description,
     };
 
     setSelectedReport(report);
     setIsModalOpen(true);
   };
 
-  const handleDeletePost = async (postId: string) => {
+  const handleDeleteOpportunity = async (opportunityId: string) => {
     const confirmed = window.confirm(
-      "Tem certeza que deseja deletar este post? Esta ação não pode ser desfeita.",
+      "Tem certeza que deseja deletar esta oportunidade? Esta ação não pode ser desfeita.",
     );
 
     if (!confirmed) return;
 
-    const response = await deletePostByAdminRequest(Number(postId));
+    const response = await deleteOpportunityByAdminRequest(
+      Number(opportunityId),
+    );
 
     if (response.success) {
-      toast.success(response.message || "Post deletado com sucesso!");
-      loadReportedPosts(); // Recarrega a lista
+      toast.success(response.message || "Oportunidade deletada com sucesso!");
+      loadReportedOpportunities(); // Recarrega a lista
     } else {
       toast.error(
-        `Erro: ${response.error || "Não foi possível deletar o post"}`,
+        `Erro: ${response.error || "Não foi possível deletar a oportunidade"}`,
       );
     }
   };
 
-  const handleDismissReports = async (postId: string) => {
+  const handleDismissReports = async (opportunityId: string) => {
     const confirmed = window.confirm(
-      "Tem certeza que deseja descartar as denúncias deste post?",
+      "Tem certeza que deseja descartar as denúncias desta oportunidade?",
     );
 
     if (!confirmed) return;
 
-    const response = await dismissReportsRequest(Number(postId), "POST");
+    const response = await dismissReportsRequest(
+      Number(opportunityId),
+      "OPPORTUNITY",
+    );
 
     if (response.success) {
       toast.success(response.message || "Denúncias descartadas com sucesso!");
-      loadReportedPosts(); // Recarrega a lista
+      loadReportedOpportunities(); // Recarrega a lista
     } else {
       toast.error(
         `Erro: ${response.error || "Não foi possível descartar as denúncias"}`,
@@ -141,28 +155,33 @@ export function ReportedPostsPage() {
     return `${days} ${days === 1 ? "dia" : "dias"} atrás`;
   };
 
-  const filteredPosts = reportedPosts.filter((reportedPost) => {
-    const matchesSearch = searchQuery
-      ? reportedPost.post.text
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        reportedPost.post.user.name
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())
-      : true;
+  const filteredOpportunities = reportedOpportunities.filter(
+    (reportedOpportunity) => {
+      const matchesSearch = searchQuery
+        ? reportedOpportunity.opportunity.title
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          reportedOpportunity.opportunity.company.name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          reportedOpportunity.opportunity.description
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+        : true;
 
-    const matchesStatus =
-      statusFilter === "all" || reportedPost.status === statusFilter;
+      const matchesStatus =
+        statusFilter === "all" || reportedOpportunity.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
-  });
+      return matchesSearch && matchesStatus;
+    },
+  );
 
-  const totalReports = reportedPosts.reduce(
-    (acc, rp) => acc + rp.totalReports,
+  const totalReports = reportedOpportunities.reduce(
+    (acc, ro) => acc + ro.totalReports,
     0,
   );
-  const pendingPosts = reportedPosts.filter(
-    (rp) => rp.status === "pending",
+  const pendingOpportunities = reportedOpportunities.filter(
+    (ro) => ro.status === "pending",
   ).length;
 
   return (
@@ -170,9 +189,9 @@ export function ReportedPostsPage() {
       <div className="space-y-6">
         {/* Cabeçalho */}
         <div>
-          <h1 className="text-3xl font-bold">Posts Denunciados</h1>
+          <h1 className="text-3xl font-bold">Oportunidades Denunciadas</h1>
           <p className="text-muted-foreground">
-            Gerencie e modere posts reportados pelos usuários
+            Gerencie e modere oportunidades reportadas pelos usuários
           </p>
         </div>
 
@@ -181,12 +200,14 @@ export function ReportedPostsPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Posts Denunciados
+                Oportunidades Denunciadas
               </CardTitle>
               <Flag className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{reportedPosts.length}</div>
+              <div className="text-2xl font-bold">
+                {reportedOpportunities.length}
+              </div>
               <p className="text-xs text-muted-foreground">Requerem atenção</p>
             </CardContent>
           </Card>
@@ -194,10 +215,10 @@ export function ReportedPostsPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Pendentes</CardTitle>
-              <FileText className="h-4 w-4 text-orange-600" />
+              <Briefcase className="h-4 w-4 text-orange-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{pendingPosts}</div>
+              <div className="text-2xl font-bold">{pendingOpportunities}</div>
               <p className="text-xs text-muted-foreground">
                 Aguardando revisão
               </p>
@@ -209,7 +230,7 @@ export function ReportedPostsPage() {
               <CardTitle className="text-sm font-medium">
                 Total de Denúncias
               </CardTitle>
-              <Heart className="h-4 w-4 text-blue-600" />
+              <MapPin className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalReports}</div>
@@ -223,9 +244,9 @@ export function ReportedPostsPage() {
         {/* Seção de Gerenciamento */}
         <Card>
           <CardHeader>
-            <CardTitle>Posts Denunciados</CardTitle>
+            <CardTitle>Oportunidades Denunciadas</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Revise e tome ações sobre posts reportados pelos usuários
+              Revise e tome ações sobre oportunidades reportadas pelos usuários
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -234,7 +255,7 @@ export function ReportedPostsPage() {
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar posts denunciados por autor ou conteúdo..."
+                  placeholder="Buscar oportunidades por título, empresa ou descrição..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -253,14 +274,14 @@ export function ReportedPostsPage() {
               </Select>
             </div>
 
-            {/* Tabela de Posts */}
+            {/* Tabela de Oportunidades */}
             <div className="rounded-lg border">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Conteúdo</TableHead>
+                    <TableHead>Oportunidade</TableHead>
                     <TableHead>Denúncias</TableHead>
-                    <TableHead>Engajamento</TableHead>
+                    <TableHead>Localização</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Data</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
@@ -272,88 +293,82 @@ export function ReportedPostsPage() {
                       <TableCell colSpan={6} className="text-center py-8">
                         <div className="flex items-center justify-center gap-2">
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>Carregando posts denunciados...</span>
+                          <span>Carregando oportunidades denunciadas...</span>
                         </div>
                       </TableCell>
                     </TableRow>
-                  ) : filteredPosts.length === 0 ? (
+                  ) : filteredOpportunities.length === 0 ? (
                     <TableRow>
                       <TableCell
                         colSpan={6}
                         className="text-center py-8 text-muted-foreground"
                       >
-                        Nenhum post denunciado no momento
+                        Nenhuma oportunidade denunciada no momento
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredPosts.map((reportedPost) => (
-                      <TableRow key={reportedPost.post.id}>
+                    filteredOpportunities.map((reportedOpportunity) => (
+                      <TableRow key={reportedOpportunity.opportunity.id}>
                         <TableCell className="max-w-md">
-                          <div className="space-y-1 ">
-                            <div className="flex items-center gap-2 ">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <Briefcase className="h-4 w-4 text-muted-foreground" />
                               <span className="font-medium text-sm">
-                                {reportedPost.post.user.name}
+                                {reportedOpportunity.opportunity.title}
                               </span>
                             </div>
-                            <p className="text-sm text-muted-foreground truncate">
-                              {reportedPost.post.text}
+                            <p className="text-xs text-muted-foreground">
+                              Por {reportedOpportunity.opportunity.company.name}
                             </p>
-                            {reportedPost.post.imageUrl && (
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground ">
-                                <Image className="h-3 w-3" />
-                                <span>Com mídia</span>
-                              </div>
-                            )}
+                            <p className="text-sm text-muted-foreground truncate">
+                              {reportedOpportunity.opportunity.description}
+                            </p>
                           </div>
                         </TableCell>
                         <TableCell>
                           <Badge variant="destructive" className="bg-red-600">
-                            {reportedPost.totalReports} denúncias
+                            {reportedOpportunity.totalReports} denúncias
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="flex flex-col gap-1 text-xs ">
-                            <div className="flex items-center gap-1 ">
-                              <Heart className="h-3 w-3 text-red-500" />
-                              <span>
-                                {reportedPost.post.likes?.length || 0}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <span>💬</span>
-                              <span>
-                                {reportedPost.post.comments?.length || 0}
-                              </span>
-                            </div>
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <MapPin className="h-3 w-3" />
+                            <span>
+                              {reportedOpportunity.opportunity.location}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
                           <Badge
                             variant="outline"
                             className={
-                              reportedPost.status === "pending"
+                              reportedOpportunity.status === "pending"
                                 ? "border-yellow-500 text-yellow-600"
-                                : reportedPost.status === "hidden"
+                                : reportedOpportunity.status === "hidden"
                                   ? "border-orange-500 text-orange-600"
                                   : "border-red-500 text-red-600"
                             }
                           >
-                            {reportedPost.status === "pending"
+                            {reportedOpportunity.status === "pending"
                               ? "Pendente"
-                              : reportedPost.status === "hidden"
+                              : reportedOpportunity.status === "hidden"
                                 ? "Oculto"
                                 : "Deletado"}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
-                          {getTimeAgoSimple(reportedPost.post.createdAt)}
+                          {getTimeAgoSimple(
+                            reportedOpportunity.opportunity.createdAt,
+                          )}
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="flex gap-2 justify-end ">
+                          <div className="flex gap-2 justify-end">
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleReviewPost(reportedPost)}
+                              onClick={() =>
+                                handleReviewOpportunity(reportedOpportunity)
+                              }
                             >
                               Revisar
                             </Button>
@@ -361,7 +376,9 @@ export function ReportedPostsPage() {
                               variant="outline"
                               size="sm"
                               onClick={() =>
-                                handleDismissReports(reportedPost.post.id)
+                                handleDismissReports(
+                                  reportedOpportunity.opportunity.id,
+                                )
                               }
                             >
                               Descartar
@@ -370,7 +387,9 @@ export function ReportedPostsPage() {
                               variant="destructive"
                               size="sm"
                               onClick={() =>
-                                handleDeletePost(reportedPost.post.id)
+                                handleDeleteOpportunity(
+                                  reportedOpportunity.opportunity.id,
+                                )
                               }
                             >
                               Deletar
@@ -390,7 +409,7 @@ export function ReportedPostsPage() {
           isOpen={isModalOpen}
           onOpenChange={setIsModalOpen}
           report={selectedReport}
-          onActionComplete={loadReportedPosts}
+          onActionComplete={loadReportedOpportunities}
         />
       </div>
     </AdminLayout>

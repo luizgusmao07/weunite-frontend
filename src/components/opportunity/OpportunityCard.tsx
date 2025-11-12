@@ -49,6 +49,7 @@ import { EditOpportunity } from "./EditOpportunity";
 import type { Opportunity } from "@/@types/opportunity.types";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useDeleteOpportunity } from "@/state/useOpportunities";
+import { ReportModal } from "@/components/shared/ReportModal";
 
 interface OpportunityCardProps {
   opportunity: Opportunity;
@@ -64,6 +65,7 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditOpportunityOpen, setIsEditOpportunityOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const timeAgo = getTimeAgo(opportunity.createdAt);
 
@@ -226,7 +228,13 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
                         Compartilhar
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-red-600 hover:cursor-pointer">
+                      <DropdownMenuItem
+                        className="text-red-600 hover:cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsReportModalOpen(true);
+                        }}
+                      >
                         <Flag className="mr-2 h-4 w-4" />
                         Denunciar
                       </DropdownMenuItem>
@@ -307,6 +315,14 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
         open={isEditOpportunityOpen}
         onOpenChange={setIsEditOpportunityOpen}
         opportunity={opportunity}
+      />
+
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onOpenChange={setIsReportModalOpen}
+        entityType="OPPORTUNITY"
+        entityId={Number(opportunity.id)}
+        entityTitle={opportunity.title}
       />
     </>
   );

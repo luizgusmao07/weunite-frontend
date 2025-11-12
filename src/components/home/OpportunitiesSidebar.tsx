@@ -31,7 +31,7 @@ const useCustomBreakpoint = (breakpoint: number = 1500) => {
 
 export const OpportunitiesSidebar: React.FC = () => {
   const [showAll, setShowAll] = useState(false);
-  const [visibleOpportunities, setVisibleOpportunities] = useState(1);
+  const [, setVisibleOpportunities] = useState(1);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [randomizedOpportunities, setRandomizedOpportunities] = useState<any[]>(
     [],
