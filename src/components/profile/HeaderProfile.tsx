@@ -88,6 +88,14 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
   };
   const { isDesktop } = useBreakpoints();
 
+  const truncatedUsername =
+    !isDesktop &&
+    !isOwnProfile &&
+    displayUser?.username &&
+    displayUser.username.length > 7
+      ? displayUser.username.substring(0, 7) + "..."
+      : displayUser?.username;
+
   if (isDesktop) {
     return (
       <>
@@ -162,7 +170,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
 
               <div className="flex flex-col ml-[0.5em]">
                 <p className="text-primary font-medium text-2xl">
-                  {displayUser?.username}
+                  {truncatedUsername}
                 </p>
                 <p className="text-[#a1a1a1] text-xs">{displayUser?.name}</p>
               </div>
@@ -284,7 +292,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
             </div>
 
             <div className="flex flex-col ml-[0.5em]">
-              <p className="text-primary text-base">{displayUser?.username}</p>
+              <p className="text-primary text-base">{truncatedUsername}</p>
               <p className="text-[#a1a1a1] text-xs">{displayUser?.name}</p>
             </div>
 
