@@ -3,6 +3,7 @@ import {
   Play,
   Pause,
   Volume2,
+  Volume1,
   VolumeX,
   Maximize,
   Minimize,
@@ -238,8 +239,16 @@ export default function VideoPlayer({
 
         {/* ✅ Controles */}
         <div className="bg-gradient-to-t from-black/95 via-black/80 to-black/0 px-4 py-3 flex items-center justify-between gap-3">
-          {/* ✅ Esquerda: Play + Skip */}
+          {/* ✅ Esquerda: Skip Back + Play + Skip Forward + Volume */}
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleSkip(-15)}
+              className="p-2.5 hover:bg-white/15 rounded-lg transition-all duration-200 text-white hover:text-green-400"
+              title="Voltar 15s"
+            >
+              <SkipBack className="w-5 h-5" />
+            </button>
+
             <button
               onClick={handlePlayPause}
               className="p-2.5 hover:bg-white/15 rounded-lg transition-all duration-200 text-white hover:text-green-400"
@@ -253,14 +262,6 @@ export default function VideoPlayer({
             </button>
 
             <button
-              onClick={() => handleSkip(-15)}
-              className="p-2.5 hover:bg-white/15 rounded-lg transition-all duration-200 text-white hover:text-green-400"
-              title="Voltar 15s"
-            >
-              <SkipBack className="w-5 h-5" />
-            </button>
-
-            <button
               onClick={() => handleSkip(15)}
               className="p-2.5 hover:bg-white/15 rounded-lg transition-all duration-200 text-white hover:text-green-400"
               title="Avançar 15s"
@@ -268,7 +269,7 @@ export default function VideoPlayer({
               <SkipForward className="w-5 h-5" />
             </button>
 
-            {/* ✅ Volume */}
+            {/* ✅ Volume com barra preenchida */}
             <div className="flex items-center gap-2 ml-2 group/vol">
               <button
                 onClick={handleMuteToggle}
@@ -277,20 +278,29 @@ export default function VideoPlayer({
               >
                 {isMuted ? (
                   <VolumeX className="w-5 h-5" />
-                ) : (
+                ) : volume > 0.5 ? (
                   <Volume2 className="w-5 h-5" />
+                ) : (
+                  <Volume1 className="w-5 h-5" />
                 )}
               </button>
               <div className="flex items-center gap-2 max-w-0 group-hover/vol:max-w-xs transition-all duration-300 overflow-hidden">
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={volume}
-                  onChange={handleVolumeChange}
-                  className="w-16 h-1 bg-white/20 rounded-full cursor-pointer appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:bg-green-400 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-2.5 [&::-moz-range-thumb]:h-2.5 [&::-moz-range-thumb]:bg-green-400 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
-                />
+                {/* ✅ NOVO: Barra de volume com preenchimento visual */}
+                <div className="relative h-1 w-16 bg-white/20 rounded-full group-hover/vol:h-1.5 transition-all duration-200 cursor-pointer overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full transition-all duration-200"
+                    style={{ width: `${volume * 100}%` }}
+                  />
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={volume}
+                    onChange={handleVolumeChange}
+                    className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-2 w-full opacity-0 cursor-pointer appearance-none"
+                  />
+                </div>
               </div>
             </div>
           </div>
