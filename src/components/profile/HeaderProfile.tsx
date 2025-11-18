@@ -14,6 +14,7 @@ import { useFollowAction } from "@/hooks/useFollowAction";
 import { useGetFollowers, useGetFollowing } from "@/state/useFollow";
 import { getInitials } from "@/utils/getInitials";
 import { useTheme } from "../ThemeProvider";
+import { Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
 
 interface HeaderProfileProps {
   profileUsername?: string;
@@ -64,6 +65,7 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
   const [isFollowingOpen, setIsFollowingOpen] = useState(false);
   const [isFollowersOpen, setIsFollowersOpen] = useState(false);
   const [isEditBannerOpen, setIsEditBannerOpen] = useState(false);
+  const [showUsernameTooltip, setShowUsernameTooltip] = useState(false);
 
   const handleEditProfileOpen = () => {
     setIsEditProfileOpen(true);
@@ -169,9 +171,13 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
               </div>
 
               <div className="flex flex-col ml-[0.5em]">
-                <p className="text-primary font-medium text-2xl">
-                  {truncatedUsername}
-                </p>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <p className="text-primary font-medium text-2xl">
+                      {truncatedUsername}
+                    </p>
+                  </TooltipTrigger>
+                </Tooltip>
                 <p className="text-[#a1a1a1] text-xs">{displayUser?.name}</p>
               </div>
 
@@ -292,7 +298,30 @@ export default function HeaderProfile({ profileUsername }: HeaderProfileProps) {
             </div>
 
             <div className="flex flex-col ml-[0.5em]">
-              <p className="text-primary text-base">{truncatedUsername}</p>
+              <Tooltip
+                open={showUsernameTooltip}
+                onOpenChange={setShowUsernameTooltip}
+              >
+                <TooltipTrigger asChild>
+                  <p
+                    className="text-primary text-base cursor-pointer"
+                    onClick={() => setShowUsernameTooltip(!showUsernameTooltip)}
+                  >
+                    {truncatedUsername}
+                  </p>
+                </TooltipTrigger>
+                {!isDesktop &&
+                  !isOwnProfile &&
+                  displayUser?.username &&
+                  displayUser.username.length > 7 && (
+                    <TooltipContent
+                      side="bottom"
+                      className="bg-background/80 text-primary text-xs border border-primary/20"
+                    >
+                      {displayUser.username}
+                    </TooltipContent>
+                  )}
+              </Tooltip>
               <p className="text-[#a1a1a1] text-xs">{displayUser?.name}</p>
             </div>
 
