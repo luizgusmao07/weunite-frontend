@@ -29,6 +29,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useAuthMessages } from "@/hooks/useAuthMessages";
 import { useState } from "react";
+import { SafeLottie } from "../shared/SafeLottie";
 
 const formatCNPJ = (value: string) => {
   const numbers = value.replace(/\D/g, "");
@@ -81,11 +82,10 @@ export function SignUpCompany({
   return (
     <div className="flex flex-col space-y-2">
       <div className="flex justify-center">
-        <DotLottieReact
+        <SafeLottie
           src="https://lottie.host/a06a613a-efd2-4dbd-96d0-2f4fd7344792/0jYYhWcj4H.lottie"
-          loop
-          autoplay
-          className="w-50 m-0"
+          width={200}
+          height={200}
         />
       </div>
 
@@ -209,7 +209,7 @@ export function SignUpCompany({
                           <Building2 className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="text"
-                            placeholder="XX.XXX.XXX/0000-XX"
+                            placeholder="00.000.000/0001-00"
                             className="pl-8"
                             value={formatCNPJ(field.value)}
                             onChange={(e) => {
@@ -218,14 +218,14 @@ export function SignUpCompany({
                                 extractCNPJNumbers(formattedValue);
                               field.onChange(numbersOnly);
                             }}
+                            onBlur={field.onBlur}
                             maxLength={18}
                           />
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Digite apenas números, a formatação será aplicada
-                            automaticamente.
-                          </p>
                         </div>
                       </FormControl>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Digite o CNPJ da sua empresa (14 dígitos)
+                      </p>
                       <FormMessage className="text-xs" />
                     </FormItem>
                   )}

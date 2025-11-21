@@ -4,16 +4,27 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
+  DrawerDescription,
 } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Opportunity } from "@/@types/opportunity.types";
 import { X as CloseIcon, MapPin, Calendar, Users } from "lucide-react";
 import { useBreakpoints } from "@/hooks/useBreakpoints";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { getInitials } from "@/utils/getInitials";
 import { getTimeAgo } from "@/hooks/useGetTimeAgo";
+import { useAuthStore } from "@/stores/useAuthStore";
+import {
+  useToggleSubscriber,
+  useCheckIsSubscribed,
+} from "@/state/useOpportunities";
+import { useNavigate } from "react-router-dom";
 
 interface OpportunityDescriptionProps {
   isOpen?: boolean;
@@ -26,11 +37,22 @@ export function OpportunityDescription({
   onOpenChange,
   opportunity,
 }: OpportunityDescriptionProps) {
-  // const { user } = useAuthStore();
-
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
   const companyInitials = getInitials(opportunity.company?.name || "");
-
   const { commentDesktop } = useBreakpoints();
+  const toggleSubscriber = useToggleSubscriber();
+
+  const isOwner = opportunity.company?.id === user?.id;
+  const isAthlete = user?.role === "ATHLETE";
+
+  // Verificar se está inscrito (somente para atletas que não são donos)
+  const { data: isSubscribedData } = useCheckIsSubscribed(
+    Number(user?.id),
+    Number(opportunity.id),
+    isAthlete && !isOwner,
+  );
+  const isSubscribed = isSubscribedData?.data || false;
 
   const opportunityDate = new Date(opportunity.dateEnd).toLocaleDateString(
     "pt-BR",
@@ -41,7 +63,16 @@ export function OpportunityDescription({
     },
   );
 
-  const handleApply = () => {};
+  const subscribersCount = opportunity.subscribersCount || 0;
+
+  const handleApply = () => {
+    if (!user?.id || !isAthlete || toggleSubscriber.isPending) return;
+
+    toggleSubscriber.mutate({
+      athleteId: Number(user.id),
+      opportunityId: Number(opportunity.id),
+    });
+  };
 
   if (!commentDesktop) {
     return (
@@ -52,6 +83,9 @@ export function OpportunityDescription({
               <CloseIcon className="h-5 w-5 hover:cursor-pointer" />
             </DrawerClose>
             <DrawerTitle>Detalhes da Oportunidade</DrawerTitle>
+            <DrawerDescription>
+              Veja todos os detalhes e candidate-se a esta oportunidade
+            </DrawerDescription>
           </DrawerHeader>
 
           <div className="flex flex-col w-full items-center overflow-y-auto px-4 py-6">
@@ -83,7 +117,8 @@ export function OpportunityDescription({
                 </div>
                 <div className="flex items-center gap-1">
                   <Users className="h-4 w-4" />
-                  {opportunity.subscribers?.length || 0} candidatos
+                  {subscribersCount}{" "}
+                  {subscribersCount === 1 ? "candidato" : "candidatos"}
                 </div>
               </div>
 
@@ -101,13 +136,40 @@ export function OpportunityDescription({
                 <h3 className="text-lg font-semibold mb-2">Descrição</h3>
                 <p className="whitespace-pre-wrap">{opportunity.description}</p>
               </div>
-            </div>
 
-            {/* Botão de candidatura */}
-            <div className="w-full max-w-[45em] border-t pt-4">
-              <Button onClick={handleApply} className="w-full">
-                Candidatar-se
-              </Button>
+              {/* Botão de candidatura - apenas para atletas */}
+              {!isOwner && isAthlete && (
+                <div className="mt-6 pt-4 border-t">
+                  <Button
+                    onClick={handleApply}
+                    className="w-full bg-third hover:bg-third/90"
+                    disabled={toggleSubscriber.isPending}
+                  >
+                    {toggleSubscriber.isPending
+                      ? "Processando..."
+                      : isSubscribed
+                        ? "Cancelar candidatura"
+                        : "Candidatar-se"}
+                  </Button>
+                </div>
+              )}
+
+              {/* Botão ver candidaturas - apenas para dono da oportunidade */}
+              {isOwner && (
+                <div className="mt-6 pt-4 border-t">
+                  <Button
+                    onClick={() => {
+                      navigate(`/opportunity/${opportunity.id}/subscribers`);
+                      onOpenChange?.(false);
+                    }}
+                    className="w-full border-third text-third hover:bg-third hover:text-white"
+                    variant="outline"
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    Ver candidaturas ({subscribersCount})
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </DrawerContent>
@@ -118,6 +180,9 @@ export function OpportunityDescription({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl w-[90vw] h-[90vh] p-0 rounded-xl overflow-hidden">
+        <DialogDescription className="sr-only">
+          Veja todos os detalhes e candidate-se a esta oportunidade
+        </DialogDescription>
         <div className="flex w-full h-full">
           <div className="w-full flex flex-col">
             {/* Cabeçalho */}
@@ -149,7 +214,10 @@ export function OpportunityDescription({
                 </div>
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-muted-foreground" />
-                  <span>{opportunity.subscribers?.length || 0} candidatos</span>
+                  <span>
+                    {subscribersCount}{" "}
+                    {subscribersCount === 1 ? "candidato" : "candidatos"}
+                  </span>
                 </div>
               </div>
 
@@ -176,13 +244,40 @@ export function OpportunityDescription({
                   </p>
                 </div>
               </div>
-            </div>
 
-            {/* Footer com botão de candidatura */}
-            <div className="border-t p-6">
-              <Button onClick={handleApply} className="w-full">
-                Candidatar-se para esta oportunidade
-              </Button>
+              {/* Botão de candidatura - apenas para atletas */}
+              {user?.role === "ATHLETE" && (
+                <div className="border-t pt-4">
+                  <Button
+                    onClick={handleApply}
+                    className="w-full bg-third hover:bg-third/90"
+                    disabled={toggleSubscriber.isPending}
+                  >
+                    {toggleSubscriber.isPending
+                      ? "Processando..."
+                      : isSubscribed
+                        ? "Cancelar candidatura"
+                        : "Candidatar-se"}
+                  </Button>
+                </div>
+              )}
+
+              {/* Botão ver candidaturas - apenas para dono da oportunidade */}
+              {isOwner && (
+                <div className="border-t pt-4">
+                  <Button
+                    onClick={() => {
+                      navigate(`/opportunity/${opportunity.id}/subscribers`);
+                      onOpenChange?.(false);
+                    }}
+                    className="w-full border-third text-third hover:bg-third hover:text-white"
+                    variant="outline"
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    Ver candidaturas ({subscribersCount})
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>

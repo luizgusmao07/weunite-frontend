@@ -30,6 +30,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import { useAuthMessages } from "@/hooks/useAuthMessages";
 import { signUpSchema } from "@/schemas/auth/signUp.schema";
+import { SafeLottie } from "../shared/SafeLottie";
 
 export function SignUp({
   setCurrentTab,
@@ -63,11 +64,10 @@ export function SignUp({
   return (
     <div className="flex flex-col space-y-2">
       <div className="flex justify-center">
-        <DotLottieReact
+        <SafeLottie
           src="https://lottie.host/a06a613a-efd2-4dbd-96d0-2f4fd7344792/0jYYhWcj4H.lottie"
-          loop
-          autoplay
-          className="w-50 m-0"
+          width={200}
+          height={200}
         />
       </div>
 

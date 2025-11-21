@@ -43,7 +43,7 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   // ✅ Cria a conexão WebSocket UMA ÚNICA VEZ quando o app carrega
   useEffect(() => {
     if (!jwt) {
-      console.log("⚠️ WebSocket: JWT não encontrado");
+      // Silenciosamente retorna se não há JWT (usuário não autenticado)
       return;
     }
 
