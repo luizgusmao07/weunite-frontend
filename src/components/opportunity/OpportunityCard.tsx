@@ -48,7 +48,11 @@ import { OpportunityDescription } from "./DescriptionOpportunity";
 import { EditOpportunity } from "./EditOpportunity";
 import type { Opportunity } from "@/@types/opportunity.types";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useDeleteOpportunity } from "@/state/useOpportunities";
+import {
+  useDeleteOpportunity,
+  useToggleSubscriber,
+  useCheckIsSubscribed,
+} from "@/state/useOpportunities";
 import { ReportModal } from "@/components/shared/ReportModal";
 
 interface OpportunityCardProps {
@@ -60,6 +64,18 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const deleteOpportunity = useDeleteOpportunity();
+  const toggleSubscriber = useToggleSubscriber();
+
+  const isOwner = opportunity.company?.id === user?.id;
+  const isAthlete = user?.role === "ATHLETE";
+
+  // Verificar se está inscrito (somente para atletas que não são donos)
+  const { data: isSubscribedData } = useCheckIsSubscribed(
+    Number(user?.id),
+    Number(opportunity.id),
+    isAthlete && !isOwner,
+  );
+  const isSubscribed = isSubscribedData?.data || false;
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
@@ -77,8 +93,6 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
       year: "numeric",
     },
   );
-
-  const isOwner = opportunity.company?.id === user?.id;
 
   const handleCompanyClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -110,6 +124,13 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
 
   const handleApply = (e: React.MouseEvent) => {
     e.stopPropagation();
+
+    if (!user?.id || !isAthlete || toggleSubscriber.isPending) return;
+
+    toggleSubscriber.mutate({
+      athleteId: Number(user.id),
+      opportunityId: Number(opportunity.id),
+    });
   };
 
   const handleBookmark = (e: React.MouseEvent) => {
@@ -161,6 +182,21 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
                 <DropdownMenuContent align="end" className="w-48">
                   {isOwner ? (
                     <>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(
+                            `/opportunity/${opportunity.id}/subscribers`,
+                          );
+                        }}
+                        className="hover:cursor-pointer"
+                      >
+                        <Users className="mr-2 h-4 w-4" />
+                        Ver Candidatos ({opportunity.subscribersCount || 0})
+                      </DropdownMenuItem>
+
+                      <DropdownMenuSeparator />
+
                       <DropdownMenuItem
                         onClick={handleEditOpportunityOpen}
                         className="hover:cursor-pointer"
@@ -269,7 +305,7 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
 
               <div className="flex items-center gap-1">
                 <Users className="h-4 w-4" />
-                <span>{opportunity.subscribers?.length || 0} candidatos</span>
+                <span>{opportunity.subscribersCount || 0} candidatos</span>
               </div>
             </div>
           </div>
@@ -278,14 +314,34 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
         <CardFooter className="flex flex-col mt-[-15px]">
           <div className="flex w-full justify-between items-center">
             <CardAction className="flex items-center gap-3">
-              {!isOwner && (
+              {!isOwner && isAthlete && (
                 <Button
                   size="sm"
                   variant="default"
                   className="bg-third hover:bg-third/90 text-white rounded-full px-4"
                   onClick={handleApply}
+                  disabled={toggleSubscriber.isPending}
                 >
-                  Candidatar-se
+                  {toggleSubscriber.isPending
+                    ? "Processando..."
+                    : isSubscribed
+                      ? "Cancelar candidatura"
+                      : "Candidatar-se"}
+                </Button>
+              )}
+
+              {isOwner && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="rounded-full px-4 border-third text-third hover:bg-third hover:text-white"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/opportunity/${opportunity.id}/subscribers`);
+                  }}
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  Ver candidaturas ({opportunity.subscribersCount || 0})
                 </Button>
               )}
             </CardAction>
