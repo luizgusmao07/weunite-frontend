@@ -24,6 +24,7 @@ export {
   getAdminStatsRequest,
   getMonthlyDataRequest,
   getUserTypeDataRequest,
+  getOpportunitiesCategoryWithSkillsRequest,
 } from "./admin/dashboard";
 
 // Re-exportar Reports

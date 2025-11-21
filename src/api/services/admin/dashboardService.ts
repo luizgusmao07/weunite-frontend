@@ -66,3 +66,28 @@ export const getOpportunitiesByCategoryRequest = async () => {
     };
   }
 };
+
+/**
+ * Busca as categorias de oportunidades com suas skills mais frequentes
+ */
+export const getOpportunitiesCategoryWithSkillsRequest = async () => {
+  try {
+    const response = await axios.get("/admin/stats/opportunities-skills");
+    return {
+      success: true,
+      data: response.data,
+      message: null,
+      error: null,
+    };
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    return {
+      success: false,
+      data: null,
+      message: null,
+      error:
+        error.response?.data?.message ||
+        "Erro ao carregar categorias de oportunidades com skills",
+    };
+  }
+};

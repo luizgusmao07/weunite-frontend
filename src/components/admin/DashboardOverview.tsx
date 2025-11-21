@@ -8,6 +8,7 @@ import {
   getAdminStatsRequest,
   getMonthlyDataRequest,
   getUserTypeDataRequest,
+  getOpportunitiesCategoryWithSkillsRequest,
 } from "@/api/services/adminService";
 import { MonthlyActivityChart } from "./charts/MonthlyActivityChart";
 import { UserTypeDistributionChart } from "./charts/UserTypeDistributionChart";
@@ -31,6 +32,7 @@ export function DashboardOverview() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [monthlyData, setMonthlyData] = useState<ChartDataPoint[]>([]);
   const [userTypeData, setUserTypeData] = useState<UserTypeData[]>([]);
+  const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,12 +41,17 @@ export function DashboardOverview() {
         setLoading(true);
 
         // Buscar todas as estatísticas em paralelo
-        const [statsResponse, monthlyResponse, userTypeResponse] =
-          await Promise.all([
-            getAdminStatsRequest(),
-            getMonthlyDataRequest(),
-            getUserTypeDataRequest(),
-          ]);
+        const [
+          statsResponse,
+          monthlyResponse,
+          userTypeResponse,
+          categoriesResponse,
+        ] = await Promise.all([
+          getAdminStatsRequest(),
+          getMonthlyDataRequest(),
+          getUserTypeDataRequest(),
+          getOpportunitiesCategoryWithSkillsRequest(),
+        ]);
 
         if (statsResponse.success && statsResponse.data) {
           setStats(statsResponse.data);
@@ -67,6 +74,22 @@ export function DashboardOverview() {
             userTypeResponse.error || "Erro ao carregar tipos de usuário",
           );
         }
+
+        if (categoriesResponse.success && categoriesResponse.data) {
+          // Transformar dados do backend para o formato esperado pelo gráfico
+          const transformedCategories: CategoryData[] =
+            categoriesResponse.data.map((cat: any, index: number) => ({
+              category: cat.category,
+              count: cat.count,
+              fill: Object.values(chartColors)[index % 5] as string,
+              topSkills: cat.topSkills || [],
+            }));
+          setCategoryData(transformedCategories);
+        } else {
+          toast.error(
+            categoriesResponse.error || "Erro ao carregar categorias",
+          );
+        }
       } catch (error) {
         toast.error("Erro ao carregar dados do dashboard");
         console.error("Erro ao buscar dados do dashboard:", error);
@@ -77,15 +100,6 @@ export function DashboardOverview() {
 
     fetchDashboardData();
   }, []);
-
-  // Dados de categoria com cores aplicadas dinamicamente
-  const categoryData: CategoryData[] = [
-    { category: "Tecnologia", count: 189, fill: chartColors.primary },
-    { category: "Marketing", count: 145, fill: chartColors.secondary },
-    { category: "Design", count: 123, fill: chartColors.tertiary },
-    { category: "Vendas", count: 98, fill: chartColors.quaternary },
-    { category: "Outros", count: 67, fill: chartColors.danger },
-  ];
 
   if (loading || !stats) {
     return (

@@ -34,6 +34,7 @@ export interface CategoryData {
   category: string;
   count: number;
   fill: string;
+  topSkills?: Array<{ name: string; count: number }>;
 }
 
 /**

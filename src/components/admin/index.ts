@@ -16,7 +16,8 @@ export { AdminDebugInfo } from "./AdminDebugInfo";
 export { DashboardStats } from "./DashboardStats";
 
 // Dashboard
-export { DashboardOverview, StatsCard } from "./dashboard";
+export { StatsCard } from "./dashboard";
+export { DashboardOverview } from "./DashboardOverview";
 
 // Reports
 export {
